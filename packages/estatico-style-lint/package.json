@@ -1,0 +1,33 @@
+{
+  "name": "estatico-style-lint",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose",
+    "lint": "eslint --fix \"{,**,**/**}*.js\"",
+    "update-dependencies": "npx npm-check-updates -u -a"
+  },
+  "author": "Unic AG",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^0.24.0",
+    "del": "^3.0.0",
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "sinon": "^4.1.2",
+    "strip-ansi": "^4.0.0"
+  },
+  "dependencies": {
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-changed-in-place": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "stylelint": "^8.4.0",
+    "gulp-stylelint": "^6.0.0",
+    "lodash.merge": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=8 <9"
+  }
+}
