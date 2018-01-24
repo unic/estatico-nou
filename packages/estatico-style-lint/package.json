@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test2": "ava test/index.js --serial --verbose",
-    "lint": "eslint --fix \"{,**,**/**}*.js\"",
-    "update-dependencies": "npx npm-check-updates -u -a"
+    "test": "ava test/index.js --serial --verbose"
   },
   "author": "Unic AG",
   "license": "MIT",
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-changed-in-place": "^2.2.0",

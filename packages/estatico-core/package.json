@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"No tests specified\"",
-    "update-dependencies": "npx npm-check-updates -u -a",
     "gulp": "gulp"
   },
   "author": "Unic AG",

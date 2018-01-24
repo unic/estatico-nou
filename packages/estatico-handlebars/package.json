@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/index.js --serial --verbose",
-    "update-dependencies": "npx npm-check-updates -u -a"
+    "test": "ava test/index.js --serial --verbose"
   },
   "author": "Unic AG",
   "license": "MIT",

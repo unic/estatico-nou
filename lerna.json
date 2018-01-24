@@ -5,5 +5,10 @@
   ],
   "version": "independent",
   "useGitVersion": true,
-  "gitVersionPrefix": "v"
+  "gitVersionPrefix": "v",
+  "command": {
+    "bootstrap": {
+      "hoist": true
+    }
+  }
 }
