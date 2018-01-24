@@ -4,17 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint --fix \"{,**,**/**}*.js\"",
+    "test": "echo \"No tests specified\"",
     "update-dependencies": "npx npm-check-updates -u -a",
     "gulp": "gulp"
   },
   "author": "Unic AG",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^4.11.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
   },
   "dependencies": {
     "gulp": "github:gulpjs/gulp#4.0",
