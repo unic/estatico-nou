@@ -48,16 +48,16 @@ module.exports = (options) => {
     read: false,
   })
 
-    .pipe(tap(function(file) {
-      var data = require(file.path);
+    .pipe(tap((file) => {
+      const data = require(file.path);
 
       file.contents = new Buffer(JSON.stringify(data));
     }))
 
-    .pipe(rename(function(path) {
-			path.basename = path.basename.replace('.data', '');
-			path.extname = '.json';
-		}))
+    .pipe(rename((path) => {
+      path.basename = path.basename.replace('.data', '');
+      path.extname = '.json';
+    }))
 
     // Formatting
     .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())

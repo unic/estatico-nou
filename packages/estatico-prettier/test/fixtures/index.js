@@ -1,1 +1,1 @@
-var  hello="bla"
+const hello = 'bla';

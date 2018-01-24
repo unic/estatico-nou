@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const path = require('path');
-const estaticoHandlebars = require('estatico-handlebars')
-const estaticoHtmlValidate = require('estatico-html-validate')
+const estaticoHandlebars = require('estatico-handlebars');
+const estaticoHtmlValidate = require('estatico-html-validate');
 const estaticoWatch = require('estatico-watch');
 
 // Exemplary custom config
@@ -31,14 +31,14 @@ gulp.task('watch', () => {
   Object.keys(tasks).forEach((task) => {
     const watchTask = estaticoWatch({
       src: tasks[task].config.watch,
-      fn: tasks[task].fn
+      fn: tasks[task].fn,
     }, gulp);
 
     try {
       watchTask.fn();
     } catch (err) {
       // TODO: "Beautify" error handling
-      console.log(err)
+      console.log(err);
     }
   });
 });
