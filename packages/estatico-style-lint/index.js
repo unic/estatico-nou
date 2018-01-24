@@ -2,6 +2,8 @@ const gulp = require('gulp');
 const plumber = require('gulp-plumber');
 const changed = require('gulp-changed-in-place');
 const gulpStylelint = require('gulp-stylelint');
+const log = require('fancy-log');
+const chalk = require('chalk');
 const merge = require('lodash.merge');
 
 const defaults = {
@@ -12,6 +14,9 @@ const defaults = {
   watch: [
     './src/modules/**/*.css',
   ],
+  errorHandler: (err) => {
+    log(`estatico-style-lint${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
+  },
 };
 
 module.exports = (options) => {
@@ -35,5 +40,5 @@ module.exports = (options) => {
       reporters: [
         { formatter: 'string', console: true },
       ],
-    }));
+    }).on('error', config.errorHandler));
 };
