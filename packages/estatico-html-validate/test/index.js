@@ -21,7 +21,7 @@ test.cb('default', (t) => {
 
     t.is(stripLog(spy.getCall(0).args.join(' ')), 'HTML Error: index.html Line 9, Column 15: End tag “h3” seen, but there were open elements.');
     t.is(stripLog(spy.getCall(1).args.join(' ')), ' <h2>Hello</h3>');
-    t.is(stripLog(spy.getCall(2).args.join(' ')), 'estatico-html-validate (reporter) /Users/me/Sites/Unic/Estatico Nou/estatico-html-validate/test/fixtures/index.html Linting error (details above)');
+    t.is(stripLog(spy.getCall(2).args.join(' ')).replace(/\(reporter\) (.*?)\/estatico-html-validate\//, '(reporter) estatico-html-validate/'), 'estatico-html-validate (reporter) estatico-html-validate/test/fixtures/index.html Linting error (details above)');
 
     t.end();
   });
