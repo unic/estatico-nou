@@ -18,7 +18,7 @@ const defaults = {
       partials: [
         './test/fixtures/_*.hbs',
       ],
-      parsePartialName: (partialOptions, file) => path.relative('./test/fixtures', file.path)
+      parsePartialName: (config, partialOptions, file) => path.relative('./test/fixtures', file.path)
         .replace(path.extname(file.path), '')
         .replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
     },
