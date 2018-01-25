@@ -7,20 +7,23 @@ const chalk = require('chalk');
 const merge = require('lodash.merge');
 
 const defaults = {
-  src: [
-    './src/modules/**/*.css',
-  ],
-  srcBase: './src/',
-  watch: [
-    './src/modules/**/*.css',
-  ],
+  src: null,
+  srcBase: null,
   errorHandler: (err) => {
-    log(`estatico-style-lint${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
+    log(`estatico-stylelint${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
 };
 
 module.exports = (options) => {
   const config = merge({}, defaults, options);
+
+  // Validate options
+  if (!config.src) {
+    throw new Error('\'options.src\' is missing');
+  }
+  if (!config.srcBase) {
+    throw new Error('\'options.srcBase\' is missing');
+  }
 
   return gulp.src(config.src, {
     base: config.srcBase,

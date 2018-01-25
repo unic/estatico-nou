@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const path = require('path');
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-html-validate');
+const estaticoStylelint = require('estatico-stylelint');
 // const estaticoWatch = require('estatico-watch');
 
 // Exemplary custom config
@@ -30,13 +31,19 @@ const config = {
       data: file => require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
     },
   },
-  validateHtml: {
+  htmlValidate: {
     src: [
       './dist/*.html',
       // './dist/modules/**/*.html',
       // './dist/pages/**/*.html',
     ],
     srcBase: './dist/',
+  },
+  stylelint: {
+    src: [
+      './src/**/*.scss',
+    ],
+    srcBase: './src/',
   },
   watch: null,
 };
@@ -47,12 +54,15 @@ const tasks = {
   handlebars: function handlebars() {
     return estaticoHandlebars(config.handlebars);
   },
-  validateHtml: function validateHtml() {
-    return estaticoHtmlValidate(config.validateHtml);
+  htmlValidate: function htmlValidate() {
+    return estaticoHtmlValidate(config.htmlValidate);
+  },
+  stylelint: function stylelint() {
+    return estaticoStylelint(config.stylelint);
   },
 };
 
-gulp.task('default', gulp.series(tasks.handlebars, tasks.validateHtml));
+gulp.task('default', gulp.series(tasks.handlebars, gulp.parallel(tasks.htmlValidate, tasks.stylelint)));
 
 // gulp.task('watch', () => {
 //   Object.keys(tasks).forEach((task) => {

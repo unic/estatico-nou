@@ -1,18 +1,18 @@
-# estatico-style-lint
+# estatico-stylelint
 
 Checks SCSS for errors and warnings.
 
 ## Installation
 
 ```
-$ npm i -S estatico-style-lint
+$ npm i -S estatico-stylelint
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const styleLintTask = require('estatico-style-lint');
+const styleLintTask = require('estatico-stylelint');
 const styleLintOptions = {}; // Custom options, deep-merged into defaults via _.merge
 
 gulp.task('css:stylelint', () => styleLintTask(styleLintOptions));
