@@ -1,4 +1,4 @@
-# Demo repo evaluate Lerna
+# Demo repo evaluate [Lerna](https://github.com/lerna/lerna)
 
 ## Recommended setup
 
