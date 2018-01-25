@@ -21,7 +21,7 @@ test.cb('default', (t) => {
   task(defaults).on('end', () => {
     spy.restore();
 
-    console.log(stripLog(spy.getCall(0).args.join(' ')));
+    t.is(stripLog(spy.getCall(0).args.join(' ')), 'estatico-stylelint (gulp-stylelint) undefined Failed with 1 error');
 
     t.end();
   });
