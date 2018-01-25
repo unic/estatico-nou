@@ -1,0 +1,3 @@
+ [31m[1mHTML Error:[22m[39m index.html Line 9, Column 15: End tag “h3” seen, but there were open elements.
+ [90m  <h2>Hello</h3[39m[31m[1m>[22m[39m
+ gulp-w3cjs [36mestatico-w3c-validator/test/fixtures/index.html[39m [31mLinting error (details above)[39m

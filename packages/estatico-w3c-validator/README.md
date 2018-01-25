@@ -1,18 +1,18 @@
-# estatico-html-validate
+# estatico-w3c-validator
 
 Sends HTML pages through the [w3c validator](https://validator.w3.org/).
 
 ## Installation
 
 ```
-$ npm i -S estatico-html-validate
+$ npm i -S estatico-w3c-validator
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const validateTask = require('estatico-html-validate');
+const validateTask = require('estatico-w3c-validator');
 const validateOptions = {}; // Custom options, deep-merged into defaults via _.merge
 
 gulp.task('html:validate', () => validateTask(validateOptions));
@@ -70,7 +70,7 @@ Type: `Function`<br>
 Default:
 ```js
 (err) => {
-  log(`estatico-html-validate${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
+  log(`estatico-w3c-validator${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
 }
 ```
 

@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const path = require('path');
 const estaticoHandlebars = require('estatico-handlebars');
-const estaticoHtmlValidate = require('estatico-html-validate');
+const estaticoHtmlValidate = require('estatico-w3c-validator');
 const estaticoStylelint = require('estatico-stylelint');
 // const estaticoWatch = require('estatico-watch');
 

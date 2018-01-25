@@ -14,7 +14,7 @@
   "dependencies": {
     "gulp": "github:gulpjs/gulp#4.0",
     "estatico-handlebars": "0.0.1",
-    "estatico-html-validate": "0.0.1",
+    "estatico-w3c-validator": "0.0.1",
     "estatico-stylelint": "0.0.1",
     "estatico-watch": "0.0.1"
   },
