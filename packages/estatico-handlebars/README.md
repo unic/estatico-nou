@@ -57,25 +57,6 @@ Passed to `gulp.dest`.
 
 Recommendation for Estático: `'./dist'`
 
-#### watch
-
-Type: `Array`/`String`<br>
-Default: `null`
-
-Used in separate watch task, changes to above files will trigger the task.
-
-Recommendation for Estático:
-```js
-[
-  './src/*.(hbs|data.js|md)',
-  './src/pages/**/*.(hbs|data.js|md)',
-  './src/demo/pages/**/*.(hbs|data.js|md)',
-  './src/modules/**/!(_)*.(hbs|data.js|md)',
-  './src/demo/modules/**/!(_)*.(hbs|data.js|md)',
-  './src/preview/styleguide/*.(hbs|data.js|md)',
-]
-```
-
 #### errorHandler
 
 Type: `Function`<br>

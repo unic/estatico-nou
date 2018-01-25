@@ -48,22 +48,6 @@ Passed as `base` option to `gulp.src`.
 
 Recommendation for Estático: `'./dist'`
 
-#### watch
-
-Type: `Array`/`String`<br>
-Default: `null`
-
-Used in separate watch task, changes to above files will trigger the task.
-
-Recommendation for Estático:
-```js
-[
-  './dist/*.html',
-  './dist/modules/**/*.html',
-  './dist/pages/**/*.html',
-]
-```
-
 #### errorHandler
 
 Type: `Function`<br>

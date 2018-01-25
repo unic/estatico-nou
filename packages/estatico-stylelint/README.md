@@ -23,33 +23,25 @@ gulp.task('css:stylelint', () => styleLintTask(styleLintOptions));
 #### src
 
 Type: `Array` or `String`<br>
-Default:
-```js
-[
-  './src/modules/**/*.scss'
-]
-```
+Default: `null`
 
 Passed to `gulp.src`.
+
+Recommendation for Estático:
+```js
+[
+  './src/assets/css/*.scss',
+]
+```
 
 #### srcBase
 
 Type: `String`<br>
-Default: `'./src'`
+Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-#### watch
-
-Type: `Array`/`String`<br>
-Default:
-```js
-[
-  './src/modules/**/*.scss'
-]
-```
-
-Used in separate watch task, changes to above files will trigger the task.
+Recommendation for Estático: `'./src'`
 
 #### Plugins
 
