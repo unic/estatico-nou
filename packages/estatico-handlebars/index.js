@@ -11,25 +11,14 @@ const importFresh = require('import-fresh');
 const merge = require('lodash.merge');
 
 const defaults = {
-  src: [
-    './src/*.hbs',
-    './src/pages/**/*.hbs',
-    './src/demo/pages/**/*.hbs',
-    './src/modules/**/!(_)*.hbs',
-    './src/demo/modules/**/!(_)*.hbs',
-    './src/preview/styleguide/*.hbs',
-  ],
-  srcBase: './src',
+  src: null,
+  srcBase: null,
+  dest: null,
   plugins: {
     handlebars: {
-      partials: [
-        './src/layouts/*.hbs',
-        './src/modules/**/*.hbs',
-        './src/demo/modules/**/*.hbs',
-        './src/preview/**/*.hbs',
-      ],
-      parsePartialName: (options, file) => {
-        const filePath = path.relative('./src', file.path)
+      partials: null,
+      parsePartialName: (config, options, file) => {
+        const filePath = path.relative(config.srcBase, file.path)
           // Remove extension
           .replace(path.extname(file.path), '')
           // Use forward slashes on every OS
@@ -47,19 +36,27 @@ const defaults = {
   errorHandler: (err) => {
     log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
-  dest: './dist/',
-  watch: [
-    './src/*.(hbs|data.js|md)',
-    './src/pages/**/*.(hbs|data.js|md)',
-    './src/demo/pages/**/*.(hbs|data.js|md)',
-    './src/modules/**/!(_)*.(hbs|data.js|md)',
-    './src/demo/modules/**/!(_)*.(hbs|data.js|md)',
-    './src/preview/styleguide/*.(hbs|data.js|md)',
-  ],
 };
 
 module.exports = (options) => {
   const config = merge({}, defaults, options);
+
+  // Validate options
+  if (!config.src) {
+    throw new Error('\'options.src\' is missing');
+  }
+  if (!config.srcBase) {
+    throw new Error('\'options.srcBase\' is missing');
+  }
+  if (!config.dest) {
+    throw new Error('\'options.dest\' is missing');
+  }
+  if (!config.plugins.handlebars.partials) {
+    throw new Error('\'options.plugins.handlebars.partials\' is missing');
+  }
+
+  // Transform options
+  config.plugins.handlebars.parsePartialName = config.plugins.handlebars.parsePartialName.bind(null, config);
 
   return gulp.src(config.src, {
     base: config.srcBase,

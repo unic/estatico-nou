@@ -9,12 +9,8 @@ const chalk = require('chalk');
 const merge = require('lodash.merge');
 
 const defaults = {
-  src: [
-    './dist/*.html',
-    './dist/modules/**/*.html',
-    './dist/pages/**/*.html',
-  ],
-  srcBase: './dist/',
+  src: null,
+  srcBase: null,
   plugins: {
     w3cjs: {
       // url: 'http://localhost:8888'
@@ -23,17 +19,14 @@ const defaults = {
   errorHandler: (err) => {
     log(`estatico-html-validate${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
-  watch: [
-    // Possibly needs to be disabled due to rate-limited w3c API
-    // Alternative: Use local validator instance
-    './dist/*.html',
-    './dist/modules/**/*.html',
-    './dist/pages/**/*.html',
-  ],
 };
 
 module.exports = (options) => {
   const config = merge({}, defaults, options);
+
+  if (!config.src) {
+    throw new Error('\'options.src\' is missing');
+  }
 
   return gulp.src(config.src, {
     base: config.srcBase,

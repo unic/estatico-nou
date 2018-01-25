@@ -23,7 +23,11 @@ gulp.task('html', () => handlebarsTask(handlebarsOptions));
 #### src
 
 Type: `Array` or `String`<br>
-Default:
+Default: `null`
+
+Passed to `gulp.src`.
+
+Recommendation for Estático:
 ```js
 [
   './src/*.hbs',
@@ -35,26 +39,32 @@ Default:
 ]
 ```
 
-Passed to `gulp.src`.
-
 #### srcBase
 
 Type: `String`<br>
-Default: `'./src'`
+Default: `null`
 
 Passed as `base` option to `gulp.src`.
+
+Recommendation for Estático: `'./src'`
 
 #### dest
 
 Type: `String`<br>
-Default: `'./dist'`
+Default: `null`
 
 Passed to `gulp.dest`.
+
+Recommendation for Estático: `'./dist'`
 
 #### watch
 
 Type: `Array`/`String`<br>
-Default:
+Default: `null`
+
+Used in separate watch task, changes to above files will trigger the task.
+
+Recommendation for Estático:
 ```js
 [
   './src/*.(hbs|data.js|md)',
@@ -65,8 +75,6 @@ Default:
   './src/preview/styleguide/*.(hbs|data.js|md)',
 ]
 ```
-
-Used in separate watch task, changes to above files will trigger the task.
 
 #### errorHandler
 
@@ -90,14 +98,10 @@ Type: `Object`<br>
 Default:
 ```js
 handlebars: {
-  partials: [
-    './src/layouts/*.hbs',
-    './src/modules/**/*.hbs',
-    './src/demo/modules/**/*.hbs',
-    './src/preview/**/*.hbs',
-  ],
-  parsePartialName: (options, file) => {
-    const filePath = path.relative('./src', file.path)
+  partials: null,
+  // We are passing the task's config as a first parameter
+  parsePartialName: (config, options, file) => {
+    const filePath = path.relative(config.srcBase, file.path)
       // Remove extension
       .replace(path.extname(file.path), '')
       // Use forward slashes on every OS
@@ -109,6 +113,18 @@ handlebars: {
 ```
 
 Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb).
+
+Recommendation for Estático:
+```js
+{
+  partials: [
+    './src/layouts/*.hbs',
+    './src/modules/**/*.hbs',
+    './src/demo/modules/**/*.hbs',
+    './src/preview/**/*.hbs',
+  ]
+}
+```
 
 ##### plugins.data
 

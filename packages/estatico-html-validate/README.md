@@ -23,28 +23,39 @@ gulp.task('html:validate', () => validateTask(validateOptions));
 #### src
 
 Type: `Array` or `String`<br>
-Default:
-```js
-[
-  './dist/*.html',
-  './dist/modules/**/*.html',
-  './dist/pages/**/*.html',
-]
-```
+Default: `null`
 
 Passed to `gulp.src`.
+
+Recommendation for Estático:
+```js
+[
+  './src/*.hbs',
+  './src/pages/**/*.hbs',
+  './src/demo/pages/**/*.hbs',
+  './src/modules/**/!(_)*.hbs',
+  './src/demo/modules/**/!(_)*.hbs',
+  './src/preview/styleguide/*.hbs',
+]
+```
 
 #### srcBase
 
 Type: `String`<br>
-Default: `'./dist'`
+Default: `null`
 
 Passed as `base` option to `gulp.src`.
+
+Recommendation for Estático: `'./dist'`
 
 #### watch
 
 Type: `Array`/`String`<br>
-Default:
+Default: `null`
+
+Used in separate watch task, changes to above files will trigger the task.
+
+Recommendation for Estático:
 ```js
 [
   './dist/*.html',
@@ -52,8 +63,6 @@ Default:
   './dist/pages/**/*.html',
 ]
 ```
-
-Used in separate watch task, changes to above files will trigger the task.
 
 #### errorHandler
 
