@@ -5,6 +5,7 @@ const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
 const estaticoSass = require('estatico-sass');
 const estaticoStylelint = require('estatico-stylelint');
+const estaticoWebpack = require('estatico-webpack');
 const estaticoWatch = require('estatico-watch');
 
 const env = parseArgs(process.argv.slice(2));
@@ -108,6 +109,12 @@ const config = {
     srcBase: './src/',
     dest: './dist',
   },
+  js: {
+    entries: {
+      main: './src/assets/js/main.js',
+    },
+    dest: path.resolve('./dist/assets/js'),
+  },
   watch: null,
 };
 
@@ -125,6 +132,9 @@ const tasks = {
   },
   cssLint: function cssLint() {
     return estaticoStylelint(config.cssLint);
+  },
+  js: function js(cb) {
+    return estaticoWebpack(config.js, cb);
   },
 };
 
