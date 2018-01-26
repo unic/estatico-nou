@@ -1,9 +1,13 @@
 const gulp = require('gulp');
 const path = require('path');
+const parseArgs = require('minimist');
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
+const estaticoSass = require('estatico-sass');
 const estaticoStylelint = require('estatico-stylelint');
 const estaticoWatch = require('estatico-watch');
+
+const env = parseArgs(process.argv.slice(2));
 
 // Exemplary custom config
 const config = {
@@ -52,11 +56,27 @@ const config = {
       // './dist/pages/**/*.html',
     ],
   },
+  sass: {
+    src: [
+      './src/assets/css/**/*.scss',
+    ],
+    srcBase: './src/',
+    dest: './dist',
+    plugins: {
+      sass: {
+        includePaths: [
+          './src/',
+        ],
+      },
+      clean: env.dev ? null : {},
+    },
+  },
   stylelint: {
     src: [
       './src/**/*.scss',
     ],
     srcBase: './src/',
+    dest: './dist',
   },
   watch: null,
 };
@@ -70,12 +90,20 @@ const tasks = {
   htmlValidate: function htmlValidate() {
     return estaticoHtmlValidate(config.htmlValidate);
   },
+  sass: function sass() {
+    return estaticoSass(config.sass);
+  },
   stylelint: function stylelint() {
     return estaticoStylelint(config.stylelint);
   },
 };
 
-gulp.task('default', gulp.series(tasks.handlebars, gulp.parallel(tasks.htmlValidate, tasks.stylelint)));
+// Register with gulp
+Object.keys(tasks).forEach((task) => {
+  gulp.task(task, tasks[task]);
+});
+
+gulp.task('default', gulp.series(gulp.parallel(tasks.handlebars, tasks.sass), gulp.parallel(tasks.htmlValidate, tasks.stylelint)));
 
 gulp.task('watch', () => {
   Object.keys(tasks).forEach((task) => {
