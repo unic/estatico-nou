@@ -62,8 +62,8 @@ const config = {
 };
 
 // Exemplary tasks
+// Create named functions so gulp-cli can properly log them
 const tasks = {
-  // Create named functions so gulp-cli can properly log them
   handlebars: function handlebars() {
     return estaticoHandlebars(config.handlebars);
   },

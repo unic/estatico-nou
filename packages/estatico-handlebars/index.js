@@ -56,7 +56,7 @@ module.exports = (options) => {
   }
 
   // Transform options
-  config.plugins.handlebars.parsePartialName = config.plugins.handlebars.parsePartialName.bind(null, config);
+  config.plugins.handlebars.parsePartialName = config.plugins.handlebars.parsePartialName.bind(null, config); // eslint-disable-line max-len
 
   return gulp.src(config.src, {
     base: config.srcBase,
