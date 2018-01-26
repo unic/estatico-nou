@@ -11,13 +11,11 @@ const task = require('../index.js');
 const defaults = {
   src: './test/fixtures/index.hbs',
   srcBase: './test/fixtures/',
+  srcPartials: './test/fixtures/_*.hbs',
   dest: './test/results/',
   plugins: {
     data: file => require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
     handlebars: {
-      partials: [
-        './test/fixtures/_*.hbs',
-      ],
       parsePartialName: (config, partialOptions, file) => path.relative('./test/fixtures', file.path)
         .replace(path.extname(file.path), '')
         .replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
@@ -71,14 +69,14 @@ test.cb('error', (t) => {
     spy.restore();
 
     const data = {
-      error: stripLog(spy.getCall(1).args.join(' '))
+      error: stripLog(spy.getCall(2).args.join(' '))
         .replace(/(.*?)\/(test\/fixtures\/error\.json)/, '$2'),
       expected: stripLog(`test/fixtures/error.json: Unexpected token
  in JSON at position 15`),
     };
 
     const handlebars = {
-      error: stripLog(spy.getCall(0).args.join(' '))
+      error: stripLog(spy.getCall(1).args.join(' '))
         .replace(/(.*?)\/(test\/fixtures\/error\.hbs)/, '$2'), // For some reason, this error is emitted before the data one
       expected: stripLog(`test/fixtures/error.hbs Parse error on line 2:
 <div> {{> _partial}</div>

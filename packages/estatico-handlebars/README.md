@@ -20,42 +20,33 @@ gulp.task('html', () => handlebarsTask(handlebarsOptions));
 
 ### Options
 
-#### src
+#### src (required)
 
 Type: `Array` or `String`<br>
 Default: `null`
 
 Passed to `gulp.src`.
 
-Recommendation for Estático:
-```js
-[
-  './src/*.hbs',
-  './src/pages/**/*.hbs',
-  './src/demo/pages/**/*.hbs',
-  './src/modules/**/!(_)*.hbs',
-  './src/demo/modules/**/!(_)*.hbs',
-  './src/preview/styleguide/*.hbs',
-]
-```
-
-#### srcBase
+#### srcBase (required)
 
 Type: `String`<br>
 Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-Recommendation for Estático: `'./src'`
+#### srcPartials (required)
 
-#### dest
+Type: `String`<br>
+Default: `null`
+
+Passed as `partials` option to `gulp-hb`.
+
+#### dest (required)
 
 Type: `String`<br>
 Default: `null`
 
 Passed to `gulp.dest`.
-
-Recommendation for Estático: `'./dist'`
 
 #### errorHandler
 
@@ -79,7 +70,9 @@ Type: `Object`<br>
 Default:
 ```js
 handlebars: {
-  partials: null,
+  // Partials are inferred from `config.srcPartials`
+  partials: (config => config.srcPartials),
+
   // We are passing the task's config as a first parameter
   parsePartialName: (config, options, file) => {
     const filePath = path.relative(config.srcBase, file.path)
@@ -93,19 +86,7 @@ handlebars: {
 }
 ```
 
-Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb).
-
-Recommendation for Estático:
-```js
-{
-  partials: [
-    './src/layouts/*.hbs',
-    './src/modules/**/*.hbs',
-    './src/demo/modules/**/*.hbs',
-    './src/preview/**/*.hbs',
-  ]
-}
-```
+Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb). `partials` is resolved first since we cannot pass a function there.
 
 ##### plugins.data
 
@@ -113,14 +94,14 @@ Type: `Function`<br>
 Default:
 ```js
 data: (file) => {
-  let data = {};
-
   // Find .data.js file with same name
   try {
-    data = importFresh(file.path.replace(path.extname(file.path), '.data.js'));
-  } catch (e) {} // eslint-disable-line no-empty
+    const data = require(file.path.replace(path.extname(file.path), '.data.js'));
 
-  return data;
+    return Object.assign({}, data);
+  } catch (e) {
+    return {};
+  }
 }
 ```
 
@@ -138,6 +119,26 @@ prettify: {
 ```
 
 Passed to [`gulp-prettify`](https://www.npmjs.com/package/gulp-prettify). Setting to `null` will disable this step.
+
+### Options recommendation for Estático
+
+```js
+{
+  src: [
+    './src/*.hbs',
+    './src/pages/**/*.hbs',
+    './src/modules/**/!(_)*.hbs',
+    './src/preview/styleguide/*.hbs',
+  ],
+  srcPartials: [
+    './src/layouts/*.hbs',
+    './src/modules/**/*.hbs',
+    './src/preview/**/*.hbs',
+  ]
+  srcBase: './src',
+  dest: './dist',
+}
+```
 
 ## License
 

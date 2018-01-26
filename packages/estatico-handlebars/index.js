@@ -7,7 +7,6 @@ const through = require('through2');
 const log = require('fancy-log');
 const PluginError = require('plugin-error');
 const chalk = require('chalk');
-const importFresh = require('import-fresh');
 const merge = require('lodash.merge');
 
 const defaults = {
@@ -16,7 +15,7 @@ const defaults = {
   dest: null,
   plugins: {
     handlebars: {
-      partials: null,
+      partials: (config => config.srcPartials),
       parsePartialName: (config, options, file) => {
         const filePath = path.relative(config.srcBase, file.path)
           // Remove extension
@@ -27,7 +26,16 @@ const defaults = {
         return filePath;
       },
     },
-    data: file => importFresh(file.path.replace(path.extname(file.path), '.data.js')),
+    data: (file) => {
+      // Find .data.js file with same name
+      try {
+        const data = require(file.path.replace(path.extname(file.path), '.data.js')); // eslint-disable-line
+
+        return Object.assign({}, data);
+      } catch (e) {
+        return {};
+      }
+    },
     prettify: {
       indent_with_tabs: false,
       max_preserve_newlines: 1,
@@ -51,11 +59,9 @@ module.exports = (options, watcher) => {
   if (!config.dest) {
     throw new Error('\'options.dest\' is missing');
   }
-  if (!config.plugins.handlebars.partials) {
-    throw new Error('\'options.plugins.handlebars.partials\' is missing');
-  }
 
   // Transform options
+  config.plugins.handlebars.partials = config.plugins.handlebars.partials(config);
   config.plugins.handlebars.parsePartialName = config.plugins.handlebars.parsePartialName.bind(null, config); // eslint-disable-line max-len
 
   return gulp.src(config.src, {
