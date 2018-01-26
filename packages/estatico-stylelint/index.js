@@ -9,6 +9,7 @@ const merge = require('lodash.merge');
 const defaults = {
   src: null,
   srcBase: null,
+  dest: null,
   errorHandler: (err) => {
     log(`estatico-stylelint${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
@@ -24,6 +25,9 @@ module.exports = (options) => {
   if (!config.srcBase) {
     throw new Error('\'options.srcBase\' is missing');
   }
+  // if (!config.dest) {
+  //   throw new Error('\'options.dest\' is missing');
+  // }
 
   return gulp.src(config.src, {
     base: config.srcBase,
@@ -44,4 +48,6 @@ module.exports = (options) => {
         { formatter: 'string', console: true },
       ],
     }).on('error', config.errorHandler));
+
+    // TODO: Optionally write back to disc
 };

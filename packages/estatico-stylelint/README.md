@@ -15,38 +15,48 @@ const gulp = require('gulp');
 const styleLintTask = require('estatico-stylelint');
 const styleLintOptions = {}; // Custom options, deep-merged into defaults via _.merge
 
-gulp.task('css:stylelint', () => styleLintTask(styleLintOptions));
+gulp.task('cssLint', () => styleLintTask(styleLintOptions));
 ```
 
 ### Options
 
-#### src
+#### src (required)
 
 Type: `Array` or `String`<br>
 Default: `null`
 
 Passed to `gulp.src`.
 
-Recommendation for Estático:
-```js
-[
-  './src/assets/css/*.scss',
-]
-```
-
-#### srcBase
+#### srcBase (required)
 
 Type: `String`<br>
 Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-Recommendation for Estático: `'./src'`
+#### dest
+
+Type: `String`<br>
+Default: `null`
+
+Passed to `gulp.dest` when chosing to write back to dics (not yet implemented).
 
 #### Plugins
 
 Type: `Object`
 
+### Options recommendation for Estático
+
+```js
+{
+  src: [
+    './src/assets/css/*.scss',
+  ],
+  srcBase: './src',
+  dest: './dist',
+}
+```
+
 ## License
 
-The MIT License (MIT)
+Apache 2.0.
