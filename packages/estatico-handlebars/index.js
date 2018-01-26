@@ -38,7 +38,7 @@ const defaults = {
   },
 };
 
-module.exports = (options) => {
+module.exports = (options, watcher) => {
   const config = merge({}, defaults, options);
 
   // Validate options
@@ -65,10 +65,17 @@ module.exports = (options) => {
     // Prevent stream from unpiping on error
     .pipe(plumber())
 
-    // TODO: Add dependency graph and decide based on fileEvents which files to pass through
-    // .pipe(through.obj((file, enc, done) => {
-    //   done(null, file)
-    // }))
+    // Decide based on watcher dependency graph which files to pass through
+    .pipe(through.obj((file, enc, done) => {
+      // TODO: Make sure HTML is rebuilt if corresponding data file changed
+      if (watcher && !watcher.resolvedGraph.includes(file.path)) {
+        return done();
+      }
+
+      log(chalk.blue('estatico-handlebars'), `Rebuilding ${path.relative(config.srcBase, file.path)}`);
+
+      return done(null, file);
+    }))
 
     // Find data and assign it to file object
     .pipe(through.obj((file, enc, done) => {

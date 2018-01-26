@@ -30,6 +30,36 @@ const config = {
       './src/demo/modules/**/!(_)*.hbs',
       './src/preview/styleguide/*.hbs',
     ],
+    watchDependencyGraph: {
+      srcBase: './',
+      resolver: {
+        hbs: {
+          match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
+          resolve: (match /* , filePath */) => {
+            if (!match[1]) {
+              return null;
+            }
+
+            let resolvedPath = path.resolve('./src', match[1]);
+
+            // Add extension
+            resolvedPath = `${resolvedPath}.hbs`;
+
+            return resolvedPath;
+          },
+        },
+        js: {
+          match: /require\('(.*?\.data\.js)'\)/g,
+          resolve: (match, filePath) => {
+            if (!match[1]) {
+              return null;
+            }
+
+            return path.resolve(path.dirname(filePath), match[1]);
+          },
+        },
+      },
+    },
     plugins: {
       handlebars: {
         partials: [
@@ -84,8 +114,8 @@ const config = {
 // Exemplary tasks
 // Create named functions so gulp-cli can properly log them
 const tasks = {
-  html: function html() {
-    return estaticoHandlebars(config.html);
+  html: function html(watcher) {
+    return estaticoHandlebars(config.html, watcher);
   },
   htmlValidate: function htmlValidate() {
     return estaticoHtmlValidate(config.htmlValidate);
@@ -98,16 +128,9 @@ const tasks = {
   },
 };
 
-// Register with gulp
-Object.keys(tasks).forEach((task) => {
-  gulp.task(task, tasks[task]);
-});
-
-gulp.task('default', gulp.series(gulp.parallel(tasks.html, tasks.css), gulp.parallel(tasks.htmlValidate, tasks.cssLint)));
-
-gulp.task('watch', () => {
+tasks.watch = () => {
   Object.keys(tasks).forEach((task) => {
-    if (!config[task].watch) {
+    if (!(config[task] && config[task].watch)) {
       return;
     }
 
@@ -116,6 +139,14 @@ gulp.task('watch', () => {
       src: config[task].watch,
       once: config[task].watchOnce,
       watcher: config[task].watcher,
+      dependencyGraph: config[task].watchDependencyGraph,
     });
   });
+};
+
+// Register with gulp
+Object.keys(tasks).forEach((task) => {
+  gulp.task(task, tasks[task]);
 });
+
+gulp.task('default', gulp.series(gulp.parallel(tasks.html, tasks.css), gulp.parallel(tasks.htmlValidate, tasks.cssLint)), tasks.watch);
