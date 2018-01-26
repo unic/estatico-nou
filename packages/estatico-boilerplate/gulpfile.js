@@ -11,7 +11,7 @@ const env = parseArgs(process.argv.slice(2));
 
 // Exemplary custom config
 const config = {
-  handlebars: {
+  html: {
     src: [
       './src/*.hbs',
       './src/pages/**/*.hbs',
@@ -56,7 +56,7 @@ const config = {
       // './dist/pages/**/*.html',
     ],
   },
-  sass: {
+  css: {
     src: [
       './src/assets/css/**/*.scss',
     ],
@@ -71,7 +71,7 @@ const config = {
       clean: env.dev ? null : {},
     },
   },
-  stylelint: {
+  cssLint: {
     src: [
       './src/**/*.scss',
     ],
@@ -84,17 +84,17 @@ const config = {
 // Exemplary tasks
 // Create named functions so gulp-cli can properly log them
 const tasks = {
-  handlebars: function handlebars() {
-    return estaticoHandlebars(config.handlebars);
+  html: function html() {
+    return estaticoHandlebars(config.html);
   },
   htmlValidate: function htmlValidate() {
     return estaticoHtmlValidate(config.htmlValidate);
   },
-  sass: function sass() {
-    return estaticoSass(config.sass);
+  css: function css() {
+    return estaticoSass(config.css);
   },
-  stylelint: function stylelint() {
-    return estaticoStylelint(config.stylelint);
+  cssLint: function cssLint() {
+    return estaticoStylelint(config.cssLint);
   },
 };
 
@@ -103,7 +103,7 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('default', gulp.series(gulp.parallel(tasks.handlebars, tasks.sass), gulp.parallel(tasks.htmlValidate, tasks.stylelint)));
+gulp.task('default', gulp.series(gulp.parallel(tasks.html, tasks.css), gulp.parallel(tasks.htmlValidate, tasks.cssLint)));
 
 gulp.task('watch', () => {
   Object.keys(tasks).forEach((task) => {
