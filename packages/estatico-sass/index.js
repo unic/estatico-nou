@@ -12,10 +12,11 @@ const merge = require('lodash.merge');
 const defaults = {
   src: null,
   srcBase: null,
+  srcIncludes: [],
   dest: null,
   plugins: {
     sass: {
-      includePaths: null,
+      includePaths: (config) => config.srcIncludes,
     },
     autoprefixer: {
       browsers: ['last 1 version'],
@@ -42,6 +43,9 @@ module.exports = (options) => {
   if (!config.dest) {
     throw new Error('\'options.dest\' is missing');
   }
+
+  // Transform options
+  config.plugins.sass.includePaths = config.plugins.sass.includePaths(config);
 
   return gulp.src(config.src, {
     base: config.srcBase,

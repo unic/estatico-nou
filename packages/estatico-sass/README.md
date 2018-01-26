@@ -20,37 +20,33 @@ gulp.task('css', () => sassTask(sassOptions));
 
 ### Options
 
-#### src
+#### src (required)
 
 Type: `Array` or `String`<br>
 Default: `null`
 
 Passed to `gulp.src`.
 
-Recommendation for Estático:
-```js
-[
-  './src/assets/css/**/*.scss',
-]
-```
-
-#### srcBase
+#### srcBase (required)
 
 Type: `String`<br>
 Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-Recommendation for Estático: `'./src'`
+#### srcIncludes
 
-#### dest
+Type: `Array`<br>
+Default: `[]`
+
+Passed as `includePaths` option to `gulp-sass`.
+
+#### dest (required)
 
 Type: `String`<br>
 Default: `null`
 
 Passed to `gulp.dest`.
-
-Recommendation for Estático: `'./dist'`
 
 #### errorHandler
 
@@ -71,18 +67,14 @@ Type: `Object`
 ##### plugins.sass
 
 Type: `Object`<br>
-Default: `{}`
-
-Recommendation for Estático: 
+Default:
 ```js
 {
-  includePaths: [
-    './src/',
-  ]
+  includePaths: (config) => config.srcIncludes
 }
 ```
 
-Passed to [`node-sass`](https://www.npmjs.com/package/node-sass) via [`gulp-sass`](https://www.npmjs.com/package/gulp-sass).
+Passed to [`node-sass`](https://www.npmjs.com/package/node-sass) via [`gulp-sass`](https://www.npmjs.com/package/gulp-sass). `includePaths` is resolved first since we cannot pass a function there.
 
 ##### plugins.autoprefixer
 
@@ -102,6 +94,21 @@ Type: `Object`<br>
 Default: `{}`
 
 Passed to [`postcss-clean`](https://www.npmjs.com/package/postcss-clean) via [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
+
+### Options recommendation for Estático
+
+```js
+{
+  src: [
+  './src/assets/css/**/*.scss',
+  ],
+  srcIncludes: [
+    './src/',
+  ],
+  srcBase: './src',
+  dest: './dist',
+}
+```
 
 ## License
 
