@@ -3,7 +3,7 @@ const path = require('path');
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
 const estaticoStylelint = require('estatico-stylelint');
-// const estaticoWatch = require('estatico-watch');
+const estaticoWatch = require('estatico-watch');
 
 // Exemplary custom config
 const config = {
@@ -18,6 +18,14 @@ const config = {
     ],
     srcBase: './src',
     dest: './dist',
+    watch: [
+      './src/*.hbs',
+      './src/pages/**/*.hbs',
+      './src/demo/pages/**/*.hbs',
+      './src/modules/**/!(_)*.hbs',
+      './src/demo/modules/**/!(_)*.hbs',
+      './src/preview/styleguide/*.hbs',
+    ],
     plugins: {
       handlebars: {
         partials: [
@@ -38,6 +46,11 @@ const config = {
       // './dist/pages/**/*.html',
     ],
     srcBase: './dist/',
+    watch: [
+      './dist/*.html',
+      // './dist/modules/**/*.html',
+      // './dist/pages/**/*.html',
+    ],
   },
   stylelint: {
     src: [
@@ -64,18 +77,17 @@ const tasks = {
 
 gulp.task('default', gulp.series(tasks.handlebars, gulp.parallel(tasks.htmlValidate, tasks.stylelint)));
 
-// gulp.task('watch', () => {
-//   Object.keys(tasks).forEach((task) => {
-//     const watchTask = estaticoWatch({
-//       src: tasks[task].config.watch,
-//       fn: tasks[task].fn,
-//     }, gulp);
+gulp.task('watch', () => {
+  Object.keys(tasks).forEach((task) => {
+    if (!config[task].watch) {
+      return;
+    }
 
-//     try {
-//       watchTask.fn();
-//     } catch (err) {
-//       // TODO: "Beautify" error handling
-//       console.log(err);
-//     }
-//   });
-// });
+    estaticoWatch({
+      task: tasks[task],
+      src: config[task].watch,
+      once: config[task].watchOnce,
+      watcher: config[task].watcher,
+    });
+  });
+});
