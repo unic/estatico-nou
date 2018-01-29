@@ -22,6 +22,12 @@ const config = {
       './src/preview/styleguide/*.hbs',
     ],
     srcBase: './src',
+    srcPartials: [
+      './src/layouts/*.hbs',
+      './src/modules/**/*.hbs',
+      './src/demo/modules/**/*.hbs',
+      './src/preview/**/*.hbs',
+    ],
     dest: './dist',
     watch: [
       './src/*.hbs',
@@ -62,14 +68,6 @@ const config = {
       },
     },
     plugins: {
-      handlebars: {
-        partials: [
-          './src/layouts/*.hbs',
-          './src/modules/**/*.hbs',
-          './src/demo/modules/**/*.hbs',
-          './src/preview/**/*.hbs',
-        ],
-      },
       // Use JSON file instead of data.js
       data: file => require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
     },
@@ -91,14 +89,12 @@ const config = {
     src: [
       './src/assets/css/**/*.scss',
     ],
+    srcIncludes: [
+      './src/',
+    ],
     srcBase: './src/',
     dest: './dist',
     plugins: {
-      sass: {
-        includePaths: [
-          './src/',
-        ],
-      },
       clean: env.dev ? null : {},
     },
   },

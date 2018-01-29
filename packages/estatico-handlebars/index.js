@@ -74,7 +74,7 @@ module.exports = (options, watcher) => {
     // Decide based on watcher dependency graph which files to pass through
     .pipe(through.obj((file, enc, done) => {
       // TODO: Make sure HTML is rebuilt if corresponding data file changed
-      if (watcher && !watcher.resolvedGraph.includes(file.path)) {
+      if (watcher && watcher.resolvedGraph && !watcher.resolvedGraph.includes(file.path)) {
         return done();
       }
 
