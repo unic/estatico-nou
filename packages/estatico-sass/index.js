@@ -17,6 +17,7 @@ const defaults = {
   plugins: {
     sass: {
       includePaths: config => config.srcIncludes,
+      importer: [require('node-sass-json-importer')], // eslint-disable-line global-require
     },
     autoprefixer: {
       browsers: ['last 1 version'],
