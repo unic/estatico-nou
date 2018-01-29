@@ -1,0 +1,6 @@
+/**
+ * Colors imported from JSON or ColorSchemer export
+ */
+
+{{#each colors}}$color{{capitalize name}}: {{color}};
+{{/each}}
