@@ -1,4 +1,4 @@
-@import "../.tmp/colors";
+@import "data/colors.json";
 @import "globals/variables";
 @import "globals/functions";
 @import "globals/mixins";
@@ -9,9 +9,9 @@
 @import "../../../node_modules/normalize.css/normalize";
 
 // Icons (as font or dataurl), PNG sprites
-@import "../.tmp/iconfont";
-@import "../.tmp/dataurls";
-@import "../.tmp/pngsprite";
+// @import "../.tmp/iconfont";
+// @import "../.tmp/dataurls";
+// @import "../.tmp/pngsprite";
 
 // General styles
 @import "mediaqueries_sync";
@@ -21,7 +21,7 @@
 @import "layout";
 
 // Modules
-@import "../../demo/modules/media/media";
+// @import "../../demo/modules/media/media";
 @import "../../demo/modules/teaser/teaser";
 @import "../../demo/modules/teasers/teasers";
 @import "../../demo/modules/skiplinks/skiplinks";

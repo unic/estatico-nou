@@ -19,7 +19,9 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "minimist": "^1.2.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "normalize.css": "^7.0.0"
+  },
   "engines": {
     "node": ">=8 <9"
   }
