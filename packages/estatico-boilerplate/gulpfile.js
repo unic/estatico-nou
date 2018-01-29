@@ -67,10 +67,6 @@ const config = {
         },
       },
     },
-    plugins: {
-      // Use JSON file instead of data.js
-      data: file => require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
-    },
   },
   htmlValidate: {
     src: [
