@@ -83,6 +83,15 @@ handlebars: {
 
     return filePath;
   },
+
+  // Register handlebars-layouts by default
+  helpers: (hb) => {
+    const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
+
+    hb.registerHelper(layouts(hb));
+
+    return hb;
+  },
 }
 ```
 

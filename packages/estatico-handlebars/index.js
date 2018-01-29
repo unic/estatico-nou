@@ -25,6 +25,13 @@ const defaults = {
 
         return filePath;
       },
+      helpers: (hb) => {
+        const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
+
+        hb.registerHelper(layouts(hb));
+
+        return hb;
+      },
     },
     data: (file) => {
       // Find .data.js file with same name
