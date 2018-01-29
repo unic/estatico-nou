@@ -49,5 +49,5 @@ module.exports = (options) => {
       ],
     }).on('error', config.errorHandler));
 
-    // TODO: Optionally write back to disc
+  // TODO: Optionally write back to disc
 };

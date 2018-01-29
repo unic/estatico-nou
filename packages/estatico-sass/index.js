@@ -16,7 +16,7 @@ const defaults = {
   dest: null,
   plugins: {
     sass: {
-      includePaths: (config) => config.srcIncludes,
+      includePaths: config => config.srcIncludes,
     },
     autoprefixer: {
       browsers: ['last 1 version'],
