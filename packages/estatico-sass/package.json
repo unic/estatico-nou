@@ -20,7 +20,6 @@
     "gulp-sourcemaps": "^1.12.1",
     "lazypipe": "^1.0.1",
     "lodash.merge": "^4.6.0",
-    "node-sass-json-importer": "^3.1.2",
     "plugin-error": "^0.1.2",
     "postcss-clean": "^1.1.0",
     "through2": "^2.0.3"

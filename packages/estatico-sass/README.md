@@ -34,13 +34,6 @@ Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-#### srcIncludes
-
-Type: `Array`<br>
-Default: `[]`
-
-Passed as `includePaths` option to `gulp-sass`.
-
 #### dest (required)
 
 Type: `String`<br>
@@ -108,6 +101,15 @@ Passed to [`postcss-clean`](https://www.npmjs.com/package/postcss-clean) via [`g
   ],
   srcBase: './src',
   dest: './dist',
+  plugins: {
+    sass: {
+      includePaths: [
+        './src/',
+      ],
+    },
+    clean: env.dev ? null : {},
+    rename: env.dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
+  },
 }
 ```
 

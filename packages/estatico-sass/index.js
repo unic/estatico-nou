@@ -8,6 +8,8 @@ const sourcemaps = require('gulp-sourcemaps');
 const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
+const through = require('through2');
+const path = require('path');
 
 const defaults = {
   src: null,
@@ -16,15 +18,13 @@ const defaults = {
   dest: null,
   plugins: {
     sass: {
-      includePaths: config => config.srcIncludes,
-      importer: [require('node-sass-json-importer')], // eslint-disable-line global-require
+      includePaths: null,
     },
     autoprefixer: {
       browsers: ['last 1 version'],
     },
-    clean: {
-
-    },
+    clean: {},
+    rename: null,
   },
   errorHandler: (err) => {
     log(`estatico-sass${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
@@ -32,7 +32,13 @@ const defaults = {
 };
 
 module.exports = (options) => {
-  const config = merge({}, defaults, options);
+  let config = {};
+
+  if (typeof options === 'function') {
+    config = options(defaults);
+  } else {
+    config = merge({}, defaults, options);
+  }
 
   // Validate options
   if (!config.src) {
@@ -44,9 +50,6 @@ module.exports = (options) => {
   if (!config.dest) {
     throw new Error('\'options.dest\' is missing');
   }
-
-  // Transform options
-  config.plugins.sass.includePaths = config.plugins.sass.includePaths(config);
 
   return gulp.src(config.src, {
     base: config.srcBase,
@@ -69,6 +72,15 @@ module.exports = (options) => {
     .pipe(postcss([]
       .concat(config.plugins.autoprefixer ? autoprefixer(config.plugins.autoprefixer) : [])
       .concat(config.plugins.clean ? clean(config.plugins.clean) : [])))
+
+    // Optional rename, allows to add .min prefix, e.g.
+    .pipe(through.obj((file, enc, done) => {
+      if (config.plugins.rename) {
+        file.path = config.plugins.rename(file); // eslint-disable-line no-param-reassign
+      }
+
+      done(null, file);
+    }))
 
     .pipe(sourcemaps.write('.', {
       includeContent: false,
