@@ -63,8 +63,7 @@ Type: `Object`<br>
 Default:
 ```js
 {
-  includePaths: (config) => config.srcIncludes,
-  importer: [require('node-sass-json-importer')],
+  includePaths: null,
 }
 ```
 

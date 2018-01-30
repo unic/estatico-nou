@@ -7,6 +7,7 @@ const estaticoSass = require('estatico-sass');
 const estaticoStylelint = require('estatico-stylelint');
 const estaticoWebpack = require('estatico-webpack');
 const estaticoWatch = require('estatico-watch');
+const jsonImporter = require('node-sass-json-importer');
 
 const env = parseArgs(process.argv.slice(2));
 
@@ -22,12 +23,6 @@ const config = {
       './src/preview/styleguide/*.hbs',
     ],
     srcBase: './src',
-    srcPartials: [
-      './src/layouts/*.hbs',
-      './src/modules/**/*.hbs',
-      './src/demo/modules/**/*.hbs',
-      './src/preview/**/*.hbs',
-    ],
     dest: './dist',
     watch: [
       './src/*.hbs',
@@ -37,6 +32,11 @@ const config = {
       './src/demo/modules/**/!(_)*.hbs',
       './src/preview/styleguide/*.hbs',
     ],
+    plugins: {
+      handlebars: {
+        partials: './src/**/*.hbs',
+      },
+    },
     watchDependencyGraph: {
       srcBase: './',
       resolver: {
@@ -85,13 +85,17 @@ const config = {
     src: [
       './src/assets/css/**/*.scss',
     ],
-    srcIncludes: [
-      './src/',
-    ],
     srcBase: './src/',
     dest: './dist',
     plugins: {
+      sass: {
+        includePaths: [
+          './src/',
+        ],
+        importer: [jsonImporter],
+      },
       clean: env.dev ? null : {},
+      rename: env.dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
     },
   },
   cssLint: {

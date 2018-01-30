@@ -34,13 +34,6 @@ Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-#### srcPartials (required)
-
-Type: `String`<br>
-Default: `null`
-
-Passed as `partials` option to `gulp-hb`.
-
 #### dest (required)
 
 Type: `String`<br>
@@ -127,11 +120,6 @@ Passed to [`gulp-prettify`](https://www.npmjs.com/package/gulp-prettify). Settin
     './src/modules/**/!(_)*.hbs',
     './src/preview/styleguide/*.hbs',
   ],
-  srcPartials: [
-    './src/layouts/*.hbs',
-    './src/modules/**/*.hbs',
-    './src/preview/**/*.hbs',
-  ]
   srcBase: './src',
   dest: './dist',
   plugins: {
