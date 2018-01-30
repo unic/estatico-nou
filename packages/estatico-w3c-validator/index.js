@@ -22,7 +22,13 @@ const defaults = {
 };
 
 module.exports = (options) => {
-  const config = merge({}, defaults, options);
+  let config = {};
+
+  if (typeof options === 'function') {
+    config = options(defaults);
+  } else {
+    config = merge({}, defaults, options);
+  }
 
   if (!config.src) {
     throw new Error('\'options.src\' is missing');
