@@ -11,14 +11,11 @@ const task = require('../index.js');
 const defaults = {
   src: './test/fixtures/index.hbs',
   srcBase: './test/fixtures/',
-  srcPartials: './test/fixtures/_*.hbs',
   dest: './test/results/',
   plugins: {
     data: file => require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
     handlebars: {
-      parsePartialName: (config, partialOptions, file) => path.relative('./test/fixtures', file.path)
-        .replace(path.extname(file.path), '')
-        .replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
+      partials: './test/fixtures/_*.hbs',
     },
     prettify: {
       // Use tabs over spaces

@@ -70,19 +70,7 @@ Type: `Object`<br>
 Default:
 ```js
 handlebars: {
-  // Partials are inferred from `config.srcPartials`
-  partials: (config => config.srcPartials),
-
-  // We are passing the task's config as a first parameter
-  parsePartialName: (config, options, file) => {
-    const filePath = path.relative(config.srcBase, file.path)
-      // Remove extension
-      .replace(path.extname(file.path), '')
-      // Use forward slashes on every OS
-      .replace(new RegExp(`\\${path.sep}`, 'g'), '/');
-
-    return filePath;
-  },
+  partials: null,
 
   // Register handlebars-layouts by default
   helpers: (hb) => {
@@ -146,6 +134,11 @@ Passed to [`gulp-prettify`](https://www.npmjs.com/package/gulp-prettify). Settin
   ]
   srcBase: './src',
   dest: './dist',
+  plugins: {
+    handlebars: {
+      partials: './src/**/*.hbs',
+    },
+  },
 }
 ```
 

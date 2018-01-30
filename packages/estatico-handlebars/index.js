@@ -15,16 +15,7 @@ const defaults = {
   dest: null,
   plugins: {
     handlebars: {
-      partials: (config => config.srcPartials),
-      parsePartialName: (config, options, file) => {
-        const filePath = path.relative(config.srcBase, file.path)
-          // Remove extension
-          .replace(path.extname(file.path), '')
-          // Use forward slashes on every OS
-          .replace(new RegExp(`\\${path.sep}`, 'g'), '/');
-
-        return filePath;
-      },
+      partials: null,
       helpers: (hb) => {
         const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
 
@@ -35,11 +26,15 @@ const defaults = {
     },
     data: (file) => {
       // Find .data.js file with same name
+      const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
+
       try {
-        const data = require(file.path.replace(path.extname(file.path), '.data.js')); // eslint-disable-line
+        const data = require(dataFilePath); // eslint-disable-line global-require
 
         return Object.assign({}, data);
-      } catch (e) {
+      } catch (err) {
+        log('estatico-handlebars (data)', chalk.cyan(path.relative('./src', dataFilePath)), chalk.red(err.message));
+
         return {};
       }
     },
@@ -54,7 +49,13 @@ const defaults = {
 };
 
 module.exports = (options, watcher) => {
-  const config = merge({}, defaults, options);
+  let config = {};
+
+  if (typeof options === 'function') {
+    config = options(defaults);
+  } else {
+    config = merge({}, defaults, options);
+  }
 
   // Validate options
   if (!config.src) {
@@ -66,10 +67,6 @@ module.exports = (options, watcher) => {
   if (!config.dest) {
     throw new Error('\'options.dest\' is missing');
   }
-
-  // Transform options
-  config.plugins.handlebars.partials = config.plugins.handlebars.partials(config);
-  config.plugins.handlebars.parsePartialName = config.plugins.handlebars.parsePartialName.bind(null, config); // eslint-disable-line max-len
 
   return gulp.src(config.src, {
     base: config.srcBase,
