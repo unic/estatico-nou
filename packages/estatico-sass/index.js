@@ -1,14 +1,6 @@
-const gulp = require('gulp');
-const plumber = require('gulp-plumber');
-const sass = require('gulp-sass');
-const postcss = require('gulp-postcss');
-const autoprefixer = require('autoprefixer');
-const clean = require('postcss-clean');
-const sourcemaps = require('gulp-sourcemaps');
 const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
-const through = require('through2');
 
 const defaults = {
   src: null,
@@ -50,42 +42,53 @@ module.exports = (options) => {
     throw new Error('\'options.dest\' is missing');
   }
 
-  return () => gulp.src(config.src, {
-    base: config.srcBase,
-  })
+  return () => {
+    const gulp = require('gulp'); // eslint-disable-line global-require
+    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
+    const sass = require('gulp-sass'); // eslint-disable-line global-require
+    const postcss = require('gulp-postcss'); // eslint-disable-line global-require
+    const autoprefixer = require('autoprefixer'); // eslint-disable-line global-require
+    const clean = require('postcss-clean'); // eslint-disable-line global-require
+    const sourcemaps = require('gulp-sourcemaps'); // eslint-disable-line global-require
+    const through = require('through2'); // eslint-disable-line global-require
 
-    // Prevent stream from unpiping on error
-    .pipe(plumber())
+    return gulp.src(config.src, {
+      base: config.srcBase,
+    })
 
-    // TODO: Add dependency graph and decide based on fileEvents which files to pass through
-    // .pipe(through.obj((file, enc, done) => {
-    //   done(null, file)
-    // }))
+      // Prevent stream from unpiping on error
+      .pipe(plumber())
 
-    .pipe(sourcemaps.init())
+      // TODO: Add dependency graph and decide based on fileEvents which files to pass through
+      // .pipe(through.obj((file, enc, done) => {
+      //   done(null, file)
+      // }))
 
-    // Sass
-    .pipe(sass(config.plugins.sass).on('error', config.errorHandler))
+      .pipe(sourcemaps.init())
 
-    // PostCSS
-    .pipe(postcss([]
-      .concat(config.plugins.autoprefixer ? autoprefixer(config.plugins.autoprefixer) : [])
-      .concat(config.plugins.clean ? clean(config.plugins.clean) : [])))
+      // Sass
+      .pipe(sass(config.plugins.sass).on('error', config.errorHandler))
 
-    // Optional rename, allows to add .min prefix, e.g.
-    .pipe(through.obj((file, enc, done) => {
-      if (config.plugins.rename) {
-        file.path = config.plugins.rename(file); // eslint-disable-line no-param-reassign
-      }
+      // PostCSS
+      .pipe(postcss([]
+        .concat(config.plugins.autoprefixer ? autoprefixer(config.plugins.autoprefixer) : [])
+        .concat(config.plugins.clean ? clean(config.plugins.clean) : [])))
 
-      done(null, file);
-    }))
+      // Optional rename, allows to add .min prefix, e.g.
+      .pipe(through.obj((file, enc, done) => {
+        if (config.plugins.rename) {
+          file.path = config.plugins.rename(file); // eslint-disable-line no-param-reassign
+        }
 
-    .pipe(sourcemaps.write('.', {
-      includeContent: false,
-      sourceRoot: config.srcBase,
-    }))
+        done(null, file);
+      }))
 
-    // Save
-    .pipe(gulp.dest(config.dest));
+      .pipe(sourcemaps.write('.', {
+        includeContent: false,
+        sourceRoot: config.srcBase,
+      }))
+
+      // Save
+      .pipe(gulp.dest(config.dest));
+  };
 };

@@ -1,7 +1,3 @@
-const gulp = require('gulp');
-const plumber = require('gulp-plumber');
-const changed = require('gulp-changed-in-place');
-const gulpStylelint = require('gulp-stylelint');
 const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
@@ -35,25 +31,32 @@ module.exports = (options) => {
   //   throw new Error('\'options.dest\' is missing');
   // }
 
-  return () => gulp.src(config.src, {
-    base: config.srcBase,
-  })
+  return () => {
+    const gulp = require('gulp'); // eslint-disable-line global-require
+    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
+    const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
+    const gulpStylelint = require('gulp-stylelint'); // eslint-disable-line global-require
 
-    // Prevent stream from unpiping on error
-    .pipe(plumber())
+    return gulp.src(config.src, {
+      base: config.srcBase,
+    })
 
-    // Do not pass unchanged files
-    .pipe(changed({
-      firstPass: true,
-    }))
+      // Prevent stream from unpiping on error
+      .pipe(plumber())
 
-    // Stylelint verification
-    .pipe(gulpStylelint({
-      failAfterError: true,
-      reporters: [
-        { formatter: 'string', console: true },
-      ],
-    }).on('error', config.errorHandler));
+      // Do not pass unchanged files
+      .pipe(changed({
+        firstPass: true,
+      }))
 
-  // TODO: Optionally write back to disc
+      // Stylelint verification
+      .pipe(gulpStylelint({
+        failAfterError: true,
+        reporters: [
+          { formatter: 'string', console: true },
+        ],
+      }).on('error', config.errorHandler));
+
+    // TODO: Optionally write back to disc
+  };
 };

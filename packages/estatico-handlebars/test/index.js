@@ -42,7 +42,7 @@ const compare = (t, name) => {
 const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
 
 test.cb('default', (t) => {
-  task(defaults).on('end', () => compare(t, 'default'));
+  task(defaults)().on('end', () => compare(t, 'default'));
 });
 
 test.cb('unprettified', (t) => {
@@ -52,7 +52,7 @@ test.cb('unprettified', (t) => {
     },
   });
 
-  task(options).on('end', () => compare(t, 'unprettified'));
+  task(options)().on('end', () => compare(t, 'unprettified'));
 });
 
 test.cb('error', (t) => {
@@ -62,7 +62,7 @@ test.cb('error', (t) => {
 
   const spy = sinon.spy(console, 'log');
 
-  task(options).on('end', () => {
+  task(options)().on('end', () => {
     spy.restore();
 
     const data = {

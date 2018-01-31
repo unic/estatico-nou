@@ -18,7 +18,7 @@ const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).r
 test.cb('default', (t) => {
   const spy = sinon.spy(console, 'log');
 
-  task(defaults).on('end', () => {
+  task(defaults)().on('end', () => {
     spy.restore();
 
     t.is(stripLog(spy.getCall(0).args.join(' ')), 'estatico-stylelint (gulp-stylelint) undefined Failed with 1 error');

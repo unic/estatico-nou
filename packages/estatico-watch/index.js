@@ -1,9 +1,4 @@
 const merge = require('lodash.merge');
-const gulp = require('gulp');
-const path = require('path');
-const decache = require('decache');
-
-const DependencyGraph = require('./lib/dependencygraph');
 
 const defaults = {
   src: null,
@@ -35,56 +30,64 @@ module.exports = (options) => {
     throw new Error('\'options.name\' is missing');
   }
 
-  let dependencyGraph;
+  return () => {
+    const gulp = require('gulp'); // eslint-disable-line global-require
+    const path = require('path'); // eslint-disable-line global-require
+    const decache = require('decache'); // eslint-disable-line global-require
 
-  if (config.dependencyGraph) {
-    dependencyGraph = new DependencyGraph(Object.assign({
-      paths: config.src,
-    }, config.dependencyGraph));
-  }
+    const DependencyGraph = require('./lib/dependencygraph'); // eslint-disable-line global-require
 
-  let events = [];
+    let dependencyGraph;
 
-  // Create named callback function for gulp-cli to be able to log it
-  const cb = {
-    [config.name]() {
-      const resolvedGraph = dependencyGraph ? events.map((event) => {
-        const resolvedPath = path.resolve(config.dependencyGraph.srcBase, event.path);
-        const ancestors = dependencyGraph.getAncestors(resolvedPath);
+    if (config.dependencyGraph) {
+      dependencyGraph = new DependencyGraph(Object.assign({
+        paths: config.src,
+      }, config.dependencyGraph));
+    }
 
-        return ancestors.concat(resolvedPath);
-      }).reduce((curr, acc) => acc.concat(curr), []) : [];
+    let events = [];
 
-      // Remove data files from require cache
-      resolvedGraph.forEach(decache);
+    // Create named callback function for gulp-cli to be able to log it
+    const cb = {
+      [config.name]() {
+        const resolvedGraph = dependencyGraph ? events.map((event) => {
+          const resolvedPath = path.resolve(config.dependencyGraph.srcBase, event.path);
+          const ancestors = dependencyGraph.getAncestors(resolvedPath);
 
-      // Run task function with queued events as parameter
-      const task = config.task({
-        events,
-        resolvedGraph,
+          return ancestors.concat(resolvedPath);
+        }).reduce((curr, acc) => acc.concat(curr), []) : [];
+
+        // Remove data files from require cache
+        resolvedGraph.forEach(decache);
+
+        // Run task function with queued events as parameter
+        const task = config.task({
+          events,
+          resolvedGraph,
+        });
+
+        // Reset events
+        events = [];
+
+        return task;
+      },
+    };
+
+    const watcher = gulp.watch(config.src, config.watcher, cb[config.name]);
+
+    watcher.on('all', (event, filePath) => {
+      events.push({
+        event,
+        path: filePath,
       });
 
-      // Reset events
-      events = [];
-
-      return task;
-    },
-  };
-
-  const watcher = gulp.watch(config.src, config.watcher, cb[config.name]);
-
-  watcher.on('all', (event, filePath) => {
-    events.push({
-      event,
-      path: filePath,
+      // Close after first run if `once` is true
+      // Useful when starting a task having its own file watcher (i.e. webpack)
+      if (config.once) {
+        watcher.close();
+      }
     });
 
-    // Close after first run if `once` is true
-    // Useful when starting a task having its own file watcher (i.e. webpack)
-    if (config.once) {
-      watcher.close();
-    }
-  });
-
-  return watcher;
+    return watcher;
+  }
 };

@@ -16,7 +16,7 @@ const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).r
 test.cb('default', (t) => {
   const spy = sinon.spy(console, 'log');
 
-  task(defaults).on('finish', () => {
+  task(defaults)().on('finish', () => {
     spy.restore();
 
     t.is(stripLog(spy.getCall(0).args.join(' ')), 'HTML Error: index.html Line 9, Column 15: End tag “h3” seen, but there were open elements.');

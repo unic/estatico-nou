@@ -32,7 +32,7 @@ const compare = (t, name) => {
 const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
 
 test.cb('default', (t) => {
-  task(defaults).on('end', () => compare(t, 'default'));
+  task(defaults)().on('end', () => compare(t, 'default'));
 });
 
 test.cb('unminified', (t) => {
@@ -42,7 +42,7 @@ test.cb('unminified', (t) => {
     },
   });
 
-  task(options).on('end', () => compare(t, 'unpretminifiedtified'));
+  task(options)().on('end', () => compare(t, 'unpretminifiedtified'));
 });
 
 test.cb('error', (t) => {
@@ -52,7 +52,7 @@ test.cb('error', (t) => {
 
   const spy = sinon.spy(console, 'log');
 
-  task(options).on('end', () => {
+  task(options)().on('end', () => {
     spy.restore();
 
     t.is(stripLog(spy.getCall(0).args.join(' ')), 'estatico-sass (gulp-sass) undefined test/fixtures/error.scssError: Invalid CSS after "a": expected 1 selector or at-rule, was "a " on line 1 of test/fixtures/error.scss>> a ^');

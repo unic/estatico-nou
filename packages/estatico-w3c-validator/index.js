@@ -1,10 +1,4 @@
-const gulp = require('gulp');
-const plumber = require('gulp-plumber');
-const changed = require('gulp-changed-in-place');
-const w3cjs = require('gulp-w3cjs');
-const through = require('through2');
 const log = require('fancy-log');
-const PluginError = require('plugin-error');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 
@@ -34,31 +28,40 @@ module.exports = (options) => {
     throw new Error('\'options.src\' is missing');
   }
 
-  return () => gulp.src(config.src, {
-    base: config.srcBase,
-  })
+  return () => {
+    const gulp = require('gulp'); // eslint-disable-line global-require
+    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
+    const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
+    const w3cjs = require('gulp-w3cjs'); // eslint-disable-line global-require
+    const through = require('through2'); // eslint-disable-line global-require
+    const PluginError = require('plugin-error'); // eslint-disable-line global-require
 
-    // Prevent stream from unpiping on error
-    .pipe(plumber())
+    return gulp.src(config.src, {
+      base: config.srcBase,
+    })
 
-    // Do not pass unchanged files
-    .pipe(changed({
-      firstPass: true,
-    }))
+      // Prevent stream from unpiping on error
+      .pipe(plumber())
 
-    // Send to validation API
-    .pipe(w3cjs(config.plugins.w3cjs))
+      // Do not pass unchanged files
+      .pipe(changed({
+        firstPass: true,
+      }))
 
-    // Handle errors
-    .pipe(through.obj((file, enc, done) => {
-      if (!file.w3cjs.success) {
-        const err = new PluginError('reporter', 'Linting error (details above)');
+      // Send to validation API
+      .pipe(w3cjs(config.plugins.w3cjs))
 
-        err.fileName = file.path;
+      // Handle errors
+      .pipe(through.obj((file, enc, done) => {
+        if (!file.w3cjs.success) {
+          const err = new PluginError('reporter', 'Linting error (details above)');
 
-        return done(err, file);
-      }
+          err.fileName = file.path;
 
-      return done(null, file);
-    }).on('error', config.errorHandler));
+          return done(err, file);
+        }
+
+        return done(null, file);
+      }).on('error', config.errorHandler));
+  };
 };

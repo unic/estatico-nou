@@ -132,7 +132,7 @@ tasks.watch = () => {
       return;
     }
 
-    estaticoWatch({
+    const watcher = estaticoWatch({
       task: tasks[task],
       name: task,
       src: config[task].watch,
@@ -140,6 +140,8 @@ tasks.watch = () => {
       watcher: config[task].watcher,
       dependencyGraph: config[task].watchDependencyGraph,
     });
+
+    watcher();
   });
 };
 

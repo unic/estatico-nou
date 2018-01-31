@@ -1,13 +1,7 @@
-const gulp = require('gulp');
-const plumber = require('gulp-plumber');
-const prettify = require('gulp-prettify');
 const Handlebars = require('handlebars');
 const handlebarsWax = require('handlebars-wax');
-const gulpHandlebars = require('gulp-hb');
-const path = require('path');
-const through = require('through2');
 const log = require('fancy-log');
-const PluginError = require('plugin-error');
+const path = require('path');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 
@@ -78,53 +72,62 @@ module.exports = (options) => {
     wax.helpers(config.plugins.handlebars.helpers);
   }
 
-  return watcher => gulp.src(config.src, {
-    base: config.srcBase,
-  })
+  return (watcher) => {
+    const gulp = require('gulp'); // eslint-disable-line global-require
+    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
+    const prettify = require('gulp-prettify'); // eslint-disable-line global-require
+    const gulpHandlebars = require('gulp-hb'); // eslint-disable-line global-require
+    const through = require('through2'); // eslint-disable-line global-require
+    const PluginError = require('plugin-error'); // eslint-disable-line global-require
 
-    // Prevent stream from unpiping on error
-    .pipe(plumber())
+    return gulp.src(config.src, {
+      base: config.srcBase,
+    })
 
-    // Decide based on watcher dependency graph which files to pass through
-    .pipe(through.obj((file, enc, done) => {
-      // TODO: Make sure HTML is rebuilt if corresponding data file changed
-      if (watcher && watcher.resolvedGraph && !watcher.resolvedGraph.includes(file.path)) {
-        return done();
-      }
+      // Prevent stream from unpiping on error
+      .pipe(plumber())
 
-      log(chalk.blue('estatico-handlebars'), `Rebuilding ${path.relative(config.srcBase, file.path)}`);
+      // Decide based on watcher dependency graph which files to pass through
+      .pipe(through.obj((file, enc, done) => {
+        // TODO: Make sure HTML is rebuilt if corresponding data file changed
+        if (watcher && watcher.resolvedGraph && !watcher.resolvedGraph.includes(file.path)) {
+          return done();
+        }
 
-      return done(null, file);
-    }))
+        log(chalk.blue('estatico-handlebars'), `Rebuilding ${path.relative(config.srcBase, file.path)}`);
 
-    // Find data and assign it to file object
-    .pipe(through.obj((file, enc, done) => {
-      try {
-        file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
+        return done(null, file);
+      }))
+
+      // Find data and assign it to file object
+      .pipe(through.obj((file, enc, done) => {
+        try {
+          file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
+
+          done(null, file);
+        } catch (err) {
+          err.fileName = file.path;
+
+          done(new PluginError('data', err), file);
+        }
+      }).on('error', config.errorHandler))
+
+      // Handlebars
+      .pipe(gulpHandlebars(config.plugins.handlebars).on('error', config.errorHandler))
+
+      // Formatting
+      .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
+
+      // Rename to .html
+      .pipe(through.obj((file, enc, done) => {
+        file.path = file.path.replace(path.extname(file.path), '.html'); // eslint-disable-line no-param-reassign
 
         done(null, file);
-      } catch (err) {
-        err.fileName = file.path;
+      }))
 
-        done(new PluginError('data', err), file);
-      }
-    }).on('error', config.errorHandler))
-
-    // Handlebars
-    .pipe(gulpHandlebars(config.plugins.handlebars).on('error', config.errorHandler))
-
-    // Formatting
-    .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
-
-    // Rename to .html
-    .pipe(through.obj((file, enc, done) => {
-      file.path = file.path.replace(path.extname(file.path), '.html'); // eslint-disable-line no-param-reassign
-
-      done(null, file);
-    }))
-
-    // Save
-    .pipe(gulp.dest(config.dest));
+      // Save
+      .pipe(gulp.dest(config.dest));
+  };
 };
 
 module.exports.handlebars = handlebars;
