@@ -13,7 +13,9 @@ Every package in `packages/` can be developed separately. However, they can shar
 
 Since lerna does magic things with packages (symlinking local ones etc.), we need to use `lerna add` to add new dependencies to a package. Examples: `lerna add node-sass --scope=estatico-sass` or `lerna add left-pad --dev --scope=estatico-boilerplate`.
 
-To remove dependencies, delete them from the corresponding `package.json` and run `lerna bootstrap` afterwards.
+To remove dependencies, delete them from the corresponding `package.json`.
+
+Run `lerna bootstrap` after any change (either adding or removing).
 
 ### Boilerplate
 
