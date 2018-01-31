@@ -22,7 +22,7 @@ const defaults = {
   dev: false,
 };
 
-module.exports = (options, cb) => {
+module.exports = (options) => {
   let config = {};
 
   if (typeof options === 'function') {
@@ -99,30 +99,32 @@ module.exports = (options, cb) => {
       // Tell webpack about the asset path structure in the browser to be able to load async files
       // publicPath: path.join('/', path.relative(config.destBase, config.dest), '/'),
     },
-    devtool: config.dev ? 'eval-cheap-module-source-map' : null,
+    devtool: config.dev ? 'eval-cheap-module-source-map' : false,
   });
 
-  const callback = (err, stats) => {
-    let done = cb;
+  return (cb) => {
+    const callback = (err, stats) => {
+      let done = cb;
+
+      if (config.watch) {
+        done = once(done);
+      }
+
+      if (err) {
+        config.errorHandler(err);
+      }
+
+      logStats(stats, 'estatico-webpack');
+
+      done();
+    };
 
     if (config.watch) {
-      done = once(done);
+      compiler.watch({}, callback);
+    } else {
+      compiler.run(callback);
     }
 
-    if (err) {
-      config.errorHandler(err);
-    }
-
-    logStats(stats, 'estatico-webpack');
-
-    done();
+    return compiler;
   };
-
-  if (config.watch) {
-    compiler.watch({}, callback);
-  } else {
-    compiler.run(callback);
-  }
-
-  return compiler;
 };

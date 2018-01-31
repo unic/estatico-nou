@@ -8,6 +8,7 @@ const DependencyGraph = require('./lib/dependencygraph');
 const defaults = {
   src: null,
   task: null,
+  name: null,
   once: false,
   // Passed to https://github.com/paulmillr/chokidar via https://github.com/gulpjs/glob-watcher
   watcher: {
@@ -30,6 +31,9 @@ module.exports = (options) => {
   if (!config.task) {
     throw new Error('\'options.task\' is missing');
   }
+  if (!config.name) {
+    throw new Error('\'options.name\' is missing');
+  }
 
   let dependencyGraph;
 
@@ -43,7 +47,7 @@ module.exports = (options) => {
 
   // Create named callback function for gulp-cli to be able to log it
   const cb = {
-    [config.task.name]() {
+    [config.name]() {
       const resolvedGraph = dependencyGraph ? events.map((event) => {
         const resolvedPath = path.resolve(config.dependencyGraph.srcBase, event.path);
         const ancestors = dependencyGraph.getAncestors(resolvedPath);
@@ -67,7 +71,7 @@ module.exports = (options) => {
     },
   };
 
-  const watcher = gulp.watch(config.src, config.watcher, cb[config.task.name]);
+  const watcher = gulp.watch(config.src, config.watcher, cb[config.name]);
 
   watcher.on('all', (event, filePath) => {
     events.push({

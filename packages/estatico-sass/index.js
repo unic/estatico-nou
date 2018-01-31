@@ -9,7 +9,6 @@ const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 const through = require('through2');
-const path = require('path');
 
 const defaults = {
   src: null,
@@ -51,7 +50,7 @@ module.exports = (options) => {
     throw new Error('\'options.dest\' is missing');
   }
 
-  return gulp.src(config.src, {
+  return () => gulp.src(config.src, {
     base: config.srcBase,
   })
 

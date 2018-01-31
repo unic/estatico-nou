@@ -34,7 +34,7 @@ module.exports = (options) => {
     throw new Error('\'options.src\' is missing');
   }
 
-  return gulp.src(config.src, {
+  return () => gulp.src(config.src, {
     base: config.srcBase,
   })
 

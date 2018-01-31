@@ -11,12 +11,6 @@ const jsonImporter = require('node-sass-json-importer');
 
 const env = parseArgs(process.argv.slice(2));
 
-// Set up handlebars instance to be reused in other tasks
-// Usage: require('estatico-handlebars').handlebars
-const handlebars = estaticoHandlebars.setupHandlebars({
-  partials: './src/**/*.hbs',
-});
-
 // Exemplary custom config
 const config = {
   html: {
@@ -42,7 +36,7 @@ const config = {
     ],
     plugins: {
       handlebars: {
-        handlebars,
+        partials: './src/**/*.hbs',
       },
     },
     watchDependencyGraph: {
@@ -125,21 +119,11 @@ const config = {
 // Exemplary tasks
 // Create named functions so gulp-cli can properly log them
 const tasks = {
-  html: function html(watcher) {
-    return estaticoHandlebars(config.html, watcher);
-  },
-  htmlValidate: function htmlValidate() {
-    return estaticoHtmlValidate(config.htmlValidate);
-  },
-  css: function css() {
-    return estaticoSass(config.css);
-  },
-  cssLint: function cssLint() {
-    return estaticoStylelint(config.cssLint);
-  },
-  js: function js(cb) {
-    return estaticoWebpack(config.js, cb);
-  },
+  html: estaticoHandlebars(config.html),
+  htmlValidate: estaticoHtmlValidate(config.htmlValidate),
+  css: estaticoSass(config.css),
+  cssLint: estaticoStylelint(config.cssLint),
+  js: estaticoWebpack(config.js),
 };
 
 tasks.watch = () => {
@@ -150,6 +134,7 @@ tasks.watch = () => {
 
     estaticoWatch({
       task: tasks[task],
+      name: task,
       src: config[task].watch,
       once: config[task].watchOnce,
       watcher: config[task].watcher,
@@ -163,4 +148,4 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('default', gulp.series(gulp.parallel(tasks.html, tasks.css), gulp.parallel(tasks.htmlValidate, tasks.cssLint)), tasks.watch);
+gulp.task('default', gulp.series(gulp.parallel('html', 'css'), gulp.parallel('htmlValidate', 'cssLint')), 'watch');

@@ -12,6 +12,7 @@ const chalk = require('chalk');
 const merge = require('lodash.merge');
 
 const handlebars = Handlebars.create();
+const wax = handlebarsWax(handlebars);
 
 const defaults = {
   src: null,
@@ -21,13 +22,7 @@ const defaults = {
     handlebars: {
       handlebars,
       partials: null,
-      // helpers: (hb) => {
-      //   const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
-
-      //   hb.registerHelper(layouts(hb));
-
-      //   return hb;
-      // },
+      helpers: require('handlebars-layouts'), // eslint-disable-line global-require
     },
     data: (file) => {
       // Find .data.js file with same name
@@ -53,28 +48,7 @@ const defaults = {
   },
 };
 
-function setupHandlebars(options) {
-  console.log(1);
-  const config = merge({
-    helpers: require('handlebars-layouts'), // eslint-disable-line global-require
-  }, options);
-  const wax = handlebarsWax(handlebars);
-
-  // Register partials
-  if (config.partials) {
-    wax.partials(config.partials);
-  }
-
-  // Register helpers
-  if (config.helpers) {
-    wax.helpers(config.helpers);
-  }
-
-  return handlebars;
-}
-
-module.exports = (options, watcher) => {
-  console.log(2);
+module.exports = (options) => {
   let config = {};
 
   if (typeof options === 'function') {
@@ -94,7 +68,17 @@ module.exports = (options, watcher) => {
     throw new Error('\'options.dest\' is missing');
   }
 
-  return gulp.src(config.src, {
+  // Register partials
+  if (config.plugins.handlebars && config.plugins.handlebars.partials) {
+    wax.partials(config.plugins.handlebars.partials);
+  }
+
+  // Register helpers
+  if (config.plugins.handlebars && config.plugins.handlebars.helpers) {
+    wax.helpers(config.plugins.handlebars.helpers);
+  }
+
+  return watcher => gulp.src(config.src, {
     base: config.srcBase,
   })
 
@@ -144,4 +128,3 @@ module.exports = (options, watcher) => {
 };
 
 module.exports.handlebars = handlebars;
-module.exports.setupHandlebars = setupHandlebars;

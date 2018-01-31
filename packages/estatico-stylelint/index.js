@@ -35,7 +35,7 @@ module.exports = (options) => {
   //   throw new Error('\'options.dest\' is missing');
   // }
 
-  return gulp.src(config.src, {
+  return () => gulp.src(config.src, {
     base: config.srcBase,
   })
 
