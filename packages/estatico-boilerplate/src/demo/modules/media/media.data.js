@@ -1,8 +1,8 @@
 'use strict';
 
 var _ = require('lodash'),
-    dataHelper = require('../../../../helpers/data.js'),
-    handlebarsHelper = require('../../../../helpers/handlebars.js'),
+    dataHelper = require('estatico-data'),
+    handlebars = require('estatico-handlebars').handlebars,
     defaultData = require('../../../data/default.data.js'),
 
     template = dataHelper.getFileContent('media.hbs'),
@@ -22,7 +22,7 @@ var _ = require('lodash'),
         }
     }, function(variant) {
         var variantProps = _.merge({}, data, variant).props,
-            compiledVariant = handlebarsHelper.Handlebars.compile(template)(variantProps),
+            compiledVariant = handlebars.compile(template)(variantProps),
             variantData = _.merge({}, data, variant, {
                 meta: {
                     demo: compiledVariant

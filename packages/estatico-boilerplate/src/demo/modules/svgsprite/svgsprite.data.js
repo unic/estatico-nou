@@ -3,13 +3,13 @@
 var _ = require('lodash'),
     glob = require('glob'),
     path = require('path'),
-    spriteTask = require('../../../../gulp/media/svgsprite.js'),
-    dataHelper = require('../../../../helpers/data.js'),
-    handlebarsHelper = require('../../../../helpers/handlebars.js'),
+    // spriteTask = require('../../../../gulp/media/svgsprite.js'),
+    dataHelper = require('estatico-data'),
+    handlebars = require('estatico-handlebars').handlebars,
     defaultData = require('../../../data/default.data.js'),
 
     template = dataHelper.getFileContent('svgsprite.hbs'),
-    sprites = _.mapValues(spriteTask.taskConfig.src, function(globs) {
+    sprites = _.mapValues({}, function(globs) {
         var files = [];
 
         globs.forEach(function(item) {
@@ -47,7 +47,7 @@ var _ = require('lodash'),
         }
     }, function(variant) {
         var variantProps = _.merge({}, data, variant).props,
-            compiledVariant = handlebarsHelper.Handlebars.compile(template)(variantProps),
+            compiledVariant = handlebars.compile(template)(variantProps),
             variantData = _.merge({}, data, variant, {
                 meta: {
                     demo: compiledVariant

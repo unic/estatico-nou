@@ -10,6 +10,7 @@
   "author": "Unic AG",
   "license": "MIT",
   "devDependencies": {
+    "estatico-data": "0.0.1",
     "estatico-handlebars": "0.0.1",
     "estatico-sass": "0.0.1",
     "estatico-stylelint": "0.0.1",

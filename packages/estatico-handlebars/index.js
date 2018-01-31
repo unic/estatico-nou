@@ -1,7 +1,9 @@
 const gulp = require('gulp');
 const plumber = require('gulp-plumber');
 const prettify = require('gulp-prettify');
-const handlebars = require('gulp-hb');
+const Handlebars = require('handlebars');
+const handlebarsWax = require('handlebars-wax');
+const gulpHandlebars = require('gulp-hb');
 const path = require('path');
 const through = require('through2');
 const log = require('fancy-log');
@@ -9,27 +11,30 @@ const PluginError = require('plugin-error');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 
+const handlebars = Handlebars.create();
+
 const defaults = {
   src: null,
   srcBase: null,
   dest: null,
   plugins: {
     handlebars: {
+      handlebars,
       partials: null,
-      helpers: (hb) => {
-        const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
+      // helpers: (hb) => {
+      //   const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
 
-        hb.registerHelper(layouts(hb));
+      //   hb.registerHelper(layouts(hb));
 
-        return hb;
-      },
+      //   return hb;
+      // },
     },
     data: (file) => {
       // Find .data.js file with same name
       const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
 
       try {
-        const data = require(dataFilePath); // eslint-disable-line global-require
+        const data = require(dataFilePath); // eslint-disable-line
 
         return Object.assign({}, data);
       } catch (err) {
@@ -48,7 +53,28 @@ const defaults = {
   },
 };
 
+function setupHandlebars(options) {
+  console.log(1);
+  const config = merge({
+    helpers: require('handlebars-layouts'), // eslint-disable-line global-require
+  }, options);
+  const wax = handlebarsWax(handlebars);
+
+  // Register partials
+  if (config.partials) {
+    wax.partials(config.partials);
+  }
+
+  // Register helpers
+  if (config.helpers) {
+    wax.helpers(config.helpers);
+  }
+
+  return handlebars;
+}
+
 module.exports = (options, watcher) => {
+  console.log(2);
   let config = {};
 
   if (typeof options === 'function') {
@@ -101,7 +127,7 @@ module.exports = (options, watcher) => {
     }).on('error', config.errorHandler))
 
     // Handlebars
-    .pipe(handlebars(config.plugins.handlebars).on('error', config.errorHandler))
+    .pipe(gulpHandlebars(config.plugins.handlebars).on('error', config.errorHandler))
 
     // Formatting
     .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
@@ -116,3 +142,6 @@ module.exports = (options, watcher) => {
     // Save
     .pipe(gulp.dest(config.dest));
 };
+
+module.exports.handlebars = handlebars;
+module.exports.setupHandlebars = setupHandlebars;

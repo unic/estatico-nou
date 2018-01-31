@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
-    dataHelper = require('../../../helpers/data.js'),
+    dataHelper = require('estatico-data'),
     defaultData = require('../../data/default.data.js'),
     data = _.merge(defaultData, {
         meta: {

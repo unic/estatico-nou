@@ -11,6 +11,12 @@ const jsonImporter = require('node-sass-json-importer');
 
 const env = parseArgs(process.argv.slice(2));
 
+// Set up handlebars instance to be reused in other tasks
+// Usage: require('estatico-handlebars').handlebars
+const handlebars = estaticoHandlebars.setupHandlebars({
+  partials: './src/**/*.hbs',
+});
+
 // Exemplary custom config
 const config = {
   html: {
@@ -18,9 +24,11 @@ const config = {
       './src/*.hbs',
       './src/pages/**/*.hbs',
       './src/demo/pages/**/*.hbs',
+      '!./src/demo/pages/handlebars/*.hbs',
       './src/modules/**/!(_)*.hbs',
       './src/demo/modules/**/!(_)*.hbs',
       './src/preview/styleguide/*.hbs',
+      '!./src/preview/styleguide/colors.hbs',
     ],
     srcBase: './src',
     dest: './dist',
@@ -34,7 +42,7 @@ const config = {
     ],
     plugins: {
       handlebars: {
-        partials: './src/**/*.hbs',
+        handlebars,
       },
     },
     watchDependencyGraph: {

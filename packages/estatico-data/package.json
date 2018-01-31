@@ -1,0 +1,19 @@
+{
+  "name": "estatico-data",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "Unic AG",
+  "license": "MIT",
+  "devDependencies": {
+  },
+  "dependencies": {
+    "callsite": "^1.0.0",
+    "glob": "^7.1.2",
+    "highlight.js": "^9.12.0",
+    "marked": "^0.3.12"
+  }
+}
