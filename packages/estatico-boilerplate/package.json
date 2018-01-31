@@ -15,8 +15,8 @@
     "estatico-sass": "0.0.1",
     "estatico-stylelint": "0.0.1",
     "estatico-w3c-validator": "0.0.1",
-    "estatico-webpack": "0.0.1",
     "estatico-watch": "0.0.1",
+    "estatico-webpack": "0.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "minimist": "^1.2.0",
     "node-sass-json-importer": "^3.1.2"
