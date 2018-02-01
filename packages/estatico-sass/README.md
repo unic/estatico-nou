@@ -5,20 +5,45 @@ Transforms `Sass` to `CSS`.
 ## Installation
 
 ```
-$ npm i -S estatico-sass
+$ npm install --save-dev estatico-sass
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const sassTask = require('estatico-sass');
-const sassOptions = {}; // Custom options, deep-merged into defaults via _.merge
+const task = require('estatico-sass');
 
-gulp.task('css', () => sassTask(sassOptions));
+// Get CLI arguments
+const env = require('minimist')(process.argv.slice(2));
+
+// Options, deep-merged into defaults via _.merge
+const options = {
+  src: [
+    './src/assets/css/**/*.scss',
+  ],
+  srcIncludes: [
+    './src/',
+  ],
+  srcBase: './src',
+  dest: './dist',
+  plugins: {
+    sass: {
+      includePaths: [
+        './src/',
+      ],
+    },
+  },
+};
+
+gulp.task('css', () => task(options, env.dev));
 ```
 
-### Options
+## API
+
+`task(options, isDev)`
+
+### options
 
 #### src (required)
 
@@ -88,29 +113,12 @@ Default: `{}`
 
 Passed to [`postcss-clean`](https://www.npmjs.com/package/postcss-clean) via [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
 
-### Options recommendation for Estático
+### dev
 
-```js
-{
-  src: [
-  './src/assets/css/**/*.scss',
-  ],
-  srcIncludes: [
-    './src/',
-  ],
-  srcBase: './src',
-  dest: './dist',
-  plugins: {
-    sass: {
-      includePaths: [
-        './src/',
-      ],
-    },
-    clean: env.dev ? null : {},
-    rename: env.dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
-  },
-}
-```
+Type: `Boolean`<br>
+Default: `false`
+
+Whether we are in dev mode. Some defaults are affected by this.
 
 ## License
 

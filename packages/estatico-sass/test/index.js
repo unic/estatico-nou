@@ -36,13 +36,7 @@ test.cb('default', (t) => {
 });
 
 test.cb('unminified', (t) => {
-  const options = merge({}, defaults, {
-    plugins: {
-      clean: null,
-    },
-  });
-
-  task(options)().on('end', () => compare(t, 'unpretminifiedtified'));
+  task(defaults, true)().on('end', () => compare(t, 'unminified'));
 });
 
 test.cb('error', (t) => {

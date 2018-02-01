@@ -1,8 +1,9 @@
 const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
+const path = require('path');
 
-const defaults = {
+const defaults = dev => ({
   src: null,
   srcBase: null,
   srcIncludes: [],
@@ -14,21 +15,21 @@ const defaults = {
     autoprefixer: {
       browsers: ['last 1 version'],
     },
-    clean: {},
-    rename: null,
+    clean: dev ? null : {},
+    rename: dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
   },
   errorHandler: (err) => {
     log(`estatico-sass${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
-};
+});
 
-module.exports = (options) => {
+module.exports = (options, dev) => {
   let config = {};
 
   if (typeof options === 'function') {
-    config = options(defaults);
+    config = options(defaults(dev));
   } else {
-    config = merge({}, defaults, options);
+    config = merge({}, defaults(dev), options);
   }
 
   // Validate options
@@ -51,6 +52,7 @@ module.exports = (options) => {
     const clean = require('postcss-clean'); // eslint-disable-line global-require
     const sourcemaps = require('gulp-sourcemaps'); // eslint-disable-line global-require
     const through = require('through2'); // eslint-disable-line global-require
+    const size = require('gulp-size'); // eslint-disable-line global-require
 
     return gulp.src(config.src, {
       base: config.srcBase,
@@ -86,6 +88,11 @@ module.exports = (options) => {
       .pipe(sourcemaps.write('.', {
         includeContent: false,
         sourceRoot: config.srcBase,
+      }))
+
+      // Log
+      .pipe(size({
+        showFiles: true,
       }))
 
       // Save

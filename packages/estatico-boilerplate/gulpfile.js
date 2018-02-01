@@ -96,8 +96,6 @@ const config = {
         ],
         importer: [jsonImporter],
       },
-      clean: env.dev ? null : {},
-      rename: env.dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
     },
   },
   cssLint: {
