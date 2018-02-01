@@ -92,7 +92,7 @@ Passed to [`gulp-stylelint`](https://www.npmjs.com/package/gulp-stylelint).
 Type: `Boolean`<br>
 Default: `false`
 
-Whether we are in dev mode. Some defaults are affected by this.
+Whether we are in dev mode. Some defaults might be affected by this.
 
 ## License
 

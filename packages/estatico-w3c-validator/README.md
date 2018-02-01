@@ -5,41 +5,48 @@ Sends HTML pages through the [w3c validator](https://validator.w3.org/).
 ## Installation
 
 ```
-$ npm i -S estatico-w3c-validator
+$ npm install --save-dev estatico-w3c-validator
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const validateTask = require('estatico-w3c-validator');
-const validateOptions = {}; // Custom options, deep-merged into defaults via _.merge
+const task = require('estatico-w3c-validator');
 
-gulp.task('html:validate', () => validateTask(validateOptions));
+// Get CLI arguments
+const env = require('minimist')(process.argv.slice(2));
+
+// Options, deep-merged into defaults via _.merge
+const options = {
+  src: [
+    './src/*.hbs',
+    './src/pages/**/*.hbs',
+    './src/demo/pages/**/*.hbs',
+    './src/modules/**/!(_)*.hbs',
+    './src/demo/modules/**/!(_)*.hbs',
+    './src/preview/styleguide/*.hbs',
+  ],
+  srcBase: './src',
+};
+
+gulp.task('htmlValidate', () => task(options, env.dev));
 ```
 
-### Options
+## API
 
-#### src
+`task(options, isDev)`
+
+### options
+
+#### src (required)
 
 Type: `Array` or `String`<br>
 Default: `null`
 
 Passed to `gulp.src`.
 
-Recommendation for Estático:
-```js
-[
-  './src/*.hbs',
-  './src/pages/**/*.hbs',
-  './src/demo/pages/**/*.hbs',
-  './src/modules/**/!(_)*.hbs',
-  './src/demo/modules/**/!(_)*.hbs',
-  './src/preview/styleguide/*.hbs',
-]
-```
-
-#### srcBase
+#### srcBase (required)
 
 Type: `String`<br>
 Default: `null`
@@ -73,6 +80,13 @@ Default:
 ```
 
 Passed to [`gulp-w3cjs`](https://www.npmjs.com/package/gulp-w3cjs).
+
+### dev
+
+Type: `Boolean`<br>
+Default: `false`
+
+Whether we are in dev mode. Some defaults might be affected by this.
 
 ## License
 

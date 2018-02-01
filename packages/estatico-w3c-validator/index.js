@@ -2,7 +2,7 @@ const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 
-const defaults = {
+const defaults = (/* dev */) => ({
   src: null,
   srcBase: null,
   plugins: {
@@ -13,15 +13,15 @@ const defaults = {
   errorHandler: (err) => {
     log(`estatico-w3c-validator${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
-};
+});
 
-module.exports = (options) => {
+module.exports = (options, dev) => {
   let config = {};
 
   if (typeof options === 'function') {
-    config = options(defaults);
+    config = options(defaults(dev));
   } else {
-    config = merge({}, defaults, options);
+    config = merge({}, defaults(dev), options);
   }
 
   if (!config.src) {
