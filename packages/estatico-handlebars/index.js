@@ -127,7 +127,7 @@ module.exports = (options, dev) => {
           const clone = file.clone();
 
           // Extend default data
-          clone.data = merge({}, config.plugins.data(file), config.plugins.clone.data);
+          clone.data = merge({}, file.data, config.plugins.clone.data);
 
           // Rename
           if (config.plugins.clone.rename) {

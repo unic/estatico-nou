@@ -39,7 +39,7 @@ gulp.task('html', () => task(options, env.dev));
 
 ## API
 
-`handlebarsTask(options, isDev)`
+`task(options, isDev)`
 
 ### options
 
