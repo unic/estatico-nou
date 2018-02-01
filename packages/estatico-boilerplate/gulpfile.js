@@ -119,11 +119,11 @@ const config = {
 // Exemplary tasks
 // Create named functions so gulp-cli can properly log them
 const tasks = {
-  html: estaticoHandlebars(config.html),
-  htmlValidate: estaticoHtmlValidate(config.htmlValidate),
-  css: estaticoSass(config.css),
-  cssLint: estaticoStylelint(config.cssLint),
-  js: estaticoWebpack(config.js),
+  html: estaticoHandlebars(config.html, env.dev),
+  htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
+  css: estaticoSass(config.css, env.dev),
+  cssLint: estaticoStylelint(config.cssLint, env.dev),
+  js: estaticoWebpack(config.js, env.dev),
 };
 
 tasks.watch = () => {

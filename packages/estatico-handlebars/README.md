@@ -5,20 +5,43 @@ Transforms `Handlebars` to `HTML`.
 ## Installation
 
 ```
-$ npm i -S estatico-handlebars
+$ npm install --save-dev estatico-handlebars
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const handlebarsTask = require('estatico-handlebars');
-const handlebarsOptions = {}; // Custom options, deep-merged into defaults via _.merge
+const task = require('estatico-handlebars');
 
-gulp.task('html', () => handlebarsTask(handlebarsOptions));
+// Get CLI arguments
+const env = require('minimist')(process.argv.slice(2));
+
+// Options, deep-merged into defaults via _.merge
+const options = {
+  src: [
+    './src/*.hbs',
+    './src/pages/**/*.hbs',
+    './src/modules/**/!(_)*.hbs',
+    './src/preview/styleguide/*.hbs',
+  ],
+  srcBase: './src',
+  dest: './dist',
+  plugins: {
+    handlebars: {
+      partials: './src/**/*.hbs',
+    },
+  },
+};
+
+gulp.task('html', () => task(options, env.dev));
 ```
 
-### Options
+## API
+
+`handlebarsTask(options, isDev)`
+
+### options
 
 #### src (required)
 
@@ -110,25 +133,31 @@ prettify: {
 
 Passed to [`gulp-prettify`](https://www.npmjs.com/package/gulp-prettify). Setting to `null` will disable this step.
 
-### Options recommendation for Estático
+#### plugins.clone
 
+Type: `Object`<br>
+Default:
 ```js
-{
-  src: [
-    './src/*.hbs',
-    './src/pages/**/*.hbs',
-    './src/modules/**/!(_)*.hbs',
-    './src/preview/styleguide/*.hbs',
-  ],
-  srcBase: './src',
-  dest: './dist',
-  plugins: {
-    handlebars: {
-      partials: './src/**/*.hbs',
+clone: dev ? null : {
+  data: {
+    env: {
+      dev: false,
     },
   },
-}
+  rename: filePath => filePath.replace(path.extname(filePath), `.prod${path.extname(filePath)}`),
+},
 ```
+
+This potentially speeds up CI builds (where the same templates are built with both a dev and prod config) since we only run the expensive task of setting up the data once.
+
+The CI needs to take care of moving & renaming the `.prod.html` files.
+
+### dev
+
+Type: `Boolean`<br>
+Default: `false`
+
+Whether we are in dev mode. Some defaults are affected by this.
 
 ## License
 

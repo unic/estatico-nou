@@ -8,7 +8,7 @@ const merge = require('lodash.merge');
 const handlebars = Handlebars.create();
 const wax = handlebarsWax(handlebars);
 
-const defaults = {
+const defaults = dev => ({
   src: null,
   srcBase: null,
   dest: null,
@@ -36,19 +36,27 @@ const defaults = {
       indent_with_tabs: false,
       max_preserve_newlines: 1,
     },
+    clone: dev ? null : {
+      data: {
+        env: {
+          dev: false,
+        },
+      },
+      rename: filePath => filePath.replace(path.extname(filePath), `.prod${path.extname(filePath)}`),
+    },
   },
   errorHandler: (err) => {
     log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
-};
+});
 
-module.exports = (options) => {
+module.exports = (options, dev) => {
   let config = {};
 
   if (typeof options === 'function') {
-    config = options(defaults);
+    config = options(defaults(dev));
   } else {
-    config = merge({}, defaults, options);
+    config = merge({}, defaults(dev), options);
   }
 
   // Validate options
@@ -94,7 +102,8 @@ module.exports = (options) => {
           return done();
         }
 
-        log(chalk.blue('estatico-handlebars'), `Rebuilding ${path.relative(config.srcBase, file.path)}`);
+        // eslint-disable-next-line
+        // log(chalk.blue('estatico-handlebars'), `Building ${path.relative(config.srcBase, file.path)}`);
 
         return done(null, file);
       }))
@@ -112,6 +121,25 @@ module.exports = (options) => {
         }
       }).on('error', config.errorHandler))
 
+      // Optionally clone file
+      .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
+        if (config.plugins.clone) {
+          const clone = file.clone();
+
+          // Extend default data
+          clone.data = merge({}, config.plugins.data(file), config.plugins.clone.data);
+
+          // Rename
+          if (config.plugins.clone.rename) {
+            clone.path = config.plugins.clone.rename(file.path);
+          }
+
+          this.push(clone);
+        }
+
+        done(null, file);
+      }).on('error', config.errorHandler))
+
       // Handlebars
       .pipe(gulpHandlebars(config.plugins.handlebars).on('error', config.errorHandler))
 
@@ -123,6 +151,13 @@ module.exports = (options) => {
         file.path = file.path.replace(path.extname(file.path), '.html'); // eslint-disable-line no-param-reassign
 
         done(null, file);
+      }))
+
+      // Log
+      .pipe(through.obj((file, enc, done) => {
+        log(chalk.blue('estatico-handlebars'), `Saving ${path.relative(config.srcBase, file.path)}`);
+
+        return done(null, file);
       }))
 
       // Save
