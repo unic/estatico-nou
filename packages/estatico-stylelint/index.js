@@ -2,22 +2,30 @@ const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 
-const defaults = {
+const defaults = (/* dev */) => ({
   src: null,
   srcBase: null,
   dest: null,
   errorHandler: (err) => {
     log(`estatico-stylelint${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
-};
+  plugins: {
+    stylelint: {
+      failAfterError: true,
+      reporters: [
+        { formatter: 'string', console: true },
+      ],
+    },
+  },
+});
 
-module.exports = (options) => {
+module.exports = (options, dev) => {
   let config = {};
 
   if (typeof options === 'function') {
-    config = options(defaults);
+    config = options(defaults(dev));
   } else {
-    config = merge({}, defaults, options);
+    config = merge({}, defaults(dev), options);
   }
 
   // Validate options
@@ -50,12 +58,7 @@ module.exports = (options) => {
       }))
 
       // Stylelint verification
-      .pipe(gulpStylelint({
-        failAfterError: true,
-        reporters: [
-          { formatter: 'string', console: true },
-        ],
-      }).on('error', config.errorHandler));
+      .pipe(gulpStylelint(config.plugins.stylelint).on('error', config.errorHandler));
 
     // TODO: Optionally write back to disc
   };

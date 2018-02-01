@@ -5,20 +5,35 @@ Checks SCSS for errors and warnings.
 ## Installation
 
 ```
-$ npm i -S estatico-stylelint
+$ npm install --save-dev estatico-stylelint
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const styleLintTask = require('estatico-stylelint');
-const styleLintOptions = {}; // Custom options, deep-merged into defaults via _.merge
+const task = require('estatico-stylelint');
 
-gulp.task('cssLint', () => styleLintTask(styleLintOptions));
+// Get CLI arguments
+const env = require('minimist')(process.argv.slice(2));
+
+// Options, deep-merged into defaults via _.merge
+const options = {
+  src: [
+    './src/assets/css/*.scss',
+  ],
+  srcBase: './src',
+  dest: './dist',
+};
+
+gulp.task('cssLint', () => task(options, env.dev));
 ```
 
-### Options
+## API
+
+`task(options, isDev)`
+
+### options
 
 #### src (required)
 
@@ -41,21 +56,43 @@ Default: `null`
 
 Passed to `gulp.dest` when chosing to write back to dics (not yet implemented).
 
-#### Plugins
+#### errorHandler
+
+Type: `Function`<br>
+Default:
+```js
+(err) => {
+  util.log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
+}
+```
+
+Function to run if an error occurs in one of the steps.
+
+#### plugins
 
 Type: `Object`
 
-### Options recommendation for Estático
+##### plugins.stylelint
 
+Type: `Object`<br>
+Default:
 ```js
-{
-  src: [
-    './src/assets/css/*.scss',
+stylelint: {
+  failAfterError: true,
+  reporters: [
+    { formatter: 'string', console: true },
   ],
-  srcBase: './src',
-  dest: './dist',
 }
 ```
+
+Passed to [`gulp-stylelint`](https://www.npmjs.com/package/gulp-stylelint).
+
+### dev
+
+Type: `Boolean`<br>
+Default: `false`
+
+Whether we are in dev mode. Some defaults are affected by this.
 
 ## License
 
