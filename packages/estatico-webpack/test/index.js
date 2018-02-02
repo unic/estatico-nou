@@ -9,9 +9,14 @@ const merge = require('lodash.merge');
 const task = require('../index.js');
 
 const defaults = {
-  src: './test/fixtures/main.scss',
-  srcBase: './test/fixtures/',
-  dest: './test/results/',
+  webpack: {
+    entry: {
+      main: './test/fixtures/main.js',
+    },
+    output: {
+      path: path.resolve('./test/results'),
+    },
+  },
 };
 
 const compare = (t, name) => {
@@ -32,32 +37,16 @@ const compare = (t, name) => {
 const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
 
 test.cb('default', (t) => {
-  task(defaults).on('end', () => compare(t, 'default'));
+  task(defaults)(() => compare(t, 'default'));
 });
 
-test.cb('unminified', (t) => {
-  const options = merge({}, defaults, {
-    plugins: {
-      clean: null,
-    },
-  });
+test.cb('dev', (t) => {
+  task(defaults, true)(() => {
+    const hasMinifiedFile = fs.existsSync('./expected/dev/main.min.js');
 
-  task(options).on('end', () => compare(t, 'unpretminifiedtified'));
-});
+    t.is(hasMinifiedFile, false);
 
-test.cb('error', (t) => {
-  const options = merge({}, defaults, {
-    src: './test/fixtures/error.scss',
-  });
-
-  const spy = sinon.spy(console, 'log');
-
-  task(options).on('end', () => {
-    spy.restore();
-
-    t.is(stripLog(spy.getCall(0).args.join(' ')), 'estatico-sass (gulp-sass) undefined test/fixtures/error.scssError: Invalid CSS after "a": expected 1 selector or at-rule, was "a " on line 1 of test/fixtures/error.scss>> a ^');
-
-    t.end();
+    compare(t, 'dev');
   });
 });
 
