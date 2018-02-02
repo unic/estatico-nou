@@ -6,7 +6,7 @@ var _ = require('lodash'),
     defaultData = require('../../../data/default.data.js'),
 
     template = dataHelper.getFileContent('skiplinks.hbs'),
-    data = _.merge(defaultData, {
+    data = _.merge({}, defaultData, {
         meta: {
             title: 'Demo: Skiplinks',
             jira: 'JIRA-5'

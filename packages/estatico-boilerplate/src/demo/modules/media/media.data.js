@@ -6,7 +6,7 @@ var _ = require('lodash'),
     defaultData = require('../../../data/default.data.js'),
 
     template = dataHelper.getFileContent('media.hbs'),
-    data = _.merge(defaultData, {
+    data = _.merge({}, defaultData, {
         meta: {
             title: 'Demo: Media demo',
             jira: 'JIRA-3'

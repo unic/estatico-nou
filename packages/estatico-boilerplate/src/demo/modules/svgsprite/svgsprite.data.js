@@ -25,7 +25,7 @@ var _ = require('lodash'),
 
         return files;
     }),
-    data = _.merge(defaultData, {
+    data = _.merge({}, defaultData, {
         meta: {
             title: 'Demo: SVG icons',
             jira: 'ESTATICO-212',

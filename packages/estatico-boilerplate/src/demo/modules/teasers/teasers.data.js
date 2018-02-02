@@ -7,7 +7,7 @@ var _ = require('lodash'),
     teaserData = require('../teaser/teaser.data.js').props,
 
     template = dataHelper.getFileContent('teasers.hbs'),
-    data = _.merge(defaultData, {
+    data = _.merge({}, defaultData, {
         meta: {
             title: 'Demo: Teasers',
             jira: 'JIRA-1',

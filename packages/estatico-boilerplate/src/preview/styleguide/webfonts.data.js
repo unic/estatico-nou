@@ -2,7 +2,7 @@
 
 var _ = require('lodash'),
     defaultData = require('../../data/default.data.js'),
-    data = _.merge(defaultData, {
+    data = _.merge({}, defaultData, {
         meta: {
             title: 'Webfonts'
         },

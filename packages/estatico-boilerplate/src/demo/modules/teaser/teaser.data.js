@@ -6,7 +6,7 @@ var _ = require('lodash'),
     defaultData = require('../../../data/default.data.js'),
 
     template = dataHelper.getFileContent('teaser.hbs'),
-    data = _.merge(defaultData, {
+    data = _.merge({}, defaultData, {
         meta: {
             title: 'Demo: Teaser with module variants'
         },
