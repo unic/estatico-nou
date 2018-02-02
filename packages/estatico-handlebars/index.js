@@ -18,7 +18,8 @@ const defaults = dev => ({
       partials: null,
       helpers: require('handlebars-layouts'), // eslint-disable-line global-require
     },
-    transform: null,
+    transformBefore: null,
+    transformAfter: null,
     data: (file) => {
       // Find .data.js file with same name
       const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
@@ -111,8 +112,8 @@ module.exports = (options, dev) => {
 
       // Optional template transformation
       .pipe(through.obj((file, enc, done) => {
-        if (config.plugins.transform) {
-          file.contents = config.plugins.transform(file); // eslint-disable-line no-param-reassign
+        if (config.plugins.transformBefore) {
+          file.contents = config.plugins.transformBefore(file); // eslint-disable-line
         }
 
         done(null, file);
@@ -152,6 +153,15 @@ module.exports = (options, dev) => {
 
       // Handlebars
       .pipe(gulpHandlebars(config.plugins.handlebars).on('error', config.errorHandler))
+
+      // Optional HTML transformation
+      .pipe(through.obj((file, enc, done) => {
+        if (config.plugins.transformAfter) {
+          file.contents = config.plugins.transformAfter(file); // eslint-disable-line
+        }
+
+        done(null, file);
+      }).on('error', config.errorHandler))
 
       // Formatting
       .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())

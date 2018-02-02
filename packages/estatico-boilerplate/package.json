@@ -10,14 +10,17 @@
   "author": "Unic AG",
   "license": "MIT",
   "devDependencies": {
+    "del": "^3.0.0",
     "estatico-data": "0.0.1",
     "estatico-handlebars": "0.0.1",
+    "estatico-puppeteer": "0.0.1",
     "estatico-sass": "0.0.1",
     "estatico-stylelint": "0.0.1",
     "estatico-w3c-validator": "0.0.1",
     "estatico-watch": "0.0.1",
     "estatico-webpack": "0.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
+    "lodash.merge": "^4.6.0",
     "minimist": "^1.2.0",
     "node-sass-json-importer": "^3.1.2"
   },
@@ -25,6 +28,7 @@
     "bows": "^1.7.0",
     "jquery": "^3.3.1",
     "normalize.css": "^7.0.0",
+    "qunitjs": "^2.4.1",
     "raf-throttle": "^2.0.3",
     "skip-link-focus": "^1.0.0"
   },

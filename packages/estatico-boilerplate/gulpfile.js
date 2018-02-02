@@ -2,13 +2,16 @@ const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
 const parseArgs = require('minimist');
+const merge = require('lodash.merge');
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
 const estaticoSass = require('estatico-sass');
 const estaticoStylelint = require('estatico-stylelint');
 const estaticoWebpack = require('estatico-webpack');
 const estaticoWatch = require('estatico-watch');
+const estaticoPuppeteer = require('estatico-puppeteer');
 const jsonImporter = require('node-sass-json-importer');
+const del = require('del');
 
 const env = parseArgs(process.argv.slice(2));
 const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
@@ -40,12 +43,27 @@ const config = {
       handlebars: {
         partials: './src/**/*.hbs',
       },
-      transform: (file) => {
+      transformBefore: (file) => {
         if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
           return Buffer.from(moduleTemplate);
         }
 
         return file.contents;
+      },
+      // Relativify absolute paths
+      transformAfter: (file) => {
+        let content = file.contents.toString();
+        let relPathPrefix = path.join(path.relative(file.path, './src'));
+
+        relPathPrefix = relPathPrefix
+          .replace(new RegExp(`\\${path.sep}g`), '/') // Normalize path separator
+          .replace(/\.\.$/, ''); // Remove trailing ..
+
+        content = content.replace(/('|")\/(?!\^)/g, `$1${relPathPrefix}`);
+
+        content = Buffer.from(content);
+
+        return content;
       },
     },
     watchDependencyGraph: {
@@ -116,20 +134,49 @@ const config = {
     srcBase: './src/',
     dest: './dist',
   },
-  js: {
-    webpack: {
-      entry: Object.assign({
-        head: './src/assets/js/head.js',
-        main: './src/assets/js/main.js',
-      }, env.dev ? {
-        dev: './src/assets/js/dev.js',
-      } : {}),
-      output: {
-        path: path.resolve('./dist/assets/js'),
-      },
-    },
-  },
+  js: defaults => ({
+    webpack: [
+      merge({}, defaults.webpack, {
+        entry: Object.assign({
+          head: './src/assets/js/head.js',
+          main: './src/assets/js/main.js',
+        }, env.dev ? {
+          dev: './src/assets/js/dev.js',
+        } : {}),
+        output: {
+          path: path.resolve('./dist/assets/js'),
+        },
+      }),
+      merge({}, defaults.webpack, {
+        entry: {
+          test: './src/preview/assets/js/test.js',
+          'test/slideshow.test': './src/demo/modules/slideshow/slideshow.test.js',
+        },
+        module: {
+          rules: [
+            {
+              test: /qunit\.js$/,
+              loader: 'expose-loader?QUnit',
+            },
+            {
+              test: /\.css$/,
+              loader: 'style-loader!css-loader',
+            },
+          ],
+        },
+        output: {
+          path: path.resolve('./dist/preview/assets/js'),
+        },
+      }),
+    ],
+  }),
   watch: null,
+  jsTest: {
+    src: [
+      './dist/{pages,modules,demo}/**/*.html',
+    ],
+    srcBase: './dist',
+  },
 };
 
 // Exemplary tasks
@@ -140,6 +187,8 @@ const tasks = {
   css: estaticoSass(config.css, env.dev),
   cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
+  jsTest: estaticoPuppeteer(config.jsTest, env.dev),
+  clean: () => del('./dist'),
 };
 
 tasks.watch = () => {
@@ -166,4 +215,4 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('default', gulp.series(gulp.parallel('html', 'css'), gulp.parallel('htmlValidate', 'cssLint')), 'watch');
+gulp.task('default', gulp.series('clean', gulp.parallel('html', 'css'), gulp.parallel('htmlValidate', 'cssLint')), 'watch');
