@@ -106,7 +106,7 @@ A simple helper example:
 }
 ```
 
-If a helpers needs access to `handlebars`, a factory needs to be defined instead:
+If a helpers needs access to `handlebars`, a factory has to be used instead (see docs on [handlebars-wax](https://github.com/shannonmoeller/handlebars-wax#exporting-a-factory)):
 ```js
 {
   helpers: {
