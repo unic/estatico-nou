@@ -18,6 +18,7 @@ const defaults = dev => ({
       partials: null,
       helpers: require('handlebars-layouts'), // eslint-disable-line global-require
     },
+    transform: null,
     data: (file) => {
       // Find .data.js file with same name
       const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
@@ -25,7 +26,7 @@ const defaults = dev => ({
       try {
         const data = require(dataFilePath); // eslint-disable-line
 
-        return Object.assign({}, data);
+        return merge({}, data);
       } catch (err) {
         log('estatico-handlebars (data)', chalk.cyan(path.relative('./src', dataFilePath)), chalk.red(err.message));
 
@@ -107,6 +108,15 @@ module.exports = (options, dev) => {
 
         return done(null, file);
       }))
+
+      // Optional template transformation
+      .pipe(through.obj((file, enc, done) => {
+        if (config.plugins.transform) {
+          file.contents = config.plugins.transform(file); // eslint-disable-line no-param-reassign
+        }
+
+        done(null, file);
+      }).on('error', config.errorHandler))
 
       // Find data and assign it to file object
       .pipe(through.obj((file, enc, done) => {
