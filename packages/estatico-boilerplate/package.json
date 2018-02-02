@@ -22,7 +22,11 @@
     "node-sass-json-importer": "^3.1.2"
   },
   "dependencies": {
-    "normalize.css": "^7.0.0"
+    "bows": "^1.7.0",
+    "jquery": "^3.3.1",
+    "normalize.css": "^7.0.0",
+    "raf-throttle": "^2.0.3",
+    "skip-link-focus": "^1.0.0"
   },
   "engines": {
     "node": ">=8 <9"

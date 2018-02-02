@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const path = require('path');
+const fs = require('fs');
 const parseArgs = require('minimist');
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
@@ -10,6 +11,7 @@ const estaticoWatch = require('estatico-watch');
 const jsonImporter = require('node-sass-json-importer');
 
 const env = parseArgs(process.argv.slice(2));
+const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
 
 // Exemplary custom config
 const config = {
@@ -37,6 +39,13 @@ const config = {
     plugins: {
       handlebars: {
         partials: './src/**/*.hbs',
+      },
+      transform: (file) => {
+        if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
+          return Buffer.from(moduleTemplate);
+        }
+
+        return file.contents;
       },
     },
     watchDependencyGraph: {
@@ -86,6 +95,7 @@ const config = {
   css: {
     src: [
       './src/assets/css/**/*.scss',
+      './src/preview/assets/css/**/*.scss',
     ],
     srcBase: './src/',
     dest: './dist',
@@ -93,6 +103,7 @@ const config = {
       sass: {
         includePaths: [
           './src/',
+          './src/assets/css/',
         ],
         importer: [jsonImporter],
       },
@@ -106,10 +117,17 @@ const config = {
     dest: './dist',
   },
   js: {
-    entries: {
-      main: './src/assets/js/main.js',
+    webpack: {
+      entry: Object.assign({
+        head: './src/assets/js/head.js',
+        main: './src/assets/js/main.js',
+      }, env.dev ? {
+        dev: './src/assets/js/dev.js',
+      } : {}),
+      output: {
+        path: path.resolve('./dist/assets/js'),
+      },
     },
-    dest: path.resolve('./dist/assets/js'),
   },
   watch: null,
 };

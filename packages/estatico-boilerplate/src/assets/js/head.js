@@ -1,4 +1,4 @@
-import '../.tmp/modernizr';
+import './helpers/modernizrrc';
 import FontLoader from './helpers/fontloader';
 import Helper from './helpers/helper';
 

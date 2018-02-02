@@ -5,7 +5,7 @@ var _ = require('lodash'),
     defaultData = require('./data/default.data.js'),
     path = require('path'),
     transform = function(data, filePath) {
-        var previewUrl = path.relative('./source/', filePath).replace('.data.js', '.html');
+        var previewUrl = path.relative('./src/', filePath).replace('.data.js', '.html');
 
         data = _.merge(data, {
             meta: {
@@ -17,11 +17,11 @@ var _ = require('lodash'),
     },
 
     data = _.merge({}, defaultData, {
-        pages: dataHelper.getDataGlob('./source/pages/**/*.data.js', transform),
-        demoPages: dataHelper.getDataGlob('./source/demo/pages/**/*.data.js', transform),
-        modules: dataHelper.getDataGlob('./source/modules/**/*.data.js', transform),
-        demoModules: dataHelper.getDataGlob('./source/demo/modules/**/*.data.js', transform),
-        styleguide: dataHelper.getDataGlob('./source/preview/styleguide/*.data.js', transform)
+        pages: dataHelper.getDataGlob('./src/pages/**/*.data.js', transform),
+        demoPages: dataHelper.getDataGlob('./src/demo/pages/**/*.data.js', transform),
+        modules: dataHelper.getDataGlob('./src/modules/**/*.data.js', transform),
+        demoModules: dataHelper.getDataGlob('./src/demo/modules/**/*.data.js', transform),
+        styleguide: dataHelper.getDataGlob('./src/preview/styleguide/*.data.js', transform)
     });
 
 data.pages = _.sortBy(data.pages, function(item) {
