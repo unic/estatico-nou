@@ -55,6 +55,40 @@ test.cb('unprettified', (t) => {
   task(options)().on('end', () => compare(t, 'unprettified'));
 });
 
+test.cb('customHelpers', (t) => {
+  const options = merge({}, defaults, {
+    src: './test/fixtures/helper.hbs',
+    plugins: {
+      handlebars: {
+        helpers: {
+          link: object => `<a href="${object.url}">${object.text}</a>`,
+        },
+      },
+    },
+  });
+
+  task(options)().on('end', () => compare(t, 'customHelpers'));
+});
+
+test.cb('customHelpersFactory', (t) => {
+  const options = merge({}, defaults, {
+    src: './test/fixtures/helper.hbs',
+    plugins: {
+      handlebars: {
+        helpers: {
+          register: (handlebars) => {
+            handlebars.registerHelper('link', (object) => { // eslint-disable-line arrow-body-style
+              return new handlebars.SafeString(`<a href="${object.url}">${object.text}</a>`);
+            });
+          },
+        },
+      },
+    },
+  });
+
+  task(options)().on('end', () => compare(t, 'customHelpers'));
+});
+
 test.cb('error', (t) => {
   const options = merge({}, defaults, {
     src: './test/fixtures/error.hbs',

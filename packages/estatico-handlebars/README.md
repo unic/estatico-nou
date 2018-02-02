@@ -87,19 +87,39 @@ Default:
 ```js
 handlebars: {
   partials: null,
-
   // Register handlebars-layouts by default
-  helpers: (hb) => {
-    const layouts = require('handlebars-layouts'); // eslint-disable-line global-require
+  helpers: require('handlebars-layouts'), // eslint-disable-line global-require
+}
+```
 
-    hb.registerHelper(layouts(hb));
+Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb).
 
-    return hb;
+Partials and helpers are resolved via [`handlebars-wax`](https://www.npmjs.com/package/handlebars-wax). This is happening outside of the task function, allowing us to export the handlebars instance with partials and helpers already registered. It can be required via `require('estatico-handlebars').handlebars`.
+
+A simple helper example:
+```js
+{
+  helpers: {
+    link: object => `<a href="${object.url}">${object.text}</a>`,
+    foo: bar => `<span>${bar}</span>`,
   },
 }
 ```
 
-Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb). `partials` is resolved first since we cannot pass a function there.
+If a helpers needs access to `handlebars`, a factory needs to be defined instead:
+```js
+{
+  helpers: {
+    register: (handlebars) => {
+      handlebars.registerHelper('link', (object) => { // eslint-disable-line arrow-body-style
+        return new handlebars.SafeString(`<a href="${object.url}">${object.text}</a>`);
+      });
+
+      handlebars.registerHelper('foo', bar => `<span>${bar}</span>`);
+    },
+  },
+}
+```
 
 ##### plugins.data
 
