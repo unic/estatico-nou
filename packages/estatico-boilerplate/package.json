@@ -14,6 +14,7 @@
     "estatico-data": "0.0.1",
     "estatico-handlebars": "0.0.1",
     "estatico-puppeteer": "0.0.1",
+    "estatico-qunit": "0.0.1",
     "estatico-sass": "0.0.1",
     "estatico-stylelint": "0.0.1",
     "estatico-w3c-validator": "0.0.1",

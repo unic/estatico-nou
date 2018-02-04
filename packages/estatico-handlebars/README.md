@@ -121,6 +121,8 @@ If a helpers needs access to `handlebars`, a factory has to be used instead (see
 }
 ```
 
+*NOTE*: [handlebars-layouts](https://github.com/shannonmoeller/handlebars-layouts)) is registered by default
+
 ##### plugins.data
 
 Type: `Function`<br>

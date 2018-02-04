@@ -16,7 +16,7 @@ const defaults = dev => ({
     handlebars: {
       handlebars,
       partials: null,
-      helpers: require('handlebars-layouts'), // eslint-disable-line global-require
+      helpers: null,
     },
     transformBefore: null,
     transformAfter: null,
@@ -74,12 +74,26 @@ module.exports = (options, dev) => {
 
   // Register partials
   if (config.plugins.handlebars && config.plugins.handlebars.partials) {
-    wax.partials(config.plugins.handlebars.partials);
+    const waxOptions = {};
+
+    if (config.plugins.handlebars.parsePartialName) {
+      waxOptions.parsePartialName = config.plugins.handlebars.parsePartialName;
+    }
+
+    wax.partials(config.plugins.handlebars.partials, waxOptions);
   }
 
   // Register helpers
+  wax.helpers(require('handlebars-layouts')); // eslint-disable-line global-require
+
   if (config.plugins.handlebars && config.plugins.handlebars.helpers) {
-    wax.helpers(config.plugins.handlebars.helpers);
+    const waxOptions = {};
+
+    if (config.plugins.handlebars.parseHelperName) {
+      waxOptions.parsePartialName = config.plugins.handlebars.parseHelperName;
+    }
+
+    wax.helpers(config.plugins.handlebars.helpers, waxOptions);
   }
 
   return (watcher) => {

@@ -10,6 +10,7 @@ const estaticoStylelint = require('estatico-stylelint');
 const estaticoWebpack = require('estatico-webpack');
 const estaticoWatch = require('estatico-watch');
 const estaticoPuppeteer = require('estatico-puppeteer');
+const estaticoQunit = require('estatico-qunit');
 const jsonImporter = require('node-sass-json-importer');
 const del = require('del');
 
@@ -41,7 +42,15 @@ const config = {
     ],
     plugins: {
       handlebars: {
-        partials: './src/**/*.hbs',
+        partials: [
+          './src/**/*.hbs',
+          './node_modules/estatico-qunit/**/*.hbs',
+        ],
+        helpers: {
+          register: (handlebars) => {
+            handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+          },
+        },
       },
       transformBefore: (file) => {
         if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
@@ -176,6 +185,17 @@ const config = {
       './dist/{pages,modules,demo}/**/*.html',
     ],
     srcBase: './dist',
+    plugins: {
+      interact: async (page) => {
+        // Run tests
+        const results = await estaticoQunit.puppeteer.run(page);
+
+        // Report results
+        if (results) {
+          estaticoQunit.puppeteer.log(results);
+        }
+      },
+    },
   },
 };
 
