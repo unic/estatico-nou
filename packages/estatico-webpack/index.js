@@ -90,7 +90,7 @@ module.exports = (options, dev) => {
     config = merge({}, defaults(dev), options);
   }
 
-  return (cb) => {
+  return (cb, watch) => {
     const once = require('lodash.once'); // eslint-disable-line global-require
     const logStats = require('./lib/log'); // eslint-disable-line global-require
 
@@ -113,7 +113,7 @@ module.exports = (options, dev) => {
         done();
       };
 
-      if (config.watch) {
+      if (watch) {
         compiler.watch({}, callback);
       } else {
         compiler.run(callback);

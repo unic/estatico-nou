@@ -158,7 +158,6 @@ const config = {
       merge({}, defaults.webpack, {
         entry: {
           test: './src/preview/assets/js/test.js',
-          'test/slideshow.test': './src/demo/modules/slideshow/slideshow.test.js',
         },
         module: {
           rules: [
@@ -172,8 +171,23 @@ const config = {
             },
           ],
         },
+        externals: {
+          jquery: 'jQuery',
+        },
         output: {
           path: path.resolve('./dist/preview/assets/js'),
+        },
+      }),
+      merge({}, defaults.webpack, {
+        entry: {
+          'slideshow.test': './src/demo/modules/slideshow/slideshow.test.js',
+        },
+        externals: {
+          jquery: 'jQuery',
+          qunit: 'QUnit',
+        },
+        output: {
+          path: path.resolve('./dist/preview/assets/js/test'),
         },
       }),
     ],
@@ -224,6 +238,8 @@ tasks.watch = () => {
 
     watcher();
   });
+
+  tasks.js(() => {}, true);
 };
 
 // Register with gulp
