@@ -32,14 +32,6 @@ const config = {
     ],
     srcBase: './src',
     dest: './dist',
-    watch: [
-      './src/*.hbs',
-      './src/pages/**/*.hbs',
-      './src/demo/pages/**/*.hbs',
-      './src/modules/**/!(_)*.hbs',
-      './src/demo/modules/**/!(_)*.hbs',
-      './src/preview/styleguide/*.hbs',
-    ],
     plugins: {
       handlebars: {
         partials: [
@@ -75,32 +67,37 @@ const config = {
         return content;
       },
     },
-    watchDependencyGraph: {
-      srcBase: './',
-      resolver: {
-        hbs: {
-          match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
-          resolve: (match /* , filePath */) => {
-            if (!match[1]) {
-              return null;
-            }
+    watch: {
+      src: [
+        './src/**/*.hbs',
+      ],
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          hbs: {
+            match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
+            resolve: (match /* , filePath */) => {
+              if (!match[1]) {
+                return null;
+              }
 
-            let resolvedPath = path.resolve('./src', match[1]);
+              let resolvedPath = path.resolve('./src', match[1]);
 
-            // Add extension
-            resolvedPath = `${resolvedPath}.hbs`;
+              // Add extension
+              resolvedPath = `${resolvedPath}.hbs`;
 
-            return resolvedPath;
+              return resolvedPath;
+            },
           },
-        },
-        js: {
-          match: /require\('(.*?\.data\.js)'\)/g,
-          resolve: (match, filePath) => {
-            if (!match[1]) {
-              return null;
-            }
+          js: {
+            match: /require\('(.*?\.data\.js)'\)/g,
+            resolve: (match, filePath) => {
+              if (!match[1]) {
+                return null;
+              }
 
-            return path.resolve(path.dirname(filePath), match[1]);
+              return path.resolve(path.dirname(filePath), match[1]);
+            },
           },
         },
       },
@@ -109,15 +106,17 @@ const config = {
   htmlValidate: {
     src: [
       './dist/*.html',
-      // './dist/modules/**/*.html',
-      // './dist/pages/**/*.html',
+      './dist/modules/**/*.html',
+      './dist/pages/**/*.html',
     ],
     srcBase: './dist/',
-    watch: [
-      './dist/*.html',
-      // './dist/modules/**/*.html',
-      // './dist/pages/**/*.html',
-    ],
+    watch: {
+      src: [
+        './dist/*.html',
+        './dist/modules/**/*.html',
+        './dist/pages/**/*.html',
+      ],
+    },
   },
   css: {
     src: [
@@ -179,7 +178,6 @@ const config = {
       }),
     ],
   }),
-  watch: null,
   jsTest: {
     src: [
       './dist/{pages,modules,demo}/**/*.html',
@@ -200,7 +198,6 @@ const config = {
 };
 
 // Exemplary tasks
-// Create named functions so gulp-cli can properly log them
 const tasks = {
   html: estaticoHandlebars(config.html, env.dev),
   htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
@@ -211,20 +208,19 @@ const tasks = {
   clean: () => del('./dist'),
 };
 
+// Register watchers
 tasks.watch = () => {
   Object.keys(tasks).forEach((task) => {
     if (!(config[task] && config[task].watch)) {
       return;
     }
 
-    const watcher = estaticoWatch({
+    const watchConfig = merge({}, {
       task: tasks[task],
       name: task,
-      src: config[task].watch,
-      once: config[task].watchOnce,
-      watcher: config[task].watcher,
-      dependencyGraph: config[task].watchDependencyGraph,
-    });
+    }, config[task].watch);
+
+    const watcher = estaticoWatch(watchConfig);
 
     watcher();
   });

@@ -6,8 +6,10 @@ const defaults = {
   name: null,
   once: false,
   // Passed to https://github.com/paulmillr/chokidar via https://github.com/gulpjs/glob-watcher
-  watcher: {
-    usePolling: false,
+  plugins: {
+    chokidar: {
+      usePolling: false,
+    },
   },
 };
 
@@ -73,7 +75,7 @@ module.exports = (options) => {
       },
     };
 
-    const watcher = gulp.watch(config.src, config.watcher, cb[config.name]);
+    const watcher = gulp.watch(config.src, config.plugins.chokidar, cb[config.name]);
 
     watcher.on('all', (event, filePath) => {
       events.push({
