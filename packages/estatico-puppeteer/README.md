@@ -1,18 +1,18 @@
-# estatico-sass
+# estatico-puppeteer
 
-Transforms `Sass` to `CSS`.
+Open local files in [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-sass
+$ npm install --save-dev estatico-puppeteer
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-sass');
+const task = require('estatico-puppeteer');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
@@ -20,23 +20,12 @@ const env = require('minimist')(process.argv.slice(2));
 // Options, deep-merged into defaults via _.merge
 const options = {
   src: [
-    './src/assets/css/**/*.scss',
+    './dist/{pages,modules,demo}/**/*.html',
   ],
-  srcIncludes: [
-    './src/',
-  ],
-  srcBase: './src',
-  dest: './dist',
-  plugins: {
-    sass: {
-      includePaths: [
-        './src/',
-      ],
-    },
-  },
+  srcBase: './dist',
 };
 
-gulp.task('css', () => task(options, env.dev));
+gulp.task('jsTest', () => task(options, env.dev));
 ```
 
 ## API
@@ -59,20 +48,13 @@ Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-#### dest (required)
-
-Type: `String`<br>
-Default: `null`
-
-Passed to `gulp.dest`.
-
 #### errorHandler
 
 Type: `Function`<br>
 Default:
 ```js
 (err) => {
-  util.log(`estatico-sass${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
+  util.log(`estatico-puppeteer${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
 }
 ```
 
@@ -82,36 +64,19 @@ Function to run if an error occurs in one of the steps.
 
 Type: `Object`
 
-##### plugins.sass
+##### plugins.puppeteer
 
 Type: `Object`<br>
-Default:
-```js
-{
-  includePaths: null,
-}
-```
+Default: `null`
 
-Passed to [`node-sass`](https://www.npmjs.com/package/node-sass) via [`gulp-sass`](https://www.npmjs.com/package/gulp-sass). `includePaths` is resolved first since we cannot pass a function there.
+Passed to [Puppeteer](https://github.com/GoogleChrome/puppeteer).
 
-##### plugins.autoprefixer
+##### plugins.interact
 
-Type: `Object`<br>
-Default:
-```js
-{
-  browsers: ['last 1 version'],
-}
-```
+Type: `async fn(page)`<br>
+Default: `null`
 
-Passed to [`autoprefixer`](https://www.npmjs.com/package/autoprefixer) via [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
-
-##### plugins.clean
-
-Type: `Object`<br>
-Default: `{}`
-
-Passed to [`postcss-clean`](https://www.npmjs.com/package/postcss-clean) via [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
+Interact with page (evaluating code, taking screenshots etc.). See [Puppeteer](https://github.com/GoogleChrome/puppeteer) for available API on `page` object.
 
 ### dev
 

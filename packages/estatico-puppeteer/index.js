@@ -1,7 +1,6 @@
 const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
-const tests = require('./lib/qunit');
 
 const defaults = (/* dev */) => ({
   src: null,
@@ -9,6 +8,8 @@ const defaults = (/* dev */) => ({
   plugins: {
     puppeteer: {
     },
+    // interact: async (page) => {
+    // },
   },
   errorHandler: (err) => {
     log(`estatico-puppeteer${err.plugin ? ` (${err.plugin})` : ''}`, chalk.cyan(err.fileName), chalk.red(err.message));
@@ -42,9 +43,7 @@ module.exports = (options, dev) => {
       .reduce((acc, curr) => acc.concat(curr), [])
       .map(filePath => path.resolve(filePath));
 
-    return puppeteer.launch({
-      // headless: false
-    }).then(async (browser) => {
+    return puppeteer.launch(config.plugins.puppeteer).then(async (browser) => {
       const page = await browser.newPage();
       let error;
 
@@ -53,7 +52,7 @@ module.exports = (options, dev) => {
         error = err;
       });
 
-      page.on('error', console.log);
+      // page.on('error', console.log);
 
       // page.on('console', (msg) => {
       //   console.log(msg.text());
@@ -70,13 +69,10 @@ module.exports = (options, dev) => {
 
         await page.goto(`file://${file}`); // eslint-disable-line no-await-in-loop
 
-        // Run Qunit tests
-        const results = await tests.run(page); // eslint-disable-line no-await-in-loop
-
-        // Report results
-        if (results) {
+        // Interact with page (evaluating code, taking screenshots etc.)
+        if (config.plugins.interact) {
           try {
-            tests.logResults(results);
+            await config.plugins.interact(page); // eslint-disable-line no-await-in-loop
           } catch (err) {
             error = err;
           }
