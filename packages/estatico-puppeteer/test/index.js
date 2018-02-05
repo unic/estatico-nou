@@ -14,7 +14,7 @@ const defaults = {
 
 const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
 
-test.cb('catches JavaScript error', (t) => {
+test.cb('Catches JavaScript error', (t) => {
   const spy = sinon.spy(console, 'log');
 
   task(defaults)().then(() => {

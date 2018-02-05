@@ -37,6 +37,16 @@ const options = {
 gulp.task('html', () => task(options, env.dev));
 ```
 
+Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
+`$ npm run gulp html`
+
+Run with debug info:
+`$ NODE_DEBUG=estatico-handlebars npm run gulp html`
+
+Run with extended debug info:
+`$ NODE_DEBUG=estatico-handlebars-extended npm run gulp html`
+
+
 ## API
 
 `task(options, isDev)`
@@ -64,17 +74,12 @@ Default: `null`
 
 Passed to `gulp.dest`.
 
-#### errorHandler
+#### logger
 
-Type: `Function`<br>
-Default:
-```js
-(err) => {
-  util.log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
-}
-```
+Type: `Object`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Function to run if an error occurs in one of the steps.
+Set of functions for infos, debugging and errors.
 
 #### plugins
 
@@ -87,8 +92,7 @@ Default:
 ```js
 handlebars: {
   partials: null,
-  // Register handlebars-layouts by default
-  helpers: require('handlebars-layouts'), // eslint-disable-line global-require
+  helpers: null, // NOTE: handlebars-layouts are registered by default
 }
 ```
 
