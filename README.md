@@ -1,4 +1,4 @@
-# Demo repo to evaluate [Lerna](https://github.com/lerna/lerna)
+# Test repo to extract and maintain task in separates packages via [Lerna](https://github.com/lerna/lerna)
 
 ## Recommended setup
 
