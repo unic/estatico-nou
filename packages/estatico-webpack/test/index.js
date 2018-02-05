@@ -1,11 +1,11 @@
 const test = require('ava');
-const sinon = require('sinon');
+// const sinon = require('sinon');
 const glob = require('glob');
-const stripAnsi = require('strip-ansi');
+// const stripAnsi = require('strip-ansi');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
-const merge = require('lodash.merge');
+// const merge = require('lodash.merge');
 const task = require('../index.js');
 
 const defaults = {
@@ -34,7 +34,8 @@ const compare = (t, name) => {
   t.end();
 };
 
-const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
+// const stripLog = str => stripAnsi(str.replace(/\n/gm, '')
+//  .replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
 
 test.cb('default', (t) => {
   task(defaults)(() => compare(t, 'default'));

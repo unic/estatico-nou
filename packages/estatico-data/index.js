@@ -1,60 +1,58 @@
-'use strict';
+const _ = require('lodash');
+const glob = require('glob');
+const path = require('path');
+const callsite = require('callsite');
+const fs = require('fs');
+const Highlight = require('highlight.js');
+const marked = require('marked');
+const prettify = require('js-beautify');
+const Handlebars = require('handlebars');
 
-var _ = require('lodash'),
-  glob = require('glob'),
-  path = require('path'),
-  callsite = require('callsite'),
-  fs = require('fs'),
-  Highlight = require('highlight.js'),
-  marked = require('marked'),
-  prettify = require('js-beautify'),
-  Handlebars = require('handlebars'),
+const fileCache = {};
 
-  fileCache = {},
+function getFile(requirePath) {
+  let cache = fileCache[requirePath];
+  const { mtime } = fs.statSync(requirePath);
+  let content;
 
-  getFile = function(requirePath) {
-    var cache = fileCache[requirePath],
-      mtime = fs.statSync(requirePath).mtime,
-      content;
+  // Only read file if modified since last time
+  if (!cache || (cache.mtime.getTime() !== mtime.getTime())) {
+    content = fs.readFileSync(requirePath).toString();
 
-    // Only read file if modified since last time
-    if (!cache || (cache.mtime.getTime() !== mtime.getTime())) {
-      content = fs.readFileSync(requirePath).toString();
+    cache = {
+      mtime,
+      content,
+    };
 
-      cache = {
-        mtime: mtime,
-        content: content
-      };
+    fileCache[requirePath] = cache;
+  }
 
-      fileCache[requirePath] = cache;
-    }
+  return cache.content;
+}
 
-    return cache.content;
-  },
+// Resolve path relative to calling function (expecting a nesting of 2 by default)
+function getRequirePath(relativeFilePath, nesting) {
+  const stack = callsite();
+  const requester = stack[nesting || 2].getFileName();
 
-  // Resolve path relative to calling function (expecting a nesting of 2 by default)
-  getRequirePath = function(relativeFilePath, nesting) {
-    var stack = callsite(),
-      requester = stack[nesting || 2].getFileName();
-
-    return path.resolve(path.dirname(requester), relativeFilePath);
-  };
+  return path.resolve(path.dirname(requester), relativeFilePath);
+}
 
 marked.setOptions({
-  highlight: function(code) {
+  highlight(code) {
     return Highlight.highlightAuto(code).value;
-  }
+  },
 });
 
 module.exports = {
-  getDataGlob: function(fileGlob, dataTransform) {
-    var data = {},
-      paths = glob.sync(fileGlob);
+  getDataGlob(fileGlob, dataTransform) {
+    const data = {};
+    const paths = glob.sync(fileGlob);
 
-    _.each(paths, function(filePath) {
-      var requirePath = path.resolve(filePath),
-        fileName = path.basename(filePath).replace('.data.js', ''),
-        fileData = require(requirePath);
+    _.each(paths, (filePath) => {
+      const requirePath = path.resolve(filePath);
+      const fileName = path.basename(filePath).replace('.data.js', '');
+      let fileData = require(requirePath); // eslint-disable-line
 
       // Optional data transformation
       if (dataTransform) {
@@ -67,54 +65,54 @@ module.exports = {
     return data;
   },
 
-  getFileContent: function(filePath) {
-    var requirePath = getRequirePath(filePath);
+  getFileContent(filePath) {
+    const requirePath = getRequirePath(filePath);
 
     return getFile(requirePath);
   },
 
-  getTestScriptPath: function(filePath) {
-    var requirePath = getRequirePath(filePath),
-      scriptPath = path.join('/preview/assets/js/test/', path.basename(requirePath));
+  getTestScriptPath(filePath) {
+    const requirePath = getRequirePath(filePath);
+    const scriptPath = path.join('/preview/assets/js/test/', path.basename(requirePath));
 
     return scriptPath;
   },
 
-  getFormattedHtml: function(content) {
-    var html = prettify.html(content, {
-        'indent_char': '\t',
-        'indent_size': 1
-      });
+  getFormattedHtml(content) {
+    const html = prettify.html(content, {
+      indent_char: '\t',
+      indent_size: 1,
+    });
 
     return Highlight.highlight('html', html).value;
   },
 
-  getFormattedHandlebars: function(content) {
-    var usedPartials = this._getUsedPartialsInTemplate(content),
-      partialContent;
+  getFormattedHandlebars(content) {
+    let usedPartials = this.getUsedPartialsInTemplate(content);
+    let partialContent;
 
     // Look up content of all partials used in the main template
     usedPartials = usedPartials.map((partial) => {
-      partialContent = getFile(path.resolve('./src/', partial + '.hbs'));
+      partialContent = getFile(path.resolve('./src/', `${partial}.hbs`));
 
       return {
         name: partial,
-        content: this._getHighlightedTemplate(partialContent)
+        content: this.getHighlightedTemplate(partialContent),
       };
     });
 
     return {
-      content: this._getHighlightedTemplate(content),
-      partials: usedPartials
+      content: this.getHighlightedTemplate(content),
+      partials: usedPartials,
     };
   },
 
-  getFormattedJsx: function(filePath) {
-    var stack = callsite(),
-      requester = stack[1].getFileName(),
-      requirePath = path.resolve(path.dirname(requester), filePath),
-      extension = path.extname(filePath).substr(1),
-      content = getFile(requirePath);
+  getFormattedJsx(filePath) {
+    const stack = callsite();
+    const requester = stack[1].getFileName();
+    const requirePath = path.resolve(path.dirname(requester), filePath);
+    const extension = path.extname(filePath).substr(1);
+    const content = getFile(requirePath);
 
     return Highlight.highlight(extension, content).value;
   },
@@ -124,14 +122,12 @@ module.exports = {
    *
    * @param {string} content
    * @returns {string}
-   *
-   * @private
    */
-  _getHighlightedTemplate: function(content) {
-    var highlighted = Highlight.highlight('html', content).value;
+  getHighlightedTemplate(content) {
+    const highlighted = Highlight.highlight('html', content).value;
 
     // Link the used sub modules (excludes partials starting with underscore)
-    return highlighted.replace(/({{&gt;[\s"]*)(([\/]?[!a-z][a-z0-9-_]+)+)([\s"}]+)/g, '$1<a href="/$2.html">$2</a>$4');
+    return highlighted.replace(/({{&gt;[\s"]*)(([/]?[!a-z][a-z0-9-_]+)+)([\s"}]+)/g, '$1<a href="/$2.html">$2</a>$4');
   },
 
   /**
@@ -141,13 +137,11 @@ module.exports = {
    *
    * @param {string} content
    * @returns {Array}
-   *
-   * @private
    */
-  _getUsedPartialsInTemplate: function(content) {
-    var list = [],
-      regexp = /{{>[\s"]*([a-z0-9\/_-]+\/_[a-z0-9\/._-]+)[\s"}]/g,
-      match;
+  getUsedPartialsInTemplate(content) {
+    let list = [];
+    const regexp = /{{>[\s"]*([a-z0-9/_-]+\/_[a-z0-9/._-]+)[\s"}]/g;
+    let match;
 
     match = regexp.exec(content);
     while (match) {
@@ -161,54 +155,52 @@ module.exports = {
     return list;
   },
 
-  getFormattedJson: function(content) {
-    var formatted = JSON.stringify(content, null, '\t');
+  getFormattedJson(content) {
+    const formatted = JSON.stringify(content, null, '\t');
 
     return Highlight.highlight('json', formatted).value;
   },
 
-  getDataMock: function(filePath) {
-    var requirePath = getRequirePath(filePath),
-      content = require(requirePath);
+  getDataMock(filePath) {
+    const requirePath = getRequirePath(filePath);
+    let content = require(requirePath); // eslint-disable-line
 
     content = JSON.stringify(content, null, '\t');
 
     return Highlight.highlight('json', content).value;
   },
 
-  getDocumentation: function(filePath) {
-    var requirePath = getRequirePath(filePath),
-      content = getFile(requirePath);
+  getDocumentation(filePath) {
+    const requirePath = getRequirePath(filePath);
+    const content = getFile(requirePath);
 
     return marked(content);
   },
 
-  getMarkedHandlebars: function(filePath, context) {
-    var requirePath = getRequirePath(filePath),
-      content = getFile(requirePath),
-      compiledHandlebars = Handlebars.compile(content)(context);
+  getMarkedHandlebars(filePath, context) {
+    const requirePath = getRequirePath(filePath);
+    const content = getFile(requirePath);
+    const compiledHandlebars = Handlebars.compile(content)(context);
 
     return marked(compiledHandlebars);
   },
 
-  getColors: function(filePath) {
-    var requirePath = getRequirePath(filePath),
-      colors = [],
-      content;
+  getColors(filePath) {
+    const requirePath = getRequirePath(filePath);
+    let colors = [];
+    let content;
 
     try {
       content = fs.readFileSync(requirePath).toString();
 
-      colors = _.map(JSON.parse(content), function(value, key) {
-        return {
-          name: key,
-          color: value
-        };
-      });
+      colors = _.map(JSON.parse(content), (value, key) => ({
+        name: key,
+        color: value,
+      }));
 
-      colors = _.map(colors, function(color) {
+      colors = _.map(colors, (color) => {
         // Remove non-aphanumeric characters
-        color.name = color.name.replace(/\W/g, '');
+        color.name = color.name.replace(/\W/g, ''); // eslint-disable-line no-param-reassign
 
         return color;
       });
