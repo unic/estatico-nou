@@ -17,6 +17,7 @@
     "estatico-qunit": "0.0.1",
     "estatico-sass": "0.0.1",
     "estatico-stylelint": "0.0.1",
+    "estatico-svgsprite": "0.0.1",
     "estatico-w3c-validator": "0.0.1",
     "estatico-watch": "0.0.1",
     "estatico-webpack": "0.0.1",

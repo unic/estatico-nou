@@ -11,6 +11,7 @@ const estaticoWebpack = require('estatico-webpack');
 const estaticoWatch = require('estatico-watch');
 const estaticoPuppeteer = require('estatico-puppeteer');
 const estaticoQunit = require('estatico-qunit');
+const estaticoSvgsprite = require('estatico-svgsprite');
 const jsonImporter = require('node-sass-json-importer');
 const del = require('del');
 
@@ -210,6 +211,14 @@ const config = {
       },
     },
   },
+  svgsprite: {
+    src: {
+      main: './src/assets/media/svg/**/*.svg',
+      demo: './src/demo/modules/svgsprite/svg/*.svg',
+    },
+    srcBase: './src',
+    dest: './dist',
+  },
 };
 
 // Exemplary tasks
@@ -220,6 +229,7 @@ const tasks = {
   cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
   jsTest: estaticoPuppeteer(config.jsTest, env.dev),
+  svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
   clean: () => del('./dist'),
 };
 
@@ -248,4 +258,4 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('default', gulp.series('clean', gulp.parallel('html', 'css'), gulp.parallel('htmlValidate', 'cssLint')), 'watch');
+gulp.task('default', gulp.series('clean', gulp.parallel('html', 'css', 'svgsprite'), gulp.parallel('htmlValidate', 'cssLint')), 'watch');
