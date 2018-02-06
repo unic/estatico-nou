@@ -40,10 +40,10 @@ gulp.task('html', () => task(options, env.dev));
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp html`
 
-Run with debug info:
+Run with debug info (showing you which file is passed through which step, e.g.):
 `$ NODE_DEBUG=estatico-handlebars npm run gulp html`
 
-Run with extended debug info:
+Run with extended debug info (showing you the data used for every template, e.g.):
 `$ NODE_DEBUG=estatico-handlebars-extended npm run gulp html`
 
 
@@ -76,10 +76,10 @@ Passed to `gulp.dest`.
 
 #### logger
 
-Type: `Object`<br>
+Type: `{ info: Function, debug: Function, error: Function }`<br>
 Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Set of functions for infos, debugging and errors.
+Set of logger utility functions used within the task.
 
 #### plugins
 

@@ -1,14 +1,14 @@
-const log = require('fancy-log');
-const chalk = require('chalk');
+// const chalk = require('chalk');
 const merge = require('lodash.merge');
+const { Logger } = require('estatico-utils');
+
+const logger = new Logger('estatico-stylelint');
 
 const defaults = (/* dev */) => ({
   src: null,
   srcBase: null,
   dest: null,
-  errorHandler: (err) => {
-    log(`estatico-stylelint${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
-  },
+  logger,
   plugins: {
     stylelint: {
       failAfterError: true,
@@ -58,7 +58,7 @@ module.exports = (options, dev) => {
       }))
 
       // Stylelint verification
-      .pipe(gulpStylelint(config.plugins.stylelint).on('error', config.errorHandler));
+      .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, dev)));
 
     // TODO: Optionally write back to disc
   };

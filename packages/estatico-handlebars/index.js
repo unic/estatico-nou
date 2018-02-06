@@ -113,16 +113,16 @@ module.exports = (options, dev) => {
       .pipe(through.obj((file, enc, done) => {
         // TODO: Make sure HTML is rebuilt if corresponding data file changed
         if (watcher && watcher.resolvedGraph) {
-          logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
+          config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
 
           if (!watcher.resolvedGraph.includes(file.path)) {
-            logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
+            config.logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
 
             return done();
           }
         }
 
-        // logger.debug('watcher', `Passing ${chalk.yellow(file.path)} to next steps`);
+        // config.logger.debug('watcher', `Passing ${chalk.yellow(file.path)} to next steps`);
 
         return done(null, file);
       }))
@@ -134,11 +134,11 @@ module.exports = (options, dev) => {
 
           file.contents = content; // eslint-disable-line no-param-reassign
 
-          logger.debug('transformBefore', `Transformed ${chalk.yellow(file.path)}`, chalk.gray(content.toString()), true);
+          config.logger.debug('transformBefore', `Transformed ${chalk.yellow(file.path)}`, chalk.gray(content.toString()), true);
         }
 
         done(null, file);
-      }).on('error', err => logger.error(err, dev)))
+      }).on('error', err => config.logger.error(err, dev)))
 
       // Find data and assign it to file object
       .pipe(through.obj((file, enc, done) => {
@@ -147,7 +147,7 @@ module.exports = (options, dev) => {
 
           file.data = data; // eslint-disable-line no-param-reassign
 
-          logger.debug('data', `Data for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')), true);
+          config.logger.debug('data', `Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')), true);
 
           done(null, file);
         } catch (err) {
@@ -155,7 +155,7 @@ module.exports = (options, dev) => {
 
           done(new PluginError('data', err), file);
         }
-      }).on('error', err => logger.error(err, dev)))
+      }).on('error', err => config.logger.error(err, dev)))
 
       // Optionally clone file
       .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
@@ -170,16 +170,16 @@ module.exports = (options, dev) => {
             clone.path = config.plugins.clone.rename(file.path);
           }
 
-          logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
+          config.logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
 
           this.push(clone);
         }
 
         done(null, file);
-      }).on('error', err => logger.error(err, dev)))
+      }).on('error', err => config.logger.error(err, dev)))
 
       // Handlebars
-      .pipe(gulpHandlebars(config.plugins.handlebars).on('error', err => logger.error(err, dev)))
+      .pipe(gulpHandlebars(config.plugins.handlebars).on('error', err => config.logger.error(err, dev)))
 
       // Optional HTML transformation
       .pipe(through.obj((file, enc, done) => {
@@ -188,11 +188,11 @@ module.exports = (options, dev) => {
 
           file.contents = content; // eslint-disable-line
 
-          logger.debug('transformAfter', `Transformed ${chalk.yellow(file.path)}`);
+          config.logger.debug('transformAfter', `Transformed ${chalk.yellow(file.path)}`);
         }
 
         done(null, file);
-      }).on('error', err => logger.error(err, dev)))
+      }).on('error', err => config.logger.error(err, dev)))
 
       // Formatting
       .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
@@ -201,7 +201,7 @@ module.exports = (options, dev) => {
       .pipe(through.obj((file, enc, done) => {
         const renamedPath = file.path.replace(path.extname(file.path), '.html');
 
-        logger.debug('rename', `Renaming ${file.path} to ${chalk.yellow(renamedPath)}`);
+        config.logger.debug('rename', `Renaming ${file.path} to ${chalk.yellow(renamedPath)}`);
 
         file.path = renamedPath; // eslint-disable-line no-param-reassign
 
@@ -210,7 +210,7 @@ module.exports = (options, dev) => {
 
       // Log
       .pipe(through.obj((file, enc, done) => {
-        logger.info(`Saving ${chalk.yellow(path.relative(config.srcBase, file.path))}`);
+        config.logger.info(`Saving ${chalk.yellow(path.relative(config.srcBase, file.path))}`);
 
         return done(null, file);
       }))

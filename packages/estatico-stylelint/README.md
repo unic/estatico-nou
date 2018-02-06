@@ -29,6 +29,9 @@ const options = {
 gulp.task('cssLint', () => task(options, env.dev));
 ```
 
+Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
+`$ npm run gulp cssLint`
+
 ## API
 
 `task(options, isDev)`
@@ -56,17 +59,12 @@ Default: `null`
 
 Passed to `gulp.dest` when chosing to write back to dics (not yet implemented).
 
-#### errorHandler
+#### logger
 
-Type: `Function`<br>
-Default:
-```js
-(err) => {
-  util.log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
-}
-```
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Function to run if an error occurs in one of the steps.
+Set of logger utility functions used within the task.
 
 #### plugins
 

@@ -28,6 +28,12 @@ const options = {
 gulp.task('jsTest', () => task(options, env.dev));
 ```
 
+Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
+`$ npm run gulp jsTest`
+
+Run with debug info:
+`$ NODE_DEBUG=estatico-puppeteer npm run gulp jsTest`
+
 ## API
 
 `task(options, isDev)`
@@ -48,17 +54,12 @@ Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
-#### errorHandler
+#### logger
 
-Type: `Function`<br>
-Default:
-```js
-(err) => {
-  util.log(`estatico-puppeteer${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
-}
-```
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Function to run if an error occurs in one of the steps.
+Set of logger utility functions used within the task.
 
 #### plugins
 

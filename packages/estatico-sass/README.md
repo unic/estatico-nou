@@ -39,6 +39,12 @@ const options = {
 gulp.task('css', () => task(options, env.dev));
 ```
 
+Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
+`$ npm run gulp css`
+
+Run with debug info (showing you the autoprefixer setup, e.g.):
+`$ NODE_DEBUG=estatico-sass npm run gulp css`
+
 ## API
 
 `task(options, isDev)`
@@ -66,17 +72,12 @@ Default: `null`
 
 Passed to `gulp.dest`.
 
-#### errorHandler
+#### logger
 
-Type: `Function`<br>
-Default:
-```js
-(err) => {
-  util.log(`estatico-sass${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
-}
-```
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Function to run if an error occurs in one of the steps.
+Set of logger utility functions used within the task.
 
 #### plugins
 

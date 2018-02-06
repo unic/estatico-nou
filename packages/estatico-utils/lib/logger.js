@@ -46,7 +46,7 @@ function Logger(plugin) {
      * @param {boolean} [dev] - Whether we are in dev mode. Process exits otherwise.
      */
     error: (err, dev) => {
-      log(plugin, err.fileName ? chalk.yellow(err.fileName) : '', chalk.red(err.message));
+      log(chalk.blue(plugin), err.fileName ? chalk.yellow(err.fileName) : '', chalk.red(err.message));
 
       if (!dev) {
         process.exit(1);

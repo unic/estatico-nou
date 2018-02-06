@@ -191,6 +191,7 @@ const config = {
         },
       }),
     ],
+    logger: defaults.logger,
   }),
   jsTest: {
     src: [

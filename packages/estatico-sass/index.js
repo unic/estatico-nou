@@ -1,7 +1,9 @@
-const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 const path = require('path');
+const { Logger } = require('estatico-utils');
+
+const logger = new Logger('estatico-sass');
 
 const defaults = dev => ({
   src: null,
@@ -18,9 +20,7 @@ const defaults = dev => ({
     clean: dev ? null : {},
     rename: dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
   },
-  errorHandler: (err) => {
-    log(`estatico-sass${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
-  },
+  logger,
 });
 
 module.exports = (options, dev) => {
@@ -54,6 +54,12 @@ module.exports = (options, dev) => {
     const through = require('through2'); // eslint-disable-line global-require
     const size = require('gulp-size'); // eslint-disable-line global-require
 
+    if (config.plugins.autoprefixer) {
+      const info = autoprefixer(config.plugins.autoprefixer).info();
+
+      config.logger.debug('autoprefixer', info);
+    }
+
     return gulp.src(config.src, {
       base: config.srcBase,
     })
@@ -69,7 +75,7 @@ module.exports = (options, dev) => {
       .pipe(sourcemaps.init())
 
       // Sass
-      .pipe(sass(config.plugins.sass).on('error', config.errorHandler))
+      .pipe(sass(config.plugins.sass).on('error', err => config.logger.error(err, dev)))
 
       // PostCSS
       .pipe(postcss([]
@@ -79,7 +85,11 @@ module.exports = (options, dev) => {
       // Optional rename, allows to add .min prefix, e.g.
       .pipe(through.obj((file, enc, done) => {
         if (config.plugins.rename) {
-          file.path = config.plugins.rename(file); // eslint-disable-line no-param-reassign
+          const filePath = config.plugins.rename(file);
+
+          file.path = filePath; // eslint-disable-line no-param-reassign
+
+          config.logger.debug('rename', `Rename ${chalk.yellow(file.path)} to ${chalk.yellow(filePath)}`);
         }
 
         done(null, file);

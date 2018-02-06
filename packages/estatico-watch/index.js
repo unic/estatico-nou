@@ -1,4 +1,7 @@
 const merge = require('lodash.merge');
+const { Logger } = require('estatico-utils');
+
+const logger = new Logger('estatico-watch');
 
 const defaults = {
   src: null,
@@ -11,6 +14,7 @@ const defaults = {
       usePolling: false,
     },
   },
+  logger,
 };
 
 module.exports = (options) => {
@@ -67,6 +71,8 @@ module.exports = (options) => {
           events,
           resolvedGraph,
         });
+
+        config.logger.debug(config.name, `Resolving the following events: ${events}`);
 
         // Reset events
         events = [];

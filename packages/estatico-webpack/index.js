@@ -1,9 +1,11 @@
-const log = require('fancy-log');
-const chalk = require('chalk');
+// const chalk = require('chalk');
 const merge = require('lodash.merge');
 const webpack = require('webpack');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { Logger } = require('estatico-utils');
+
+const logger = new Logger('estatico-webpack');
 
 const defaults = dev => ({
   webpack: {
@@ -57,6 +59,7 @@ const defaults = dev => ({
         // Relative to bundles output directory.
         reportFilename: 'report.html',
         openAnalyzer: false,
+        logLevel: 'warn',
       }),
     ].concat(dev ? [] : [
       new UnminifiedWebpackPlugin(),
@@ -72,13 +75,7 @@ const defaults = dev => ({
       // publicPath: path.join('/', path.relative(config.destBase, config.dest), '/'),
     },
   },
-  errorHandler: (err) => {
-    log('estatico-webpack', chalk.red(err.message));
-
-    if (!dev) {
-      process.exit(1);
-    }
-  },
+  logger,
 });
 
 module.exports = (options, dev) => {
@@ -92,7 +89,7 @@ module.exports = (options, dev) => {
 
   return (cb, watch) => {
     const once = require('lodash.once'); // eslint-disable-line global-require
-    const logStats = require('./lib/log'); // eslint-disable-line global-require
+    const { format } = require('./lib/stats'); // eslint-disable-line global-require
 
     try {
       const compiler = webpack(config.webpack);
@@ -108,7 +105,7 @@ module.exports = (options, dev) => {
           config.errorHandler(err);
         }
 
-        logStats(stats, 'estatico-webpack');
+        config.logger.info(format(stats));
 
         done();
       };
@@ -121,7 +118,7 @@ module.exports = (options, dev) => {
 
       return compiler;
     } catch (err) {
-      config.errorHandler(err);
+      config.logger.error(err, dev);
 
       return cb();
     }

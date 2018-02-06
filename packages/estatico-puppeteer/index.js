@@ -1,6 +1,8 @@
-const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
+const { Logger } = require('estatico-utils');
+
+const logger = new Logger('estatico-puppeteer');
 
 const defaults = (/* dev */) => ({
   src: null,
@@ -11,9 +13,7 @@ const defaults = (/* dev */) => ({
     // interact: async (page) => {
     // },
   },
-  errorHandler: (err) => {
-    log(`estatico-puppeteer${err.plugin ? ` (${err.plugin})` : ''}`, chalk.cyan(err.fileName), chalk.red(err.message));
-  },
+  logger,
 });
 
 module.exports = (options, dev) => {
@@ -65,7 +65,7 @@ module.exports = (options, dev) => {
       // });
 
       for (const file of files) { // eslint-disable-line no-restricted-syntax
-        log(chalk.cyan('Testing'), path.relative(config.srcBase, file));
+        config.logger.info(`Testing ${chalk.yellow(path.relative(config.srcBase, file))}`);
 
         await page.goto(`file://${file}`); // eslint-disable-line no-await-in-loop
 
@@ -82,7 +82,7 @@ module.exports = (options, dev) => {
         if (error) {
           error.fileName = path.relative(config.srcBase, file);
 
-          config.errorHandler(error);
+          config.logger.error(error, dev);
 
           error = null;
 

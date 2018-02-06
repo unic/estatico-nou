@@ -33,6 +33,9 @@ const options = {
 gulp.task('htmlValidate', () => task(options, env.dev));
 ```
 
+Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
+`$ npm run gulp htmlValidate`
+
 ## API
 
 `task(options, isDev)`
@@ -55,17 +58,12 @@ Passed as `base` option to `gulp.src`.
 
 Recommendation for Estático: `'./dist'`
 
-#### errorHandler
+#### logger
 
-Type: `Function`<br>
-Default:
-```js
-(err) => {
-  log(`estatico-w3c-validator${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
-}
-```
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Function to run if an error occurs in one of the steps.
+Set of logger utility functions used within the task.
 
 #### plugins
 

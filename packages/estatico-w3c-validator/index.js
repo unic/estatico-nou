@@ -1,6 +1,8 @@
-const log = require('fancy-log');
 const chalk = require('chalk');
 const merge = require('lodash.merge');
+const { Logger } = require('estatico-utils');
+
+const logger = new Logger('estatico-w3c-validtor');
 
 const defaults = (/* dev */) => ({
   src: null,
@@ -10,9 +12,7 @@ const defaults = (/* dev */) => ({
       // url: 'http://localhost:8888'
     },
   },
-  errorHandler: (err) => {
-    log(`estatico-w3c-validator${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
-  },
+  logger,
 });
 
 module.exports = (options, dev) => {
@@ -53,6 +53,8 @@ module.exports = (options, dev) => {
 
       // Handle errors
       .pipe(through.obj((file, enc, done) => {
+        config.logger.info(`Tested ${chalk.yellow(file.path)}`);
+
         if (!file.w3cjs.success) {
           const err = new PluginError('reporter', 'Linting error (details above)');
 
@@ -62,6 +64,6 @@ module.exports = (options, dev) => {
         }
 
         return done(null, file);
-      }).on('error', config.errorHandler));
+      }).on('error', err => config.logger.error(err, dev)));
   };
 };

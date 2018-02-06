@@ -5,73 +5,161 @@ Bundles JavaScript, transpiles via [`babel`](https://www.npmjs.com/package/babel
 ## Installation
 
 ```
-$ npm i -S estatico-webpack
+$ npm install --save-dev estatico-webpack
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const webpackTask = require('estatico-webpack');
-const webpackOptions = {}; // Custom options, deep-merged into defaults via _.merge
+const task = require('estatico-webpack');
 
-gulp.task('js', () => sassTask(webpackOptions));
+// Get CLI arguments
+const env = require('minimist')(process.argv.slice(2));
+
+// Options, deep merged with defaults
+const options = defaults => ({
+  webpack: [
+    merge({}, defaults.webpack, {
+      entry: Object.assign({
+        head: './src/assets/js/head.js',
+        main: './src/assets/js/main.js',
+      }, env.dev ? {
+        dev: './src/assets/js/dev.js',
+      } : {}),
+      output: {
+        path: path.resolve('./dist/assets/js'),
+      },
+    }),
+    merge({}, defaults.webpack, {
+      entry: {
+        test: './src/preview/assets/js/test.js',
+      },
+      module: {
+        rules: [
+          {
+            test: /qunit\.js$/,
+            loader: 'expose-loader?QUnit',
+          },
+          {
+            test: /\.css$/,
+            loader: 'style-loader!css-loader',
+          },
+        ],
+      },
+      externals: {
+        jquery: 'jQuery',
+      },
+      output: {
+        path: path.resolve('./dist/preview/assets/js'),
+      },
+    }),
+    merge({}, defaults.webpack, {
+      entry: {
+        'slideshow.test': './src/demo/modules/slideshow/slideshow.test.js',
+      },
+      externals: {
+        jquery: 'jQuery',
+        qunit: 'QUnit',
+      },
+      output: {
+        path: path.resolve('./dist/preview/assets/js/test'),
+      },
+    }),
+  ],
+  logger: defaults.logger,
+});
+
+gulp.task('js', () => task(options, env.dev));
 ```
+
+Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
+`$ npm run gulp js`
+
+Run with debug info:
+`$ NODE_DEBUG=estatico-webpack npm run gulp js`
 
 ### Options
 
-#### entries
+#### webpack
 
 Type: `Object`<br>
-Default: `null`
-
-Webpack `entry`.
-
-Recommendation for Estático:
-```js
-{
-  main: './src/assets/js/main.js',
-}
-```
-
-#### dest
-
-Type: `String`<br>
-Default: `null`
-
-Output directory.
-
-Recommendation for Estático: `path.resolve('./dist/assets/js')`
-
-#### errorHandler
-
-Type: `Function`<br>
 Default:
 ```js
-(err) => {
-  util.log(`estatico-webpack${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
-}
-```
-
-Function to run if an error occurs in one of the steps.
-
-#### plugins
-
-Type: `Object`
-
-##### plugins.uglify
-
-Type: `Object`<br>
-Default: `{}`
-
-Recommendation for Estático: 
-```js
 {
-  
+  mode: dev ? 'development' : 'production',
+  entry: null,
+  resolve: {
+    alias: {
+      handlebars: 'handlebars/runtime.js',
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /jquery\.js$/,
+        loader: 'expose-loader?$!expose-loader?jQuery',
+      },
+      {
+        test: /modernizrrc\.js$/,
+        loader: 'expose-loader?Modernizr!webpack-modernizr-loader',
+      },
+      {
+        test: /\.hbs$/,
+        loader: 'handlebars-loader',
+      },
+      {
+        test: /(\.js|\.jsx)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            ['@babel/preset-env', {
+              useBuiltIns: 'usage',
+              targets: {
+                browsers: ['last 2 versions'],
+              },
+              // Disabled due to https://gist.github.com/jasonphillips/57c1f8f9dbcd8b489dafcafde4fcdba6
+              // loose: true,
+            }],
+          ],
+          plugins: [],
+        },
+      },
+    ],
+  },
+
+  // Minifiy in prod mode
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      // Path to bundle report file that will be generated in `static` mode.
+      // Relative to bundles output directory.
+      reportFilename: 'report.html',
+      openAnalyzer: false,
+    }),
+  ].concat(dev ? [] : [
+    new UnminifiedWebpackPlugin(),
+  ]),
+  output: {
+    path: null,
+    filename: `[name]${dev ? '' : '.min'}.js`,
+
+    // Save async loaded files (using require.ensurce) in special dir
+    chunkFilename: `assets/[name]${dev ? '' : '.min'}.js`,
+
+    // Tell webpack about the asset path structure in the browser to be able to load async files
+    // publicPath: path.join('/', path.relative(config.destBase, config.dest), '/'),
+  },
 }
 ```
 
-Passed to [`UglifyjsWebpackPlugin`](https://webpack.js.org/plugins/uglifyjs-webpack-plugin/).
+#### logger
+
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
+
+Set of logger utility functions used within the task.
 
 ## License
 
