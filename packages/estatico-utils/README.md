@@ -37,10 +37,41 @@ logger.error('Step X', new Error('Something went wrong'), env.dev);
 
 ### Test
 
-```js
-const { test } = require('estatico-utils');
+#### compareFiles(t, fileGlob)
 
-test.bla();
+Compares files resolved from `fileGlob` with current files in `results/` directory.
+
+```js
+const test = require('ava');
+const utils = require('estatico-utils').test;
+
+test.cb('default', (t) => {
+  task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
+});
+```
+
+#### stripLogs(sinonSpy)
+
+Join everything `sinon.spy` captured into string, strip ANSI characters and line-breaks.
+
+```js
+const test = require('ava');
+const sinon = require('sinon');
+const utils = require('estatico-utils').test;
+
+test.cb('error', (t) => {
+  const spy = sinon.spy(console, 'log');
+
+  task(defaults)().on('end', () => {
+    spy.restore();
+
+    const log = utils.stripLogs(spy);
+
+    t.regex(log, /test\/fixtures\/error.hbs Parse error on line 2/);
+
+    t.end();
+  });
+});
 ```
 
 ## License
