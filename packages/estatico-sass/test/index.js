@@ -13,11 +13,11 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  task(defaults)().on('end', () => utils.compareFiles(t, 'default'));
+  task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
 });
 
 test.cb('unminified', (t) => {
-  task(defaults, true)().on('end', () => utils.compareFiles(t, 'unminified'));
+  task(defaults, true)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/unminified/*')));
 });
 
 test.cb('error', (t) => {

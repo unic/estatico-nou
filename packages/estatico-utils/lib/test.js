@@ -1,37 +1,43 @@
 const stripAnsi = require('strip-ansi');
 const glob = require('glob');
 const fs = require('fs');
-const path = require('path');
+const chalk = require('chalk');
+const Logger = require('./logger');
+
+const logger = new Logger('Testing');
 
 function stripLog(str) {
-  const log = stripAnsi(str)
+  const logStr = stripAnsi(str)
     .replace(/\n/gm, '')
     .replace(/\t/g, ' ')
     .replace(/\s\s+/g, ' ');
 
-  return log;
+  return logStr;
 }
 
 function stripLogs(sinonSpy) {
   const logs = sinonSpy.getCalls().map((call) => {
-    let log = call.args.join(' ');
+    let logStr = call.args.join(' ');
 
-    log = stripLog(log);
+    logStr = stripLog(logStr);
 
-    return log;
+    return logStr;
   }).join(' ');
 
   return logs;
 }
 
-function compareFiles(t, name) {
-  const expected = glob.sync(path.join(__dirname, `expected/${name}/*`), {
+function compareFiles(t, globPath) {
+  const expected = glob.sync(globPath, {
     nodir: true,
   });
 
   expected.forEach((filePath) => {
+    const resultedFilePath = filePath.replace(/expected\/(.*?)\//, 'results/');
     const expectedFile = fs.readFileSync(filePath).toString();
-    const resultedFile = fs.readFileSync(filePath.replace(`expected/${name}`, 'results')).toString();
+    const resultedFile = fs.readFileSync(resultedFilePath).toString();
+
+    logger.info(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
 
     t.is(expectedFile, resultedFile);
   });

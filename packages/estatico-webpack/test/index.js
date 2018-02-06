@@ -18,7 +18,7 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  task(defaults)(() => utils.compareFiles(t, 'default'));
+  task(defaults)(() => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
 });
 
 test.cb('dev', (t) => {
@@ -27,7 +27,7 @@ test.cb('dev', (t) => {
 
     t.is(hasMinifiedFile, false);
 
-    utils.compareFiles(t, 'dev');
+    utils.compareFiles(t, path.join(__dirname, 'expected/dev/*'));
   });
 });
 
