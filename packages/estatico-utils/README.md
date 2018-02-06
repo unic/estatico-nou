@@ -10,6 +10,8 @@ $ npm install --save-dev estatico-utils
 
 ## Usage
 
+### Logger
+
 ```js
 const parseArgs = require('minimist');
 const { Logger } = require('estatico-utils');
@@ -31,6 +33,14 @@ logger.debug('Step X', 'Something is happening', { /* Additional log info */ });
 
 // Log error, will exit process unless env.dev is true
 logger.error('Step X', new Error('Something went wrong'), env.dev);
+```
+
+### Test
+
+```js
+const { test } = require('estatico-utils');
+
+test.bla();
 ```
 
 ## License

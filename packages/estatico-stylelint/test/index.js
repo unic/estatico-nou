@@ -1,6 +1,6 @@
 const test = require('ava');
 const sinon = require('sinon');
-const stripAnsi = require('strip-ansi');
+const utils = require('estatico-utils').test;
 const path = require('path');
 const del = require('del');
 const task = require('../index.js');
@@ -13,15 +13,15 @@ const defaults = {
   dest: './test/results/',
 };
 
-const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
-
 test.cb('default', (t) => {
   const spy = sinon.spy(console, 'log');
 
-  task(defaults)().on('end', () => {
+  task(defaults, true)().on('end', () => {
     spy.restore();
 
-    t.is(stripLog(spy.getCall(0).args.join(' ')), 'estatico-stylelint (gulp-stylelint) undefined Failed with 1 error');
+    const log = utils.stripLogs(spy);
+
+    t.regex(log, /estatico-stylelint Failed with 1 error/);
 
     t.end();
   });

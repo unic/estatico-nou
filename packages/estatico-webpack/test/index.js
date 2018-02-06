@@ -1,11 +1,9 @@
 const test = require('ava');
 // const sinon = require('sinon');
-const glob = require('glob');
-// const stripAnsi = require('strip-ansi');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
-// const merge = require('lodash.merge');
+const utils = require('estatico-utils').test;
 const task = require('../index.js');
 
 const defaults = {
@@ -19,26 +17,8 @@ const defaults = {
   },
 };
 
-const compare = (t, name) => {
-  const expected = glob.sync(path.join(__dirname, `expected/${name}/*`), {
-    nodir: true,
-  });
-
-  expected.forEach((filePath) => {
-    const expectedFile = fs.readFileSync(filePath).toString();
-    const resultedFile = fs.readFileSync(filePath.replace(`expected/${name}`, 'results')).toString();
-
-    t.is(expectedFile, resultedFile);
-  });
-
-  t.end();
-};
-
-// const stripLog = str => stripAnsi(str.replace(/\n/gm, '')
-//  .replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
-
 test.cb('default', (t) => {
-  task(defaults)(() => compare(t, 'default'));
+  task(defaults)(() => utils.compareFiles(t, 'default'));
 });
 
 test.cb('dev', (t) => {
@@ -47,7 +27,7 @@ test.cb('dev', (t) => {
 
     t.is(hasMinifiedFile, false);
 
-    compare(t, 'dev');
+    utils.compareFiles(t, 'dev');
   });
 });
 
