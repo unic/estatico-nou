@@ -1,6 +1,6 @@
 # estatico-eslint
 
-Uses ESLint to lint and optionally fix code.
+Uses ESLint to lint and automatically fix code.
 
 ## Installation
 
@@ -23,7 +23,7 @@ const options = {
     './src/**/*.js',
   ],
   srcBase: './src',
-  dest: './dist',
+  dest: './src',
 };
 
 gulp.task('jsLint', () => task(options, env.dev));
@@ -76,11 +76,23 @@ Type: `Object`<br>
 Default:
 ```js
 {
- 
+  fix: true,
 }
 ```
 
-Passed to [`eslint`](https://www.npmjs.com/package/eslint) via [`gulp-eslint`](https://www.npmjs.com/package/gulp-eslint) .
+Passed to [`eslint`](https://www.npmjs.com/package/eslint) via [`gulp-eslint`](https://www.npmjs.com/package/gulp-eslint).
+
+##### plugins.changed
+
+Type: `Object`<br>
+Default:
+```js
+{
+  firstPass: true,
+}
+```
+
+Passed to [`gulp-changed-in-place`](https://www.npmjs.com/package/gulp-changed-in-place).
 
 ### dev
 

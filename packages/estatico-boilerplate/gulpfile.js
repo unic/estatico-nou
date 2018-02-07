@@ -225,7 +225,7 @@ const config = {
       './src/**/*.js',
     ],
     srcBase: './src',
-    dest: './dist',
+    dest: './src',
   },
 };
 
