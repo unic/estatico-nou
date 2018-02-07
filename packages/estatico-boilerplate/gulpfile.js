@@ -219,6 +219,22 @@ const config = {
       './dist/{pages,modules,demo}/**/*.html',
     ],
     srcBase: './dist',
+    viewports: {
+      mobile: {
+        width: 400,
+        height: 1000,
+        isMobile: true,
+      },
+      // tablet: {
+      //   width: 700,
+      //   height: 1000,
+      //   isMobile: true,
+      // },
+      desktop: {
+        width: 1400,
+        height: 1000,
+      },
+    },
     plugins: {
       interact: async (page) => {
         // Run tests

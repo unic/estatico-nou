@@ -3,6 +3,14 @@ const chalk = require('chalk');
 
 module.exports = {
   run: async (page) => {
+    // eslint-disable-next-line no-undef
+    const isDone = await page.evaluate(() => typeof QUnit !== 'undefined' && QUnit.isDone);
+
+    // We cannot run QUnit tests twice without reloading
+    if (isDone) {
+      await page.reload();
+    }
+
     const results = await page.evaluate(() => new Promise((resolve) => { // eslint-disable-line
       if (typeof QUnit === 'undefined') {
         return resolve();
@@ -21,6 +29,8 @@ module.exports = {
           details,
           summary,
         });
+
+        QUnit.isDone = true;
       });
     }));
 

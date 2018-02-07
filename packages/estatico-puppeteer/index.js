@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const chalk = require('chalk');
 const merge = require('lodash.merge');
 const { Logger } = require('estatico-utils');
@@ -7,6 +8,7 @@ const logger = new Logger('estatico-puppeteer');
 const defaults = (/* dev */) => ({
   src: null,
   srcBase: null,
+  viewports: null,
   plugins: {
     puppeteer: {
     },
@@ -64,15 +66,26 @@ module.exports = (options, dev) => {
       //  }
       // });
 
-      for (const file of files) { // eslint-disable-line no-restricted-syntax
+      // eslint-disable-next-line no-restricted-syntax
+      for (const file of files) {
         config.logger.info(`Testing ${chalk.yellow(path.relative(config.srcBase, file))}`);
 
-        await page.goto(`file://${file}`); // eslint-disable-line no-await-in-loop
+        await page.goto(`file://${file}`);
 
         // Interact with page (evaluating code, taking screenshots etc.)
         if (config.plugins.interact) {
           try {
-            await config.plugins.interact(page); // eslint-disable-line no-await-in-loop
+            if (config.viewports) {
+              // eslint-disable-next-line no-restricted-syntax
+              for (const viewport of Object.keys(config.viewports)) {
+                config.logger.info(`Testing viewport ${chalk.yellow(viewport)}`);
+
+                await page.setViewport(config.viewports[viewport]);
+                await config.plugins.interact(page);
+              }
+            } else {
+              await config.plugins.interact(page);
+            }
           } catch (err) {
             error = err;
           }
@@ -87,7 +100,7 @@ module.exports = (options, dev) => {
           error = null;
 
           if (!dev) {
-            await browser.close(); // eslint-disable-line no-await-in-loop
+            await browser.close();
 
             break;
           }

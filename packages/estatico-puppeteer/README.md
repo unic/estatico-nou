@@ -23,6 +23,22 @@ const options = {
     './dist/{pages,modules,demo}/**/*.html',
   ],
   srcBase: './dist',
+  viewports: {
+    mobile: {
+      width: 400,
+      height: 1000,
+      isMobile: true,
+    },
+    tablet: {
+      width: 700,
+      height: 1000,
+      isMobile: true,
+    },
+    desktop: {
+      width: 1400,
+      height: 1000,
+    },
+  },
 };
 
 gulp.task('jsTest', () => task(options, env.dev));
@@ -53,6 +69,13 @@ Type: `String`<br>
 Default: `null`
 
 Passed as `base` option to `gulp.src`.
+
+#### viewports
+
+Type: `Object`<br>
+Default: `null`
+
+Every item is passed to Puppeteer's [`setViewport`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
 
 #### logger
 
