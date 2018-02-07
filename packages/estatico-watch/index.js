@@ -28,13 +28,13 @@ module.exports = (options, dev) => {
   }
 
   if (!config.src) {
-    logger.error(new Error(`${chalk.bold('options.src')} is missing for ${chalk.cyan(options.name)}`), dev);
+    config.logger.error(new Error(`${chalk.bold('options.src')} is missing for ${chalk.cyan(options.name)}`), dev);
   }
   if (!config.task) {
-    logger.error(new Error(`${chalk.bold('options.task')}' is missing for ${chalk.cyan(options.name)}`), dev);
+    config.logger.error(new Error(`${chalk.bold('options.task')}' is missing for ${chalk.cyan(options.name)}`), dev);
   }
   if (!config.name) {
-    logger.error(new Error(`${chalk.bold('options.nam')}' is missing for ${chalk.cyan(options.name)}`), dev);
+    config.logger.error(new Error(`${chalk.bold('options.nam')}' is missing for ${chalk.cyan(options.name)}`), dev);
   }
 
   return () => {

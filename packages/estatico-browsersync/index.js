@@ -54,7 +54,7 @@ module.exports = (options, dev) => {
 
     // if (config.plugins.browsersync.watch) {
     //   bs.watch(config.plugins.browsersync.watch).on('change', (file) => {
-    //     logger.info(`Reloading ${chalk.yellow(file)}`);
+    //     config.logger.info(`Reloading ${chalk.yellow(file)}`);
 
     //     bs.reload(file);
     //   });
