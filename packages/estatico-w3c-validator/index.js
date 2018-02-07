@@ -2,7 +2,7 @@ const chalk = require('chalk');
 const merge = require('lodash.merge');
 const { Logger } = require('estatico-utils');
 
-const logger = new Logger('estatico-w3c-validtor');
+const logger = new Logger('estatico-w3c-validator');
 
 const defaults = (/* dev */) => ({
   src: null,
