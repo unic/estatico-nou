@@ -1,0 +1,26 @@
+{
+  "name": "estatico-eslint",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose"
+  },
+  "author": "Unic AG",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "estatico-utils": "^0.0.1",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-changed-in-place": "^2.2.0",
+    "gulp-eslint": "^4.0.2",
+    "gulp-plumber": "^1.1.0",
+    "lodash.merge": "^4.6.0",
+    "through2": "^2.0.3"
+  },
+  "engines": {
+    "node": ">=8 <9"
+  }
+}

@@ -12,6 +12,7 @@ const estaticoWatch = require('estatico-watch');
 const estaticoPuppeteer = require('estatico-puppeteer');
 const estaticoQunit = require('estatico-qunit');
 const estaticoSvgsprite = require('estatico-svgsprite');
+const estaticoEslint = require('estatico-eslint');
 const jsonImporter = require('node-sass-json-importer');
 const del = require('del');
 
@@ -219,6 +220,13 @@ const config = {
     srcBase: './src',
     dest: './dist',
   },
+  jsLint: {
+    src: [
+      './src/**/*.js',
+    ],
+    srcBase: './src',
+    dest: './dist',
+  },
 };
 
 // Exemplary tasks
@@ -229,6 +237,7 @@ const tasks = {
   cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
   jsTest: estaticoPuppeteer(config.jsTest, env.dev),
+  jsLint: estaticoEslint(config.jsLint, env.dev),
   svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
   clean: () => del('./dist'),
 };

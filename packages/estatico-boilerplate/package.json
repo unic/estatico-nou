@@ -12,6 +12,7 @@
   "devDependencies": {
     "del": "^3.0.0",
     "estatico-data": "0.0.1",
+    "estatico-eslint": "0.0.1",
     "estatico-handlebars": "0.0.1",
     "estatico-puppeteer": "0.0.1",
     "estatico-qunit": "0.0.1",
