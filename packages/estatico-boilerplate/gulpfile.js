@@ -39,6 +39,7 @@ const config = {
     srcBase: './src',
     dest: './dist',
     plugins: {
+      clone: null,
       handlebars: {
         partials: [
           './src/**/*.hbs',
@@ -295,8 +296,8 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('build', gulp.parallel('html', 'css', 'js', 'svgsprite'));
-gulp.task('lint', gulp.parallel('htmlValidate', /* 'cssLint', 'jsLint', */ 'jsTest'));
+gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint',,*/ 'jsLint', 'jsTest'));
+gulp.task('build', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'lint'));
 gulp.task('dev', gulp.parallel('watch', 'serve'));
 
 gulp.task('default', (done) => {
@@ -305,7 +306,7 @@ gulp.task('default', (done) => {
       return gulp.series('dev')(done);
     }
 
-    return gulp.series('clean', 'build', 'lint', 'dev')(done);
+    return gulp.series('build', 'dev')(done);
   };
 
   if (!env.noInteractive && !env.skipBuild) {
