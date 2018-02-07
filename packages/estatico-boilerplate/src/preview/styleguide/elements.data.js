@@ -1,12 +1,11 @@
-'use strict';
+const _ = require('lodash');
+const defaultData = require('../../data/default.data.js');
 
-var _ = require('lodash'),
-    defaultData = require('../../data/default.data.js'),
-    data = _.merge({}, defaultData, {
-        meta: {
-            title: 'Elements'
-        },
-        additionalLayoutClass: 'sg_elements'
-    });
+const data = _.merge({}, defaultData, {
+  meta: {
+    title: 'Elements',
+  },
+  additionalLayoutClass: 'sg_elements',
+});
 
 module.exports = data;

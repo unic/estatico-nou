@@ -1,13 +1,11 @@
-'use strict';
+const _ = require('lodash');
+const defaultData = require('../../data/default.data.js');
 
-var _ = require('lodash'),
-    dataHelper = require('estatico-data'),
-    defaultData = require('../../data/default.data.js'),
-    data = _.merge({}, defaultData, {
-        meta: {
-            title: 'Form Elements'
-        },
-        additionalLayoutClass: 'sg_forms'
-    });
+const data = _.merge({}, defaultData, {
+  meta: {
+    title: 'Form Elements',
+  },
+  additionalLayoutClass: 'sg_forms',
+});
 
 module.exports = data;

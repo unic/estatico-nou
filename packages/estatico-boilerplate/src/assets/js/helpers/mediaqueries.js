@@ -8,107 +8,110 @@
  *
  * // Listen to custom (debounced) event to react to viewport changes:
  * MediaQuery.addMQChangeListener(function(event, prevBreakpoint, currentBreakpoint) {
- * 	console.log(prevBreakpoint); // { name: "small", value: "768px" }
- * 	console.log(parseInt(prevBreakpoint.value)); // "768"
+ *   console.log(prevBreakpoint); // { name: "small", value: "768px" }
+ *   console.log(parseInt(prevBreakpoint.value)); // "768"
  * });
  *
  * // Check the current viewport against a specific breakpoint:
  * if (MediaQuery.query({ from: 'small' })) {
- * 	this.destroySmall();
- * 	this.initLarge();
+ *   this.destroySmall();
+ *   this.initLarge();
  * }
  * // or
  * if (MediaQuery.query({ from: 'small', to: 'medium' })) {
- * 	this.destroySmall();
- * 	this.initMedium();
+ *   this.destroySmall();
+ *   this.initMedium();
  * }
  */
 
 import $ from 'jquery';
 
 class MediaQuery {
-	constructor() {
-		this.$document = $(document);
+  constructor() {
+    this.$document = $(document);
 
-		this.$head = this.$document.find('head');
-		this.$title = this.$head.find('title');
+    this.$head = this.$document.find('head');
+    this.$title = this.$head.find('title');
 
-		this.breakpointsString = this.$head.css('font-family');
-		this.currentBreakpointString = this.$title.css('font-family');
+    this.breakpointsString = this.$head.css('font-family');
+    this.currentBreakpointString = this.$title.css('font-family');
 
-		this.breakpoints = this.parseCssProperty(this.breakpointsString);
-		this.currentBreakpoint = this.parseCssProperty(this.currentBreakpointString);
+    this.breakpoints = this.parseCssProperty(this.breakpointsString);
+    this.currentBreakpoint = this.parseCssProperty(this.currentBreakpointString);
 
-		// Save to global namespace
-		$.extend(true, estatico, { events: {} });
-		estatico.events.mq = 'mq.estatico';
+    // Save to global namespace
+    $.extend(true, estatico, { events: {} });
+    estatico.events.mq = 'mq.estatico';
 
-		this.$document.on('debouncedresize.estatico.mq', () => {
-			var breakpoint = this.parseCssProperty(this.$title.css('font-family')),
-				prevBreakpoint = this.currentBreakpoint;
+    this.$document.on('debouncedresize.estatico.mq', () => {
+      const breakpoint = this.parseCssProperty(this.$title.css('font-family'));
+      const prevBreakpoint = this.currentBreakpoint;
 
-			if (breakpoint && breakpoint.name !== this.currentBreakpoint.name) {
-				this.currentBreakpoint = breakpoint;
-				this.$document.triggerHandler(estatico.events.mq, [prevBreakpoint, breakpoint]);
-			}
-		});
-	}
+      if (breakpoint && breakpoint.name !== this.currentBreakpoint.name) {
+        this.currentBreakpoint = breakpoint;
+        this.$document.triggerHandler(estatico.events.mq, [prevBreakpoint, breakpoint]);
+      }
+    });
+  }
 
-	addMQChangeListener(callback, uuid) {
-		this.$document.on(estatico.events.mq + '.' + uuid, (prevBreakpoint, breakpoint) => {
-			callback(prevBreakpoint, breakpoint);
-		});
-	}
+  addMQChangeListener(callback, uuid) {
+    this.$document.on(`${estatico.events.mq}.${uuid}`, (prevBreakpoint, breakpoint) => {
+      callback(prevBreakpoint, breakpoint);
+    });
+  }
 
-	parseCssProperty(str) {
-		return $.parseJSON($.trim(str.replace(/^('|")|(\\)|('|")$/g, '')));
-	}
+  parseCssProperty(str) {
+    return $.parseJSON($.trim(str.replace(/^('|")|(\\)|('|")$/g, '')));
+  }
 
-	getBreakpointValue(breakpoint) {
-		if (this.breakpoints[breakpoint] === undefined) {
-			throw 'Breakpoint not found: "' + breakpoint + '"';
-		}
+  getBreakpointValue(breakpoint) {
+    if (this.breakpoints[breakpoint] === undefined) {
+      throw new Error(`Breakpoint not found: "${breakpoint}"`);
+    }
 
-		return parseInt(this.breakpoints[breakpoint], 10);
-	}
+    return parseInt(this.breakpoints[breakpoint], 10);
+  }
 
-	query(options) {
-		var breakpointFrom, breakpointTo,
-			breakpointCurrent = parseInt(this.currentBreakpoint.value, 10);
+  query(options) {
+    let breakpointFrom;
+    let breakpointTo;
+    const breakpointCurrent = parseInt(this.currentBreakpoint.value, 10);
 
-		if (typeof options !== 'object') {
-			// No or wrong arguments passed
-			throw 'Illegal argument of type "' + typeof options + '", expected "object"';
-		}
+    if (typeof options !== 'object') {
+      // No or wrong arguments passed
+      throw new Error(`Illegal argument of type "${typeof options}", expected "object"`);
+    }
 
-		if (options.to === undefined && options.from === undefined) {
-			throw 'No values for "to" or "from" received';
-		}
+    if (options.to === undefined && options.from === undefined) {
+      throw new Error('No values for "to" or "from" received');
+    }
 
-		if (options.to !== undefined && options.from !== undefined) {
-			breakpointFrom = this.getBreakpointValue(options.from);
-			breakpointTo = this.getBreakpointValue(options.to);
+    if (options.to !== undefined && options.from !== undefined) {
+      breakpointFrom = this.getBreakpointValue(options.from);
+      breakpointTo = this.getBreakpointValue(options.to);
 
-			// "from" cannot be larger than "to"
-			if (breakpointFrom > breakpointTo) {
-				throw 'Breakpoint ' + breakpointFrom + ' is larger than ' + breakpointTo + '';
-			}
+      // "from" cannot be larger than "to"
+      if (breakpointFrom > breakpointTo) {
+        throw new Error(`Breakpoint ${breakpointFrom} is larger than ${breakpointTo}`);
+      }
 
-			// The breakpoint needs to smaller than the "to" (exclusive)
-			// but larger or the same as "from" (inclusive)
-			return breakpointFrom <= breakpointCurrent && breakpointCurrent < breakpointTo;
-		}
+      // The breakpoint needs to smaller than the "to" (exclusive)
+      // but larger or the same as "from" (inclusive)
+      return breakpointFrom <= breakpointCurrent && breakpointCurrent < breakpointTo;
+    }
 
-		if (options.to !== undefined) {
-			// Breakpoint needs to smaller than the "to" (exclusive)
-			return breakpointCurrent < this.getBreakpointValue(options.to);
-		}
+    if (options.to !== undefined) {
+      // Breakpoint needs to smaller than the "to" (exclusive)
+      return breakpointCurrent < this.getBreakpointValue(options.to);
+    }
 
-		if (options.from !== undefined) {
-			// Breakpoint needs larger or the same as "from" (inclusive)
-			return breakpointCurrent >= this.getBreakpointValue(options.from);
-		}
-	}
+    if (options.from !== undefined) {
+      // Breakpoint needs larger or the same as "from" (inclusive)
+      return breakpointCurrent >= this.getBreakpointValue(options.from);
+    }
+
+    return true;
+  }
 }
 
 // Exports an INSTANCE

@@ -1,18 +1,17 @@
-'use strict';
+const parseArgs = require('minimist');
 
-var util = require('gulp-util'),
-	data = {
-		meta: {
-			project: 'Estático'
-		},
-		env: util.env,
-		props: {
-			svgSprites: JSON.stringify([
-
-				// Disabled since there are no icons by default
-				// '/assets/media/svg/base.svg'
-			])
-		}
-	};
+const env = parseArgs(process.argv.slice(2));
+const data = {
+  meta: {
+    project: 'Estático',
+  },
+  env,
+  props: {
+    svgSprites: JSON.stringify([
+      // Disabled since there are no icons by default
+      // '/assets/media/svg/base.svg'
+    ]),
+  },
+};
 
 module.exports = data;

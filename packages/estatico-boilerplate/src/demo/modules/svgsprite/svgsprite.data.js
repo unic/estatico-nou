@@ -1,67 +1,62 @@
-'use strict';
+const _ = require('lodash');
+const glob = require('glob');
+const path = require('path');
+// const spriteTask = require('../../../../gulp/media/svgsprite.js');
+const dataHelper = require('estatico-data');
+const { handlebars } = require('estatico-handlebars');
+const defaultData = require('../../../data/default.data.js');
 
-var _ = require('lodash'),
-    glob = require('glob'),
-    path = require('path'),
-    // spriteTask = require('../../../../gulp/media/svgsprite.js'),
-    dataHelper = require('estatico-data'),
-    handlebars = require('estatico-handlebars').handlebars,
-    defaultData = require('../../../data/default.data.js'),
+const template = dataHelper.getFileContent('svgsprite.hbs');
+const sprites = _.mapValues({}, (globs) => {
+  let files = [];
 
-    template = dataHelper.getFileContent('svgsprite.hbs'),
-    sprites = _.mapValues({}, function(globs) {
-        var files = [];
+  globs.forEach((item) => {
+    let paths = glob.sync(item);
 
-        globs.forEach(function(item) {
+    paths = paths.map(file => path.basename(file, path.extname(file)));
 
-            var paths = glob.sync(item);
+    files = files.concat(paths);
+  });
 
-            paths = paths.map(function(file) {
-                return path.basename(file, path.extname(file));
-            });
+  return files;
+});
+const data = _.merge({}, defaultData, {
+  meta: {
+    title: 'Demo: SVG icons',
+    jira: 'ESTATICO-212',
+    documentation: dataHelper.getDocumentation('svgsprite.md'),
+  },
+  props: {
+    svgSprites: JSON.stringify(JSON.parse(defaultData.props.svgSprites || '[]').concat([
+      '/assets/media/svg/demo.svg',
+    ])),
+    preview: sprites,
+  },
+});
+const variants = _.mapValues({
+  default: {
+    meta: {
+      title: 'Default',
+      desc: 'Default implementation',
+    },
+  },
+}, (variant) => {
+  const variantProps = _.merge({}, data, variant).props;
+  const compiledVariant = handlebars.compile(template)(variantProps);
+  const variantData = _.merge({}, data, variant, {
+    meta: {
+      demo: compiledVariant,
 
-            files = files.concat(paths);
-        });
+      // code: {
+      //  handlebars: dataHelper.getFormattedHandlebars(template),
+      //  html: dataHelper.getFormattedHtml(compiledVariant),
+      //  data: dataHelper.getFormattedJson(variantProps)
+      // }
+    },
+  });
 
-        return files;
-    }),
-    data = _.merge({}, defaultData, {
-        meta: {
-            title: 'Demo: SVG icons',
-            jira: 'ESTATICO-212',
-            documentation: dataHelper.getDocumentation('svgsprite.md')
-        },
-        props: {
-            svgSprites: JSON.stringify(JSON.parse(defaultData.props.svgSprites || '[]').concat([
-                '/assets/media/svg/demo.svg'
-            ])),
-            preview: sprites
-        }
-    }),
-    variants = _.mapValues({
-        default: {
-            meta: {
-                title: 'Default',
-                desc: 'Default implementation'
-            }
-        }
-    }, function(variant) {
-        var variantProps = _.merge({}, data, variant).props,
-            compiledVariant = handlebars.compile(template)(variantProps),
-            variantData = _.merge({}, data, variant, {
-                meta: {
-                    demo: compiledVariant
-
-                    // code: {
-                    //  handlebars: dataHelper.getFormattedHandlebars(template),
-                    //  html: dataHelper.getFormattedHtml(compiledVariant),
-                    //  data: dataHelper.getFormattedJson(variantProps)
-                    // }
-                }
-            });
-
-        return variantData;
-    });
+  return variantData;
+});
 
 data.variants = variants;
 
