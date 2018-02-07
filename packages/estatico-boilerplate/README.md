@@ -1,4 +1,4 @@
-# estatico-boilerplate [WIP]
+# @unic/estatico-boilerplate [WIP]
 
 Demo repo based on old Estático.
 

@@ -1,18 +1,18 @@
-# estatico-stylelint
+# @unic/estatico-stylelint
 
 Checks SCSS for errors and warnings.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-stylelint
+$ npm install --save-dev @unic/estatico-stylelint
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-stylelint');
+const task = require('@unic/estatico-stylelint');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

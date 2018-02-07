@@ -1,5 +1,5 @@
 {
-  "name": "estatico-puppeteer",
+  "name": "@unic/estatico-puppeteer",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.3.0",
-    "estatico-utils": "^0.0.1",
+    "@unic/estatico-utils": "^0.0.1",
     "glob": "^7.1.2",
     "lodash.merge": "^4.6.0",
     "puppeteer": "^1.0.0"

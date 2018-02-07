@@ -1,5 +1,5 @@
 const test = require('ava');
-const utils = require('estatico-utils').test;
+const utils = require('@unic/estatico-utils').test;
 const path = require('path');
 const del = require('del');
 const merge = require('lodash.merge');

@@ -1,18 +1,18 @@
-# estatico-puppeteer
+# @unic/estatico-puppeteer
 
 Open local files in [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-puppeteer
+$ npm install --save-dev @unic/estatico-puppeteer
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-puppeteer');
+const task = require('@unic/estatico-puppeteer');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

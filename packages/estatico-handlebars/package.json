@@ -1,5 +1,5 @@
 {
-  "name": "estatico-handlebars",
+  "name": "@unic/estatico-handlebars",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.3.0",
-    "estatico-utils": "^0.0.1",
+    "@unic/estatico-utils": "^0.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-hb": "^6.0.2",
     "gulp-plumber": "^1.1.0",

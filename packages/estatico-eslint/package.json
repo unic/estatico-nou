@@ -1,5 +1,5 @@
 {
-  "name": "estatico-eslint",
+  "name": "@unic/estatico-eslint",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,7 @@
     "chalk": "^2.3.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
-    "estatico-utils": "^0.0.1",
+    "@unic/estatico-utils": "^0.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-changed-in-place": "^2.2.0",
     "gulp-eslint": "^4.0.2",

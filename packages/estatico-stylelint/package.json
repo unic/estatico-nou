@@ -1,5 +1,5 @@
 {
-  "name": "estatico-stylelint",
+  "name": "@unic/estatico-stylelint",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "devDependencies": {},
   "dependencies": {
     "chalk": "^2.3.0",
-    "estatico-utils": "^0.0.1",
+    "@unic/estatico-utils": "^0.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-changed-in-place": "^2.2.0",
     "gulp-plumber": "^1.1.0",

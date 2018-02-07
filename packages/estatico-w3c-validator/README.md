@@ -1,18 +1,18 @@
-# estatico-w3c-validator
+# @unic/estatico-w3c-validator
 
 Sends HTML pages through the [w3c validator](https://validator.w3.org/).
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-w3c-validator
+$ npm install --save-dev @unic/estatico-w3c-validator
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-w3c-validator');
+const task = require('@unic/estatico-w3c-validator');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

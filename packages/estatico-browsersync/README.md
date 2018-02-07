@@ -1,18 +1,18 @@
-# estatico-browsersync
+# @unic/estatico-browsersync
 
 Uses Browsersync to serve and realod files.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-browsersync
+$ npm install --save-dev @unic/estatico-browsersync
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-browsersync');
+const task = require('@unic/estatico-browsersync');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

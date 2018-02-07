@@ -1,18 +1,18 @@
-# estatico-sass
+# @unic/estatico-sass
 
 Transforms `Sass` to `CSS`.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-sass
+$ npm install --save-dev @unic/estatico-sass
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-sass');
+const task = require('@unic/estatico-sass');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

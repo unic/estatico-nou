@@ -1,11 +1,11 @@
-# estatico-watch
+# @unic/estatico-watch
 
 Watches files using `gulp.watch`. Provides a dependency graph based on `graphlib`.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-watch
+$ npm install --save-dev @unic/estatico-watch
 ```
 
 ## Usage

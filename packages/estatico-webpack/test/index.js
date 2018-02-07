@@ -3,7 +3,7 @@ const test = require('ava');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
-const utils = require('estatico-utils').test;
+const utils = require('@unic/estatico-utils').test;
 const task = require('../index.js');
 
 const defaults = {

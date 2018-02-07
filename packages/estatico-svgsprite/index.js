@@ -1,5 +1,5 @@
 const merge = require('lodash.merge');
-const { Logger } = require('estatico-utils');
+const { Logger } = require('@unic/estatico-utils');
 
 const logger = new Logger('estatico-svgsprite');
 

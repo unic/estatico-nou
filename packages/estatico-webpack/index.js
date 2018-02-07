@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const { Logger } = require('estatico-utils');
+const { Logger } = require('@unic/estatico-utils');
 
 const logger = new Logger('estatico-webpack');
 

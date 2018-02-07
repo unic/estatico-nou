@@ -1,18 +1,20 @@
-# estatico-webpack
+# @unic/estatico-webpack
 
 Bundles JavaScript, transpiles via [`babel`](https://www.npmjs.com/package/babel).
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-webpack
+$ npm install --save-dev @unic/estatico-webpack
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-webpack');
+const glob = require('glob');
+const path = require('path');
+const task = require('@unic/estatico-webpack');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
@@ -55,9 +57,14 @@ const options = defaults => ({
       },
     }),
     merge({}, defaults.webpack, {
-      entry: {
-        'slideshow.test': './src/demo/modules/slideshow/slideshow.test.js',
-      },
+      // Create object of fileName:filePath pairs
+      entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
+        const key = path.basename(item, path.extname(item));
+
+        obj[key] = item; // eslint-disable-line no-param-reassign
+
+        return obj;
+      }, {}),
       externals: {
         jquery: 'jQuery',
         qunit: 'QUnit',

@@ -1,5 +1,5 @@
 {
-  "name": "estatico-browsersync",
+  "name": "@unic/estatico-browsersync",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "dependencies": {
     "browser-sync": "^2.23.6",
     "chalk": "^2.3.0",
-    "estatico-utils": "^0.0.1",
+    "@unic/estatico-utils": "^0.0.1",
     "lodash.merge": "^4.6.0"
   },
   "engines": {

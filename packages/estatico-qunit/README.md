@@ -1,11 +1,11 @@
-# estatico-qunit [WIP]
+# @unic/estatico-qunit [WIP]
 
 Helpers for QUnit tests
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-qunit
+$ npm install --save-dev @unic/estatico-qunit
 ```
 
 ## Usage
@@ -17,11 +17,11 @@ Add the following config to the `estatico-puppeteer`'s options:
     interact: {
       interact: async (page) => {
         // Run tests
-        const results = await require('estatico-qunit').puppeteer.run(page);
+        const results = await require('@unic/estatico-qunit').puppeteer.run(page);
 
         // Report results
         if (results) {
-          require('estatico-qunit').puppeteer.log(results);
+          require('@unic/estatico-qunit').puppeteer.log(results);
         }
       },
     },

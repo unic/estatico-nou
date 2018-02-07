@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const dataHelper = require('estatico-data');
+const dataHelper = require('@unic/estatico-data');
 const defaultData = require('./data/default.data.js');
 const path = require('path');
 

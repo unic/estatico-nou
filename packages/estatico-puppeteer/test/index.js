@@ -2,7 +2,7 @@ const test = require('ava');
 const sinon = require('sinon');
 const path = require('path');
 const del = require('del');
-const utils = require('estatico-utils').test;
+const utils = require('@unic/estatico-utils').test;
 const task = require('../index.js');
 
 const defaults = {

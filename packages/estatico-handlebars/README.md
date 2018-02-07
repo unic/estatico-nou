@@ -1,18 +1,18 @@
-# estatico-handlebars
+# @unic/estatico-handlebars
 
 Transforms `Handlebars` to `HTML`.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-handlebars
+$ npm install --save-dev @unic/estatico-handlebars
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-handlebars');
+const task = require('@unic/estatico-handlebars');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
@@ -98,7 +98,7 @@ handlebars: {
 
 Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb).
 
-Partials and helpers are resolved via [`handlebars-wax`](https://www.npmjs.com/package/handlebars-wax). This is happening outside of the task function, allowing us to export the handlebars instance with partials and helpers already registered. It can be required via `require('estatico-handlebars').handlebars`.
+Partials and helpers are resolved via [`handlebars-wax`](https://www.npmjs.com/package/handlebars-wax). This is happening outside of the task function, allowing us to export the handlebars instance with partials and helpers already registered. It can be required via `require('@unic/estatico-handlebars').handlebars`.
 
 A simple helper example:
 ```js

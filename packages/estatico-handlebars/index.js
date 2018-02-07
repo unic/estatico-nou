@@ -1,6 +1,6 @@
 const Handlebars = require('handlebars');
 const handlebarsWax = require('handlebars-wax');
-const { Logger } = require('estatico-utils');
+const { Logger } = require('@unic/estatico-utils');
 const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');

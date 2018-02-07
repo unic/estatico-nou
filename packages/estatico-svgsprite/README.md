@@ -1,18 +1,18 @@
-# estatico-svgsprite
+# @unic/estatico-svgsprite
 
 Transforms `SVGs` into sprites.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-svgsprite
+$ npm install --save-dev @unic/estatico-svgsprite
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-svgsprite');
+const task = require('@unic/estatico-svgsprite');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

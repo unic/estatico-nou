@@ -1,11 +1,11 @@
-# estatico-data [WIP]
+# @unic/estatico-data [WIP]
 
 Contains helpers used in Estático's data layer.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-data
+$ npm install --save-dev @unic/estatico-data
 ```
 
 ## Usage

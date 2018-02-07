@@ -1,8 +1,8 @@
 'use strict';
 
 var _ = require('lodash'),
-    dataHelper = require('estatico-data'),
-    handlebars = require('estatico-handlebars').handlebars,
+    dataHelper = require('@unic/estatico-data'),
+    handlebars = require('@unic/estatico-handlebars').handlebars,
     defaultData = require('../../data/default.data.js'),
 
     template = dataHelper.getFileContent('{{name}}.hbs'),

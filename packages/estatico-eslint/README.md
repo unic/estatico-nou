@@ -1,18 +1,18 @@
-# estatico-eslint
+# @unic/estatico-eslint
 
 Uses ESLint to lint and automatically fix code.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-eslint
+$ npm install --save-dev @unic/estatico-eslint
 ```
 
 ## Usage
 
 ```js
 const gulp = require('gulp');
-const task = require('estatico-eslint');
+const task = require('@unic/estatico-eslint');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));

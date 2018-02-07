@@ -1,6 +1,6 @@
 const _ = require('lodash');
-const dataHelper = require('estatico-data');
-const { handlebars } = require('estatico-handlebars');
+const dataHelper = require('@unic/estatico-data');
+const { handlebars } = require('@unic/estatico-handlebars');
 const defaultData = require('../../../data/default.data.js');
 
 const template = dataHelper.getFileContent('slideshow.hbs');

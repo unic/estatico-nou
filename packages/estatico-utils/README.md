@@ -1,11 +1,11 @@
-# estatico-utils [WIP]
+# @unic/estatico-utils [WIP]
 
 Utilities for logging etc.
 
 ## Installation
 
 ```
-$ npm install --save-dev estatico-utils
+$ npm install --save-dev @unic/estatico-utils
 ```
 
 ## Usage
@@ -14,7 +14,7 @@ $ npm install --save-dev estatico-utils
 
 ```js
 const parseArgs = require('minimist');
-const { Logger } = require('estatico-utils');
+const { Logger } = require('@unic/estatico-utils');
 
 const env = parseArgs(process.argv.slice(2));
 
@@ -43,7 +43,7 @@ Compares files resolved from `fileGlob` with current files in `results/` directo
 
 ```js
 const test = require('ava');
-const utils = require('estatico-utils').test;
+const utils = require('@unic/estatico-utils').test;
 
 test.cb('default', (t) => {
   task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
@@ -57,7 +57,7 @@ Join everything `sinon.spy` captured into string, strip ANSI characters and line
 ```js
 const test = require('ava');
 const sinon = require('sinon');
-const utils = require('estatico-utils').test;
+const utils = require('@unic/estatico-utils').test;
 
 test.cb('error', (t) => {
   const spy = sinon.spy(console, 'log');
