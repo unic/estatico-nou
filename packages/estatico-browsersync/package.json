@@ -1,0 +1,20 @@
+{
+  "name": "estatico-browsersync",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "Unic AG",
+  "license": "MIT",
+  "dependencies": {
+    "browser-sync": "^2.23.6",
+    "chalk": "^2.3.0",
+    "estatico-utils": "^0.0.1",
+    "lodash.merge": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=8 <9"
+  }
+}

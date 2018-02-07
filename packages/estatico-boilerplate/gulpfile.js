@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const parseArgs = require('minimist');
 const merge = require('lodash.merge');
+const glob = require('glob');
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
 const estaticoSass = require('estatico-sass');
@@ -13,6 +14,7 @@ const estaticoPuppeteer = require('estatico-puppeteer');
 const estaticoQunit = require('estatico-qunit');
 const estaticoSvgsprite = require('estatico-svgsprite');
 const estaticoEslint = require('estatico-eslint');
+const estaticoBrowsersync = require('estatico-browsersync');
 const jsonImporter = require('node-sass-json-importer');
 const del = require('del');
 
@@ -46,6 +48,7 @@ const config = {
           },
         },
       },
+      // Wrap with module layout
       transformBefore: (file) => {
         if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
           return Buffer.from(moduleTemplate);
@@ -157,12 +160,12 @@ const config = {
           path: path.resolve('./dist/assets/js'),
         },
       }),
-      merge({}, defaults.webpack, {
+      {
         entry: {
           test: './src/preview/assets/js/test.js',
         },
         module: {
-          rules: [
+          rules: defaults.webpack.module.rules.concat([
             {
               test: /qunit\.js$/,
               loader: 'expose-loader?QUnit',
@@ -171,7 +174,7 @@ const config = {
               test: /\.css$/,
               loader: 'style-loader!css-loader',
             },
-          ],
+          ]),
         },
         externals: {
           jquery: 'jQuery',
@@ -179,11 +182,18 @@ const config = {
         output: {
           path: path.resolve('./dist/preview/assets/js'),
         },
-      }),
-      merge({}, defaults.webpack, {
-        entry: {
-          'slideshow.test': './src/demo/modules/slideshow/slideshow.test.js',
-        },
+        mode: 'development',
+      },
+      {
+        // Create object of fileName:filePath pairs
+        entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
+          const key = path.basename(item, path.extname(item));
+
+          obj[key] = item; // eslint-disable-line no-param-reassign
+
+          return obj;
+        }, {}),
+        module: defaults.webpack.module,
         externals: {
           jquery: 'jQuery',
           qunit: 'QUnit',
@@ -191,7 +201,8 @@ const config = {
         output: {
           path: path.resolve('./dist/preview/assets/js/test'),
         },
-      }),
+        mode: 'development',
+      },
     ],
     logger: defaults.logger,
   }),
@@ -227,6 +238,14 @@ const config = {
     srcBase: './src',
     dest: './src',
   },
+  serve: {
+    watch: '**/*.{html,css,js}',
+    plugins: {
+      browsersync: {
+        server: './dist',
+      },
+    },
+  },
 };
 
 // Exemplary tasks
@@ -239,6 +258,7 @@ const tasks = {
   jsTest: estaticoPuppeteer(config.jsTest, env.dev),
   jsLint: estaticoEslint(config.jsLint, env.dev),
   svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
+  serve: estaticoBrowsersync(config.serve, env.dev),
   clean: () => del('./dist'),
 };
 
@@ -267,4 +287,4 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('default', gulp.series('clean', gulp.parallel('html', 'css', 'svgsprite'), gulp.parallel('htmlValidate', 'cssLint')), 'watch');
+gulp.task('default', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), gulp.parallel('htmlValidate', /* 'cssLint', 'jsLint', */ 'jsTest')), 'watch');

@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "del": "^3.0.0",
+    "estatico-browsersync": "0.0.1",
     "estatico-data": "0.0.1",
     "estatico-eslint": "0.0.1",
     "estatico-handlebars": "0.0.1",
@@ -22,6 +23,7 @@
     "estatico-w3c-validator": "0.0.1",
     "estatico-watch": "0.0.1",
     "estatico-webpack": "0.0.1",
+    "glob": "^7.1.2",
     "gulp": "github:gulpjs/gulp#4.0",
     "lodash.merge": "^4.6.0",
     "minimist": "^1.2.0",
