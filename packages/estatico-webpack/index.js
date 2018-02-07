@@ -2,6 +2,7 @@
 const merge = require('lodash.merge');
 const webpack = require('webpack');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { Logger } = require('estatico-utils');
 
@@ -51,7 +52,18 @@ const defaults = dev => ({
       ],
     },
 
-    // Minifiy in prod mode
+    // Custom UglifyJS options
+    optimization: {
+      minimizer: [
+        new UglifyJSPlugin({
+          uglifyOptions: {
+            mangle: {
+              keep_fnames: true,
+            },
+          },
+        }),
+      ],
+    },
     plugins: [
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',

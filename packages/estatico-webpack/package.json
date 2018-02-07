@@ -21,6 +21,7 @@
     "lodash.merge": "^4.6.0",
     "lodash.once": "^4.1.1",
     "style-loader": "^0.20.1",
+    "uglifyjs-webpack-plugin": "^1.1.8",
     "unminified-webpack-plugin": "github:unic/unminified-webpack-plugin#18bfc8dfafeeb9f025d0a394819ae7c556e2a734",
     "webpack": "^4.0.0-beta.0",
     "webpack-bundle-analyzer": "^2.9.2",
