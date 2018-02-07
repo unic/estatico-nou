@@ -1,15 +1,15 @@
-const chalk = require('chalk');
+// const chalk = require('chalk');
 const merge = require('lodash.merge');
 const { Logger } = require('estatico-utils');
 
 const logger = new Logger('estatico-browsersync');
 
 const defaults = (/* dev */) => ({
-  watch: null,
   logger,
   plugins: {
     browsersync: {
       server: null,
+      watch: null,
       port: 9000,
       middleware: (req, res, next) => {
         // Rewrite POST to GET
@@ -52,13 +52,13 @@ module.exports = (options, dev) => {
 
     const bs = browsersync.create();
 
-    if (config.watch) {
-      bs.watch(config.watch).on('change', (file) => {
-        logger.info(`Reloading ${chalk.yellow(file)}`);
+    // if (config.plugins.browsersync.watch) {
+    //   bs.watch(config.plugins.browsersync.watch).on('change', (file) => {
+    //     logger.info(`Reloading ${chalk.yellow(file)}`);
 
-        bs.reload(file);
-      });
-    }
+    //     bs.reload(file);
+    //   });
+    // }
 
     bs.init(config.plugins.browsersync);
   };

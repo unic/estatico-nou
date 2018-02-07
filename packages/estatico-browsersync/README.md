@@ -19,10 +19,10 @@ const env = require('minimist')(process.argv.slice(2));
 
 // Options, deep-merged into defaults via _.merge
 const options = {
-  watch: '**/*.{html,css,js}',
   plugins: {
     browsersync: {
-      server: './dist'
+      server: './dist',
+      watch: './dist/**/*.{html,css,js}',
     },
   },
 };
@@ -38,13 +38,6 @@ Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": 
 `task(options, dev)`
 
 ### options
-
-#### watch
-
-Type: `String`<br>
-Default: `null`
-
-File glob passed to `browser-sync`'s [`.watch`](https://browsersync.io/docs/api#api-watch).
 
 #### logger
 

@@ -4,6 +4,10 @@ const fs = require('fs');
 const parseArgs = require('minimist');
 const merge = require('lodash.merge');
 const glob = require('glob');
+const jsonImporter = require('node-sass-json-importer');
+const del = require('del');
+const inquirer = require('inquirer');
+
 const estaticoHandlebars = require('estatico-handlebars');
 const estaticoHtmlValidate = require('estatico-w3c-validator');
 const estaticoSass = require('estatico-sass');
@@ -15,8 +19,6 @@ const estaticoQunit = require('estatico-qunit');
 const estaticoSvgsprite = require('estatico-svgsprite');
 const estaticoEslint = require('estatico-eslint');
 const estaticoBrowsersync = require('estatico-browsersync');
-const jsonImporter = require('node-sass-json-importer');
-const del = require('del');
 
 const env = parseArgs(process.argv.slice(2));
 const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
@@ -139,6 +141,11 @@ const config = {
         importer: [jsonImporter],
       },
     },
+    watch: {
+      src: [
+        './src/**/*.scss',
+      ],
+    },
   },
   cssLint: {
     src: [
@@ -239,10 +246,10 @@ const config = {
     dest: './src',
   },
   serve: {
-    watch: '**/*.{html,css,js}',
     plugins: {
       browsersync: {
         server: './dist',
+        watch: './dist/**/*.{html,css,js}',
       },
     },
   },
@@ -279,6 +286,7 @@ tasks.watch = () => {
     watcher();
   });
 
+  // Start webpack watcher
   tasks.js(() => {}, true);
 };
 
@@ -287,4 +295,27 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('default', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), gulp.parallel('htmlValidate', /* 'cssLint', 'jsLint', */ 'jsTest')), 'watch');
+gulp.task('build', gulp.parallel('html', 'css', 'js', 'svgsprite'));
+gulp.task('lint', gulp.parallel('htmlValidate', /* 'cssLint', 'jsLint', */ 'jsTest'));
+gulp.task('dev', gulp.parallel('watch', 'serve'));
+
+gulp.task('default', (done) => {
+  const cb = (skipBuild) => {
+    if (skipBuild) {
+      return gulp.series('dev')(done);
+    }
+
+    return gulp.series('clean', 'build', 'lint', 'dev')(done);
+  };
+
+  if (!env.noInteractive && !env.skipBuild) {
+    return inquirer.prompt([{
+      type: 'confirm',
+      name: 'skipBuild',
+      message: 'Do you want to skip the build before starting the server?',
+      default: false,
+    }]).then(answers => cb(answers.skipBuild));
+  }
+
+  return cb(env.skipBuild);
+});

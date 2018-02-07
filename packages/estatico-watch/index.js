@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const merge = require('lodash.merge');
 const { Logger } = require('estatico-utils');
 
@@ -17,7 +18,7 @@ const defaults = {
   logger,
 };
 
-module.exports = (options) => {
+module.exports = (options, dev) => {
   let config = {};
 
   if (typeof options === 'function') {
@@ -27,13 +28,13 @@ module.exports = (options) => {
   }
 
   if (!config.src) {
-    throw new Error('\'options.src\' is missing');
+    logger.error(new Error(`${chalk.bold('options.src')} is missing for ${chalk.cyan(options.name)}`), dev);
   }
   if (!config.task) {
-    throw new Error('\'options.task\' is missing');
+    logger.error(new Error(`${chalk.bold('options.task')}' is missing for ${chalk.cyan(options.name)}`), dev);
   }
   if (!config.name) {
-    throw new Error('\'options.name\' is missing');
+    logger.error(new Error(`${chalk.bold('options.nam')}' is missing for ${chalk.cyan(options.name)}`), dev);
   }
 
   return () => {
