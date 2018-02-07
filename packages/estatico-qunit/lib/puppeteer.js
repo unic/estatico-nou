@@ -1,3 +1,4 @@
+/* globals QUnit */
 const log = require('fancy-log');
 const chalk = require('chalk');
 
@@ -18,13 +19,13 @@ module.exports = {
 
       const details = [];
 
-      QUnit.start(); // eslint-disable-line no-undef
+      QUnit.start();
 
-      QUnit.testDone((result) => { // eslint-disable-line no-undef
+      QUnit.testDone((result) => {
         details.push(result);
       });
 
-      QUnit.done((summary) => { // eslint-disable-line no-undef
+      QUnit.done((summary) => {
         resolve({
           details,
           summary,

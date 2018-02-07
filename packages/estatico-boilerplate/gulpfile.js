@@ -312,7 +312,7 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint',,*/ 'jsLint', 'jsTest'));
+gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint', */ 'jsLint', 'jsTest'));
 gulp.task('build', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'lint'));
 gulp.task('dev', gulp.parallel('watch', 'serve'));
 
