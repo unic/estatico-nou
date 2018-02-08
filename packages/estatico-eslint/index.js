@@ -1,14 +1,41 @@
-// const chalk = require('chalk');
-const merge = require('lodash.merge');
-const { Logger } = require('@unic/estatico-utils');
+/* eslint-disable global-require */
+const { Plugin, Logger } = require('@unic/estatico-utils');
+const Joi = require('joi');
 
-const logger = new Logger('estatico-eslint');
+// Config schema used for validation
+const schema = Joi.object().keys({
+  src: [Joi.string().required(), Joi.array().required()],
+  srcBase: Joi.string().required(),
+  dest: Joi.string().required(),
+  watch: Joi.object().keys({
+    src: [Joi.string().required(), Joi.array().required()],
+    name: Joi.string().required(),
+  }).allow(null),
+  plugins: {
+    eslint: Joi.object().keys({
+      fix: Joi.boolean(),
+    }),
+    changed: Joi.object().keys({
+      firstPass: Joi.boolean(),
+    }).allow(null),
+  },
+  logger: Joi.object().keys({
+    info: Joi.func(),
+    error: Joi.func(),
+    debug: Joi.func(),
+  }),
+});
 
+/**
+ * Default config
+ * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @return {object}
+ */
 const defaults = (/* dev */) => ({
   src: null,
   srcBase: null,
   dest: null,
-  logger,
+  watch: null,
   plugins: {
     eslint: {
       fix: true,
@@ -17,59 +44,61 @@ const defaults = (/* dev */) => ({
       firstPass: true,
     },
   },
+  logger: new Logger('estatico-eslint'),
 });
 
-module.exports = (options, dev) => {
-  let config = {};
+/**
+ * Task function
+ * @param {object} config - Complete task config
+ * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @return {object} gulp stream
+ */
+const task = (config, env = {}) => {
+  const gulp = require('gulp');
+  const plumber = require('gulp-plumber');
+  const changed = require('gulp-changed-in-place');
+  const eslint = require('gulp-eslint');
+  const through = require('through2');
+  const chalk = require('chalk');
+  const path = require('path');
 
-  if (typeof options === 'function') {
-    config = options(defaults(dev));
-  } else {
-    config = merge({}, defaults(dev), options);
-  }
+  return gulp.src(config.src, {
+    base: config.srcBase,
+  })
 
-  // Validate options
-  if (!config.src) {
-    throw new Error('\'options.src\' is missing');
-  }
-  if (!config.srcBase) {
-    throw new Error('\'options.srcBase\' is missing');
-  }
-  // if (!config.dest) {
-  //   throw new Error('\'options.dest\' is missing');
-  // }
+    // Prevent stream from unpiping on error
+    .pipe(plumber())
 
-  return () => {
-    const gulp = require('gulp'); // eslint-disable-line global-require
-    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
-    const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
-    const eslint = require('gulp-eslint'); // eslint-disable-line global-require
-    const through = require('through2'); // eslint-disable-line global-require
-    const chalk = require('chalk'); // eslint-disable-line global-require
-    const path = require('path'); // eslint-disable-line global-require
+    // Do not pass unchanged files
+    .pipe(config.plugins.changed ? changed(config.plugins.changed) : through.obj())
 
-    return gulp.src(config.src, {
-      base: config.srcBase,
-    })
+    // Stylelint verification
+    .pipe(eslint(config.plugins.eslint).on('error', err => config.config.logger.error(err, env.dev)))
+    .pipe(eslint.formatEach())
+    .pipe(through.obj((file, enc, done) => {
+      if (file.eslint && file.eslint.errorCount > 0) {
+        const relFilePath = path.relative(config.srcBase, file.path);
 
-      // Prevent stream from unpiping on error
-      .pipe(plumber())
+        config.logger.error(new Error(`Linting error in file ${chalk.yellow(relFilePath)} (details above)`), env.dev);
+      }
 
-      // Do not pass unchanged files
-      .pipe(config.plugins.changed ? changed(config.plugins.changed) : through.obj())
+      return done(null, file);
+    }))
 
-      // Stylelint verification
-      .pipe(eslint(config.plugins.eslint).on('error', err => config.config.logger.error(err, dev)))
-      .pipe(eslint.formatEach())
-      .pipe(through.obj((file, enc, done) => {
-        if (file.eslint && file.eslint.errorCount > 0) {
-          config.logger.error(new Error(`Linting error in file ${chalk.yellow(path.relative(config.srcBase, file.path))} (details above)`), dev);
-        }
-
-        return done(null, file);
-      }))
-
-      // Optionally write back to disc
-      .pipe(config.plugins.eslint.fix ? gulp.dest(config.dest) : through.obj());
-  };
+    // Optionally write back to disc
+    .pipe(config.plugins.eslint.fix ? gulp.dest(config.dest) : through.obj());
 };
+
+/**
+ * @param {object|func} options - Custom config
+ *  Either deep-merged (object) or called (func) with defaults
+ * @param {object} env - Optional environment config, e.g. { dev: true }, passed to defaults
+ * @return {func} Task function from above with bound config and env
+ */
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});

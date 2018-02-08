@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/index.js --serial --verbose"
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-eslint -- npm test"
   },
   "author": "Unic AG",
   "license": "MIT",
@@ -17,7 +18,6 @@
     "gulp-changed-in-place": "^2.2.0",
     "gulp-eslint": "^4.0.2",
     "gulp-plumber": "^1.1.0",
-    "lodash.merge": "^4.6.0",
     "through2": "^2.0.3"
   },
   "engines": {

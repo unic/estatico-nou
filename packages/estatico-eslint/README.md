@@ -17,24 +17,27 @@ const task = require('@unic/estatico-eslint');
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * JavaScript linting task
+ * Uses ESLint to lint and automatically fix code
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js:lint', estaticoEslint({
   src: [
     './src/**/*.js',
   ],
   srcBase: './src',
   dest: './src',
-};
-
-gulp.task('jsLint', () => task(options, env.dev));
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
-`$ npm run gulp jsLint`
+`$ npm run gulp js:lint`
 
 ## API
 
-`task(options, isDev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
 
@@ -57,14 +60,14 @@ Passed as `base` option to `gulp.src`.
 Type: `String`<br>
 Default: `null`
 
-Passed to `gulp.dest` when chosing to write back to dics (not yet implemented).
+Passed to `gulp.dest` when `plugins.eslint.fix` is enabled.
 
-#### logger
+#### watch
 
-Type: `{ info: Function, debug: Function, error: Function }`<br>
-Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
+Type: `Array` or `String`<br>
+Default: `null`
 
-Set of logger utility functions used within the task.
+Passed to file watcher when `--watch` is used.
 
 #### plugins
 
@@ -94,12 +97,19 @@ Default:
 
 Passed to [`gulp-changed-in-place`](https://www.npmjs.com/package/gulp-changed-in-place).
 
-### dev
+#### logger
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Whether we are in dev mode. An error will exit the task unless in dev mode.
+Set of logger utility functions used within the task.
+
+### env
+
+Type: `Object`<br>
+Default: `{}`
+
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Some defaults are affected by this, see above.
 
 ## License
 
