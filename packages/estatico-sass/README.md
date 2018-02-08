@@ -87,7 +87,7 @@ Passed to `gulp.dest`.
 
 #### watch
 
-Type: `Array` or `String`<br>
+Type: `Object`<br>
 Default: `null`
 
 Passed to file watcher when `--watch` is used.

@@ -64,7 +64,7 @@ Passed to `gulp.dest` when `plugins.eslint.fix` is enabled.
 
 #### watch
 
-Type: `Array` or `String`<br>
+Type: `Object`<br>
 Default: `null`
 
 Passed to file watcher when `--watch` is used.
