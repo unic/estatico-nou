@@ -12,22 +12,23 @@ $ npm install --save-dev @unic/estatico-browsersync
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-browsersync');
+const estaticoBrowsersync = require('@unic/estatico-browsersync');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * Serve task
+ * Uses Browsersync to serve the build directory, reloads on changes
+ */
+gulp.task('serve', estaticoBrowsersync({
   plugins: {
     browsersync: {
       server: './dist',
       watch: './dist/**/*.{html,css,js}',
     },
   },
-};
-
-gulp.task('serve', () => task(options, env.dev));
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
@@ -35,9 +36,67 @@ Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": 
 
 ## API
 
-`task(options, dev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
+
+#### plugins
+
+Type: `Object`
+
+##### plugins.browsersync (required)
+
+Type: `Object`
+
+Passed to [`browser-sync`](https://www.npmjs.com/package/browser-sync). See https://browsersync.io/docs/options for available options.
+
+###### plugins.browsersync.server
+
+Type: `String`<br>
+Default: `null`
+
+Directory to serve.
+
+###### plugins.browsersync.watch
+
+Type: `String`<br>
+Default: `null`
+
+Files to watch and reload.
+
+###### plugins.browsersync.port
+
+Type: `Number`<br>
+Default: `null`
+
+On which port to expose the server.
+
+###### plugins.browsersync.middleware
+
+Type: `Function`<br>
+Default:
+```js
+(req, res, next) => {
+  // Rewrite POST to GET
+  if (req.method === 'POST') {
+    req.method = 'GET';
+  }
+
+  // Respond with optional delay
+  // Example: http://localhost:9000/mocks/demo/modules/slideshow/modules.json?delay=5000
+  const delay = req.url.match(/delay=([0-9]+)/);
+
+  if (delay) {
+    setTimeout(() => {
+      next();
+    }, delay[1]);
+  } else {
+    next();
+  }
+},
+```
+
+Transform requests.
 
 #### logger
 
@@ -46,47 +105,12 @@ Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
 Set of logger utility functions used within the task.
 
-#### plugins
-
-Type: `Object`
-
-##### plugins.browsersync (required)
+### env
 
 Type: `Object`<br>
-Default:
-```js
-{
-  server: null, // Required
-  port: 9000,
-  middleware: (req, res, next) => {
-    // Rewrite POST to GET
-    if (req.method === 'POST') {
-      req.method = 'GET';
-    }
+Default: `{}`
 
-    // Respond with optional delay
-    // Example: http://localhost:9000/mocks/demo/modules/slideshow/modules.json?delay=5000
-    const delay = req.url.match(/delay=([0-9]+)/);
-
-    if (delay) {
-      setTimeout(() => {
-        next();
-      }, delay[1]);
-    } else {
-      next();
-    }
-  },
-}
-```
-
-Passed to [`browser-sync`](https://www.npmjs.com/package/browser-sync). See https://browsersync.io/docs/options for available options.
-
-### dev
-
-Type: `Boolean`<br>
-Default: `false`
-
-Whether we are in dev mode. An error will exit the task unless in dev mode.
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Currently unused.
 
 ## License
 
