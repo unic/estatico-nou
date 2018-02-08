@@ -16,7 +16,9 @@ const defaults = {
 test.cb('default', (t) => {
   const spy = sinon.spy(console, 'log');
 
-  task(defaults, true)().on('end', () => {
+  task(defaults, {
+    dev: true,
+  })().on('end', () => {
     spy.restore();
 
     const log = utils.stripLogs(spy);

@@ -1,6 +1,6 @@
 # @unic/estatico-stylelint
 
-Checks SCSS for errors and warnings.
+Uses Stylelint to lint (and possibly autofix files in the future)
 
 ## Installation
 
@@ -12,29 +12,38 @@ $ npm install --save-dev @unic/estatico-stylelint
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-stylelint');
+const estaticoStylelint = require('@unic/estatico-stylelint');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * CSS linting task
+ * Uses Stylelint to lint (and possibly autofix files in the future)
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('css:lint', estaticoStylelint({
   src: [
-    './src/assets/css/*.scss',
+    './src/**/*.scss',
   ],
-  srcBase: './src',
+  srcBase: './src/',
   dest: './dist',
-};
-
-gulp.task('cssLint', () => task(options, env.dev));
+  watch: {
+    src: [
+      './src/**/*.scss',
+    ],
+    name: 'css:lint',
+  },
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
-`$ npm run gulp cssLint`
+`$ npm run gulp css:lint`
 
 ## API
 
-`task(options, isDev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
 
@@ -59,12 +68,12 @@ Default: `null`
 
 Passed to `gulp.dest` when chosing to write back to dics (not yet implemented).
 
-#### logger
+#### watch
 
-Type: `{ info: Function, debug: Function, error: Function }`<br>
-Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
+Type: `Object`<br>
+Default: `null`
 
-Set of logger utility functions used within the task.
+Passed to file watcher when `--watch` is used.
 
 #### plugins
 
@@ -75,22 +84,32 @@ Type: `Object`
 Type: `Object`<br>
 Default:
 ```js
-stylelint: {
+{
   failAfterError: true,
   reporters: [
-    { formatter: 'string', console: true },
+    {
+      formatter: 'string',
+      console: true,
+    },
   ],
 }
 ```
 
 Passed to [`gulp-stylelint`](https://www.npmjs.com/package/gulp-stylelint).
 
-### dev
+#### logger
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Whether we are in dev mode. Some defaults might be affected by this.
+Set of logger utility functions used within the task.
+
+### env
+
+Type: `Object`<br>
+Default: `{}`
+
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Some defaults are affected by this, see above.
 
 ## License
 

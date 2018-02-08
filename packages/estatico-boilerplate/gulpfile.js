@@ -153,6 +153,60 @@ gulp.task('css', estaticoSass({
 }, env));
 
 /**
+ * CSS task
+ * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
+ *
+ * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('css', estaticoSass({
+  src: [
+    './src/assets/css/**/*.scss',
+    './src/preview/assets/css/**/*.scss',
+  ],
+  srcBase: './src/',
+  dest: './dist',
+  watch: {
+    src: [
+      './src/**/*.scss',
+    ],
+    name: 'css', // Displayed in watch log
+  },
+  plugins: {
+    sass: {
+      includePaths: [
+        './src/',
+        './src/assets/css/',
+      ],
+      importer: [
+        // Add importer being able to deal with json files like colors, e.g.
+        require('node-sass-json-importer'),
+      ],
+    },
+  },
+}, env));
+
+/**
+ * CSS linting task
+ * Uses Stylelint to lint (and possibly autofix files in the future)
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('css:lint', estaticoStylelint({
+  src: [
+    './src/**/*.scss',
+  ],
+  srcBase: './src/',
+  dest: './dist',
+  watch: {
+    src: [
+      './src/**/*.scss',
+    ],
+    name: 'css:lint',
+  },
+}, env));
+
+/**
  * JavaScript linting task
  * Uses ESLint to lint and autofix files
  *
@@ -250,13 +304,6 @@ const config = {
       ],
     },
   },
-  cssLint: {
-    src: [
-      './src/**/*.scss',
-    ],
-    srcBase: './src/',
-    dest: './dist',
-  },
   js: defaults => ({
     webpack: [
       merge({}, defaults.webpack, {
@@ -329,7 +376,6 @@ const config = {
 // Exemplary tasks
 const tasks = {
   htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
-  cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
   svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
   clean: () => del('./dist'),

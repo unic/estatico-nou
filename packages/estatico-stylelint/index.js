@@ -1,65 +1,91 @@
-// const chalk = require('chalk');
-const merge = require('lodash.merge');
-const { Logger } = require('@unic/estatico-utils');
+/* eslint-disable global-require, no-await-in-loop */
+const { Plugin, Logger } = require('@unic/estatico-utils');
+const Joi = require('joi');
 
-const logger = new Logger('estatico-stylelint');
+// Config schema used for validation
+const schema = Joi.object().keys({
+  src: [Joi.string().required(), Joi.array().required()],
+  srcBase: Joi.string().required(),
+  dest: Joi.string(),
+  watch: Joi.object().keys({
+    src: [Joi.string().required(), Joi.array().required()],
+    name: Joi.string().required(),
+  }).allow(null),
+  plugins: {
+    stylelint: Joi.object().allow(null),
+  },
+  logger: Joi.object().keys({
+    info: Joi.func(),
+    error: Joi.func(),
+    debug: Joi.func(),
+  }),
+});
 
-const defaults = (/* dev */) => ({
+/**
+ * Default config
+ * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @return {object}
+ */
+const defaults = (/* env */) => ({
   src: null,
   srcBase: null,
   dest: null,
-  logger,
+  watch: null,
   plugins: {
     stylelint: {
       failAfterError: true,
       reporters: [
-        { formatter: 'string', console: true },
+        {
+          formatter: 'string',
+          console: true,
+        },
       ],
     },
   },
+  logger: new Logger('estatico-stylelint'),
 });
 
-module.exports = (options, dev) => {
-  let config = {};
+/**
+ * Task function
+ * @param {object} config - Complete task config
+ * @param {object} env - Environment config, e.g. { dev: true }
+ * @param {object} [watcher] - Watch file events
+ * @return {object} gulp stream
+ */
+const task = (config, env = {}) => {
+  const gulp = require('gulp'); // eslint-disable-line global-require
+  const plumber = require('gulp-plumber'); // eslint-disable-line global-require
+  const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
+  const gulpStylelint = require('gulp-stylelint'); // eslint-disable-line global-require
 
-  if (typeof options === 'function') {
-    config = options(defaults(dev));
-  } else {
-    config = merge({}, defaults(dev), options);
-  }
+  return gulp.src(config.src, {
+    base: config.srcBase,
+  })
 
-  // Validate options
-  if (!config.src) {
-    throw new Error('\'options.src\' is missing');
-  }
-  if (!config.srcBase) {
-    throw new Error('\'options.srcBase\' is missing');
-  }
-  // if (!config.dest) {
-  //   throw new Error('\'options.dest\' is missing');
-  // }
+    // Prevent stream from unpiping on error
+    .pipe(plumber())
 
-  return () => {
-    const gulp = require('gulp'); // eslint-disable-line global-require
-    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
-    const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
-    const gulpStylelint = require('gulp-stylelint'); // eslint-disable-line global-require
+    // Do not pass unchanged files
+    .pipe(changed({
+      firstPass: true,
+    }))
 
-    return gulp.src(config.src, {
-      base: config.srcBase,
-    })
+    // Stylelint verification
+    .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, env.dev)));
 
-      // Prevent stream from unpiping on error
-      .pipe(plumber())
-
-      // Do not pass unchanged files
-      .pipe(changed({
-        firstPass: true,
-      }))
-
-      // Stylelint verification
-      .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, dev)));
-
-    // TODO: Optionally write back to disc
-  };
+  // TODO: Optionally write back to disc
 };
+
+/**
+ * @param {object|func} options - Custom config
+ *  Either deep-merged (object) or called (func) with defaults
+ * @param {object} env - Optional environment config, e.g. { dev: true }, passed to defaults
+ * @return {func} Task function from above with bound config and env
+ */
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});
