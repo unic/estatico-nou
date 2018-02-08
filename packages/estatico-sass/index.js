@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+const { Plugin, Logger } = require('@unic/estatico-utils');
 const Joi = require('joi');
 
 // Config schema used for validation
@@ -48,7 +49,7 @@ const defaults = (env = {}) => ({
     },
     clean: env.dev ? null : {},
   },
-  logger: new require('@unic/estatico-utils').Logger('estatico-sass'), // eslint-disable-line
+  logger: new Logger('estatico-sass'),
 });
 
 /**
@@ -136,37 +137,10 @@ const task = (config, env = {}) => {
  * @param {object} env - Optional environment config, e.g. { dev: true }, passed to defaults
  * @return {func} Task function from above with bound config and env
  */
-module.exports = (options, env = {}) => {
-  const merge = require('lodash.merge');
-  const watcher = require('@unic/estatico-watch');
-
-  let config = {};
-
-  // Either merge or transform options
-  if (typeof options === 'function') {
-    config = options(defaults(env));
-  } else {
-    config = merge({}, defaults(env), options);
-  }
-
-  // Validate options
-  const validate = Joi.validate(config, schema, {
-    allowUnknown: true,
-  });
-
-  if (validate.error) {
-    config.logger.error(new Error(`Config validation: ${validate.error}`), env.dev);
-  }
-
-  // Add optional watcher
-  if (env.watch && config.watch) {
-    const watchConfig = merge({}, {
-      task: task.bind(null, config, env),
-    }, config.watch);
-
-    watcher(watchConfig)();
-  }
-
-  // Return configured task function
-  return task.bind(null, config, env);
-};
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});
