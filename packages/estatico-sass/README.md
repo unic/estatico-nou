@@ -72,6 +72,13 @@ Default: `null`
 
 Passed to `gulp.dest`.
 
+#### minifiedSuffix
+
+Type: `String`<br>
+Default: `.min`
+
+Added to the name of minified files.
+
 #### logger
 
 Type: `{ info: Function, debug: Function, error: Function }`<br>

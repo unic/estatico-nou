@@ -18,8 +18,9 @@ const defaults = dev => ({
       browsers: ['last 1 version'],
     },
     clean: dev ? null : {},
-    rename: dev ? null : file => file.path.replace(path.extname(file.path), ext => `.min${ext}`),
+    clone: dev ? null : {},
   },
+  minifiedSuffix: '.min',
   logger,
 });
 
@@ -53,6 +54,7 @@ module.exports = (options, dev) => {
     const sourcemaps = require('gulp-sourcemaps'); // eslint-disable-line global-require
     const through = require('through2'); // eslint-disable-line global-require
     const size = require('gulp-size'); // eslint-disable-line global-require
+    const filterStream = require('postcss-filter-stream'); // eslint-disable-line global-require
 
     if (config.plugins.autoprefixer) {
       const info = autoprefixer(config.plugins.autoprefixer).info();
@@ -77,23 +79,25 @@ module.exports = (options, dev) => {
       // Sass
       .pipe(sass(config.plugins.sass).on('error', err => config.logger.error(err, dev)))
 
-      // PostCSS
-      .pipe(postcss([]
-        .concat(config.plugins.autoprefixer ? autoprefixer(config.plugins.autoprefixer) : [])
-        .concat(config.plugins.clean ? clean(config.plugins.clean) : [])))
+      // Clone for production version
+      .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
+        if (config.plugins.clean) {
+          const clone = file.clone();
 
-      // Optional rename, allows to add .min prefix, e.g.
-      .pipe(through.obj((file, enc, done) => {
-        if (config.plugins.rename) {
-          const filePath = config.plugins.rename(file);
+          clone.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`);
 
-          file.path = filePath; // eslint-disable-line no-param-reassign
+          config.logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
 
-          config.logger.debug('rename', `Rename ${chalk.yellow(file.path)} to ${chalk.yellow(filePath)}`);
+          this.push(clone);
         }
 
         done(null, file);
       }))
+
+      // PostCSS
+      .pipe(postcss([]
+        .concat(config.plugins.autoprefixer ? autoprefixer(config.plugins.autoprefixer) : [])
+        .concat(config.plugins.clean ? filterStream(['**/*', `!**/*${config.minifiedSuffix}*`], clean(config.plugins.clean)) : [])))
 
       .pipe(sourcemaps.write('.', {
         includeContent: false,
