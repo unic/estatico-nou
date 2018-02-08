@@ -220,12 +220,12 @@ gulp.task('css:lint', estaticoStylelint({
   ],
   srcBase: './src/',
   dest: './dist',
-  watch: {
-    src: [
-      './src/**/*.scss',
-    ],
-    name: 'css:lint',
-  },
+  // watch: {
+  //   src: [
+  //     './src/**/*.scss',
+  //   ],
+  //   name: 'css:lint',
+  // },
 }, env));
 
 /**
@@ -393,20 +393,30 @@ gulp.task('serve', estaticoBrowsersync({
  */
 gulp.task('clean', () => del('./dist'));
 
-// gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint', */ 'jsLint', 'jsTest'));
-// gulp.task('build', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'lint'));
-// gulp.task('dev', gulp.parallel('watch', 'serve'));
+/**
+ * Test & lint / validate
+ */
+gulp.task('lint', gulp.parallel(/* 'css:lint', */ 'js:lint'));
+gulp.task('test', gulp.parallel('html:validate', 'js:test'));
+
+/**
+ * Create complete build
+ */
+gulp.task('build', gulp.series('clean', 'lint', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'test'));
 
 /**
  * Default development task
+ * Prompts whether build should be created initially
+ *
+ * --noInteractive / --skipBuild will bypass the prompt
  */
 gulp.task('default', (done) => {
   const cb = (skipBuild) => {
     if (skipBuild) {
-      return gulp.series('dev')(done);
+      return gulp.series('serve')(done);
     }
 
-    return gulp.series('build', 'dev')(done);
+    return gulp.series('build', 'serve')(done);
   };
 
   if (!env.noInteractive && !env.skipBuild) {
