@@ -15,7 +15,9 @@ const defaults = {
 test.cb('Catches JavaScript error', (t) => {
   const spy = sinon.spy(console, 'log');
 
-  task(defaults, true)().then(() => {
+  task(defaults, {
+    dev: true,
+  })().then(() => {
     spy.restore();
 
     const log = utils.stripLogs(spy);

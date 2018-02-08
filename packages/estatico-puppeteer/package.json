@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/index.js --serial --verbose"
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-puppeteer -- npm test"
   },
   "author": "Unic AG",
   "license": "MIT",

@@ -1,6 +1,6 @@
 # @unic/estatico-puppeteer
 
-Open local files in [Puppeteer](https://github.com/GoogleChrome/puppeteer)
+Uses [Puppeteer](https://github.com/GoogleChrome/puppeteer) to check for JS errors and run tests
 
 ## Installation
 
@@ -17,42 +17,59 @@ const task = require('@unic/estatico-puppeteer');
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * JavaScript testing task
+ * Uses Puppeteer to check for JS errors and run tests
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js:test', estaticoPuppeteer({
   src: [
     './dist/{pages,modules,demo}/**/*.html',
   ],
   srcBase: './dist',
+  watch: {
+    src: [
+      './dist/{pages,modules,demo}/**/*.html',
+    ],
+    name: 'js:test', // Displayed in watch log
+  },
   viewports: {
     mobile: {
       width: 400,
       height: 1000,
       isMobile: true,
     },
-    tablet: {
-      width: 700,
-      height: 1000,
-      isMobile: true,
-    },
+    // tablet: {
+    //   width: 700,
+    //   height: 1000,
+    //   isMobile: true,
+    // },
     desktop: {
       width: 1400,
       height: 1000,
     },
   },
-};
+  plugins: {
+    interact: async (page) => {
+      // Run tests
+      const results = await estaticoQunit.puppeteer.run(page);
 
-gulp.task('jsTest', () => task(options, env.dev));
+      // Report results
+      if (results) {
+        estaticoQunit.puppeteer.log(results);
+      }
+    },
+  },
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
-`$ npm run gulp jsTest`
-
-Run with debug info:
-`$ NODE_DEBUG=estatico-puppeteer npm run gulp jsTest`
+`$ npm run gulp js:test`
 
 ## API
 
-`task(options, isDev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
 
@@ -70,19 +87,19 @@ Default: `null`
 
 Passed as `base` option to `gulp.src`.
 
+#### watch
+
+Type: `Object`<br>
+Default: `null`
+
+Passed to file watcher when `--watch` is used.
+
 #### viewports
 
 Type: `Object`<br>
 Default: `null`
 
 Every item is passed to Puppeteer's [`setViewport`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
-
-#### logger
-
-Type: `{ info: Function, debug: Function, error: Function }`<br>
-Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
-
-Set of logger utility functions used within the task.
 
 #### plugins
 
@@ -102,12 +119,19 @@ Default: `null`
 
 Interact with page (evaluating code, taking screenshots etc.). See [Puppeteer](https://github.com/GoogleChrome/puppeteer) for available API on `page` object.
 
-### dev
+#### logger
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Whether we are in dev mode. Some defaults are affected by this.
+Set of logger utility functions used within the task.
+
+### env
+
+Type: `Object`<br>
+Default: `{}`
+
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Some defaults are affected by this, see above.
 
 ## License
 

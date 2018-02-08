@@ -173,6 +173,53 @@ gulp.task('js:lint', estaticoEslint({
 }, env));
 
 /**
+ * JavaScript testing task
+ * Uses Puppeteer to check for JS errors and run tests
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js:test', estaticoPuppeteer({
+  src: [
+    './dist/{pages,modules,demo}/**/*.html',
+  ],
+  srcBase: './dist',
+  watch: {
+    src: [
+      './dist/{pages,modules,demo}/**/*.html',
+    ],
+    name: 'js:test', // Displayed in watch log
+  },
+  viewports: {
+    mobile: {
+      width: 400,
+      height: 1000,
+      isMobile: true,
+    },
+    // tablet: {
+    //   width: 700,
+    //   height: 1000,
+    //   isMobile: true,
+    // },
+    desktop: {
+      width: 1400,
+      height: 1000,
+    },
+  },
+  plugins: {
+    interact: async (page) => {
+      // Run tests
+      const results = await estaticoQunit.puppeteer.run(page);
+
+      // Report results
+      if (results) {
+        estaticoQunit.puppeteer.log(results);
+      }
+    },
+  },
+}, env));
+
+
+/**
  * Serve task
  * Uses Browsersync to serve the build directory, reloads on changes
  */
@@ -269,39 +316,6 @@ const config = {
     ],
     logger: defaults.logger,
   }),
-  jsTest: {
-    src: [
-      './dist/{pages,modules,demo}/**/*.html',
-    ],
-    srcBase: './dist',
-    viewports: {
-      mobile: {
-        width: 400,
-        height: 1000,
-        isMobile: true,
-      },
-      // tablet: {
-      //   width: 700,
-      //   height: 1000,
-      //   isMobile: true,
-      // },
-      desktop: {
-        width: 1400,
-        height: 1000,
-      },
-    },
-    plugins: {
-      interact: async (page) => {
-        // Run tests
-        const results = await estaticoQunit.puppeteer.run(page);
-
-        // Report results
-        if (results) {
-          estaticoQunit.puppeteer.log(results);
-        }
-      },
-    },
-  },
   svgsprite: {
     src: {
       main: './src/assets/media/svg/**/*.svg',
@@ -317,7 +331,6 @@ const tasks = {
   htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
   cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
-  jsTest: estaticoPuppeteer(config.jsTest, env.dev),
   svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
   clean: () => del('./dist'),
 };
