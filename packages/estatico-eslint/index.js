@@ -76,13 +76,22 @@ const task = (config, env = {}) => {
     .pipe(eslint(config.plugins.eslint).on('error', err => config.config.logger.error(err, env.dev)))
     .pipe(eslint.formatEach())
     .pipe(through.obj((file, enc, done) => {
-      if (file.eslint && file.eslint.errorCount > 0) {
+      if (file.eslint && (file.eslint.errorCount > 0 || file.eslint.fixed)) {
         const relFilePath = path.relative(config.srcBase, file.path);
 
-        config.logger.error(new Error(`Linting error in file ${chalk.yellow(relFilePath)} (details above)`), env.dev);
+        if (file.eslint.errorCount > 0) {
+          config.logger.error(new Error(`Linting error in file ${chalk.yellow(relFilePath)} (details above)`), env.dev);
+        }
+
+        // Only keep file in stream if it was fixed
+        if (eslint.eslint.fixed) {
+          config.logger.info(`Fixed linting issues in ${chalk.yellow(relFilePath)}`);
+
+          return done(null, file);
+        }
       }
 
-      return done(null, file);
+      return done();
     }))
 
     // Optionally write back to disc
