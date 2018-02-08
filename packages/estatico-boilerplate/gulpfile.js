@@ -38,6 +38,12 @@ gulp.task('css', estaticoSass({
   ],
   srcBase: './src/',
   dest: './dist',
+  watch: {
+    src: [
+      './src/**/*.scss',
+    ],
+    name: 'css', // Displayed in watch log
+  },
   plugins: {
     sass: {
       includePaths: [
@@ -50,14 +56,27 @@ gulp.task('css', estaticoSass({
       ],
     },
   },
-  watch: {
-    src: [
-      './src/**/*.scss',
-    ],
-    name: 'css', // Displayed in watch log
-  },
 }, env));
 
+/**
+ * JavaScript linting task
+ * Uses ESLint to lint and autofix files
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js:lint', estaticoEslint({
+  src: [
+    './src/**/*.js',
+  ],
+  srcBase: './src',
+  dest: './src',
+  watch: {
+    src: [
+      './src/**/*.js',
+    ],
+    name: 'js:lint', // Displayed in watch log
+  },
+}, env));
 
 /**
  * Serve task
@@ -283,13 +302,6 @@ const config = {
     srcBase: './src',
     dest: './dist',
   },
-  jsLint: {
-    src: [
-      './src/**/*.js',
-    ],
-    srcBase: './src',
-    dest: './src',
-  },
 };
 
 // Exemplary tasks
@@ -299,7 +311,6 @@ const tasks = {
   cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
   jsTest: estaticoPuppeteer(config.jsTest, env.dev),
-  jsLint: estaticoEslint(config.jsLint, env.dev),
   svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
   clean: () => del('./dist'),
 };
@@ -330,9 +341,9 @@ Object.keys(tasks).forEach((task) => {
   gulp.task(task, tasks[task]);
 });
 
-gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint', */ 'jsLint', 'jsTest'));
-gulp.task('build', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'lint'));
-gulp.task('dev', gulp.parallel('watch', 'serve'));
+// gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint', */ 'jsLint', 'jsTest'));
+// gulp.task('build', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'lint'));
+// gulp.task('dev', gulp.parallel('watch', 'serve'));
 
 gulp.task('default', (done) => {
   const cb = (skipBuild) => {
