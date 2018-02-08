@@ -9,9 +9,9 @@
   "author": "Unic AG",
   "license": "MIT",
   "dependencies": {
-    "browser-sync": "^2.23.6",
-    "chalk": "^2.3.0",
     "@unic/estatico-utils": "^0.0.1",
+    "browser-sync": "^2.23.6",
+    "joi": "^13.1.2",
     "lodash.merge": "^4.6.0"
   },
   "engines": {

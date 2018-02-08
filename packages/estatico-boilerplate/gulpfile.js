@@ -1,5 +1,4 @@
 /* eslint-disable global-require */
-
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
@@ -58,6 +57,21 @@ gulp.task('css', estaticoSass({
     name: 'css', // Displayed in watch log
   },
 }, env));
+
+
+/**
+ * Serve task
+ * Uses Browsersync to serve the build directory, reloads on changes
+ */
+gulp.task('serve', estaticoBrowsersync({
+  plugins: {
+    browsersync: {
+      server: './dist',
+      watch: './dist/**/*.{html,css,js}',
+    },
+  },
+}, env));
+
 
 // Exemplary custom config
 const config = {
@@ -276,14 +290,6 @@ const config = {
     srcBase: './src',
     dest: './src',
   },
-  serve: {
-    plugins: {
-      browsersync: {
-        server: './dist',
-        watch: './dist/**/*.{html,css,js}',
-      },
-    },
-  },
 };
 
 // Exemplary tasks
@@ -295,7 +301,6 @@ const tasks = {
   jsTest: estaticoPuppeteer(config.jsTest, env.dev),
   jsLint: estaticoEslint(config.jsLint, env.dev),
   svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
-  serve: estaticoBrowsersync(config.serve, env.dev),
   clean: () => del('./dist'),
 };
 
