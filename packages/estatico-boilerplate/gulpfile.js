@@ -13,7 +13,6 @@ const estaticoHtmlValidate = require('@unic/estatico-w3c-validator');
 const estaticoSass = require('@unic/estatico-sass');
 const estaticoStylelint = require('@unic/estatico-stylelint');
 const estaticoWebpack = require('@unic/estatico-webpack');
-const estaticoWatch = require('@unic/estatico-watch');
 const estaticoPuppeteer = require('@unic/estatico-puppeteer');
 const estaticoQunit = require('@unic/estatico-qunit');
 const estaticoSvgsprite = require('@unic/estatico-svgsprite');
@@ -159,7 +158,7 @@ gulp.task('css', estaticoSass({
     src: [
       './src/**/*.scss',
     ],
-    name: 'css', // Displayed in watch log
+    name: 'css',
   },
   plugins: {
     sass: {
@@ -193,7 +192,7 @@ gulp.task('css', estaticoSass({
     src: [
       './src/**/*.scss',
     ],
-    name: 'css', // Displayed in watch log
+    name: 'css',
   },
   plugins: {
     sass: {
@@ -230,6 +229,72 @@ gulp.task('css:lint', estaticoStylelint({
 }, env));
 
 /**
+ * JavaScript bundling task
+ * Uses Webpack with Babel to transpile and bundle JavaScript.
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js', estaticoWebpack(defaults => ({
+  webpack: [
+    merge({}, defaults.webpack, {
+      entry: Object.assign({
+        head: './src/assets/js/head.js',
+        main: './src/assets/js/main.js',
+      }, env.dev ? {
+        dev: './src/assets/js/dev.js',
+      } : {}),
+      output: {
+        path: path.resolve('./dist/assets/js'),
+      },
+    }),
+    {
+      entry: {
+        test: './src/preview/assets/js/test.js',
+      },
+      module: {
+        rules: defaults.webpack.module.rules.concat([
+          {
+            test: /qunit\.js$/,
+            loader: 'expose-loader?QUnit',
+          },
+          {
+            test: /\.css$/,
+            loader: 'style-loader!css-loader',
+          },
+        ]),
+      },
+      externals: {
+        jquery: 'jQuery',
+      },
+      output: {
+        path: path.resolve('./dist/preview/assets/js'),
+      },
+      mode: 'development',
+    },
+    {
+      // Create object of fileName:filePath pairs
+      entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
+        const key = path.basename(item, path.extname(item));
+
+        obj[key] = item; // eslint-disable-line no-param-reassign
+
+        return obj;
+      }, {}),
+      module: defaults.webpack.module,
+      externals: {
+        jquery: 'jQuery',
+        qunit: 'QUnit',
+      },
+      output: {
+        path: path.resolve('./dist/preview/assets/js/test'),
+      },
+      mode: 'development',
+    },
+  ],
+  logger: defaults.logger,
+}), env));
+
+/**
  * JavaScript linting task
  * Uses ESLint to lint and autofix files
  *
@@ -245,7 +310,7 @@ gulp.task('js:lint', estaticoEslint({
     src: [
       './src/**/*.js',
     ],
-    name: 'js:lint', // Displayed in watch log
+    name: 'js:lint',
   },
 }, env));
 
@@ -262,9 +327,9 @@ gulp.task('js:test', estaticoPuppeteer({
   srcBase: './dist',
   watch: {
     src: [
-      './dist/{pages,modules,demo}/**/*.html',
+      './src/**/*.test.js',
     ],
-    name: 'js:test', // Displayed in watch log
+    name: 'js:test',
   },
   viewports: {
     mobile: {
@@ -298,6 +363,8 @@ gulp.task('js:test', estaticoPuppeteer({
 /**
  * SVG spriting task
  * Uses svgstore to create a sprite from multiple SVGs
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
 gulp.task('svgsprite', estaticoSvgsprite({
   src: {
@@ -321,106 +388,18 @@ gulp.task('serve', estaticoBrowsersync({
   },
 }, env));
 
-
-// Exemplary custom config
-const config = {
-  js: defaults => ({
-    webpack: [
-      merge({}, defaults.webpack, {
-        entry: Object.assign({
-          head: './src/assets/js/head.js',
-          main: './src/assets/js/main.js',
-        }, env.dev ? {
-          dev: './src/assets/js/dev.js',
-        } : {}),
-        output: {
-          path: path.resolve('./dist/assets/js'),
-        },
-      }),
-      {
-        entry: {
-          test: './src/preview/assets/js/test.js',
-        },
-        module: {
-          rules: defaults.webpack.module.rules.concat([
-            {
-              test: /qunit\.js$/,
-              loader: 'expose-loader?QUnit',
-            },
-            {
-              test: /\.css$/,
-              loader: 'style-loader!css-loader',
-            },
-          ]),
-        },
-        externals: {
-          jquery: 'jQuery',
-        },
-        output: {
-          path: path.resolve('./dist/preview/assets/js'),
-        },
-        mode: 'development',
-      },
-      {
-        // Create object of fileName:filePath pairs
-        entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
-          const key = path.basename(item, path.extname(item));
-
-          obj[key] = item; // eslint-disable-line no-param-reassign
-
-          return obj;
-        }, {}),
-        module: defaults.webpack.module,
-        externals: {
-          jquery: 'jQuery',
-          qunit: 'QUnit',
-        },
-        output: {
-          path: path.resolve('./dist/preview/assets/js/test'),
-        },
-        mode: 'development',
-      },
-    ],
-    logger: defaults.logger,
-  }),
-};
-
-// Exemplary tasks
-const tasks = {
-  js: estaticoWebpack(config.js, env.dev),
-  clean: () => del('./dist'),
-};
-
-// Register watchers
-tasks.watch = () => {
-  Object.keys(tasks).forEach((task) => {
-    if (!(config[task] && config[task].watch)) {
-      return;
-    }
-
-    const watchConfig = merge({}, {
-      task: tasks[task],
-      name: task,
-    }, config[task].watch);
-
-    const watcher = estaticoWatch(watchConfig);
-
-    watcher();
-  });
-
-  // Start webpack watcher
-  tasks.js(() => {}, true);
-};
-
-// Register with gulp
-Object.keys(tasks).forEach((task) => {
-  gulp.task(task, tasks[task]);
-});
+/**
+ * Clean build directory
+ */
+gulp.task('clean', () => del('./dist'));
 
 // gulp.task('lint', gulp.parallel(/* 'htmlValidate', 'cssLint', */ 'jsLint', 'jsTest'));
 // gulp.task('build', gulp.series('clean', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'lint'));
 // gulp.task('dev', gulp.parallel('watch', 'serve'));
 
+/**
+ * Default development task
+ */
 gulp.task('default', (done) => {
   const cb = (skipBuild) => {
     if (skipBuild) {

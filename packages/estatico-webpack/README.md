@@ -1,6 +1,6 @@
 # @unic/estatico-webpack
 
-Bundles JavaScript, transpiles via [`babel`](https://www.npmjs.com/package/babel).
+Uses Webpack with Babel to transpile and bundle JavaScript.
 
 ## Installation
 
@@ -12,15 +12,18 @@ $ npm install --save-dev @unic/estatico-webpack
 
 ```js
 const gulp = require('gulp');
-const glob = require('glob');
-const path = require('path');
-const task = require('@unic/estatico-webpack');
+const task = estaticoWebpack('@unic/estatico-webpack');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep merged with defaults
-const options = defaults => ({
+/**
+ * JavaScript bundling task
+ * Uses Webpack with Babel to transpile and bundle JavaScript.
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js', estaticoWebpack(defaults => ({
   webpack: [
     merge({}, defaults.webpack, {
       entry: Object.assign({
@@ -33,12 +36,12 @@ const options = defaults => ({
         path: path.resolve('./dist/assets/js'),
       },
     }),
-    merge({}, defaults.webpack, {
+    {
       entry: {
         test: './src/preview/assets/js/test.js',
       },
       module: {
-        rules: [
+        rules: defaults.webpack.module.rules.concat([
           {
             test: /qunit\.js$/,
             loader: 'expose-loader?QUnit',
@@ -47,7 +50,7 @@ const options = defaults => ({
             test: /\.css$/,
             loader: 'style-loader!css-loader',
           },
-        ],
+        ]),
       },
       externals: {
         jquery: 'jQuery',
@@ -55,8 +58,9 @@ const options = defaults => ({
       output: {
         path: path.resolve('./dist/preview/assets/js'),
       },
-    }),
-    merge({}, defaults.webpack, {
+      mode: 'development',
+    },
+    {
       // Create object of fileName:filePath pairs
       entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
         const key = path.basename(item, path.extname(item));
@@ -65,6 +69,7 @@ const options = defaults => ({
 
         return obj;
       }, {}),
+      module: defaults.webpack.module,
       externals: {
         jquery: 'jQuery',
         qunit: 'QUnit',
@@ -72,12 +77,11 @@ const options = defaults => ({
       output: {
         path: path.resolve('./dist/preview/assets/js/test'),
       },
-    }),
+      mode: 'development',
+    },
   ],
   logger: defaults.logger,
-});
-
-gulp.task('js', () => task(options, env.dev));
+}), env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

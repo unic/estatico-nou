@@ -22,7 +22,9 @@ test.cb('default', (t) => {
 });
 
 test.cb('dev', (t) => {
-  task(defaults, true)(() => {
+  task(defaults, {
+    dev: true,
+  })(() => {
     const hasMinifiedFile = fs.existsSync('./expected/dev/main.min.js');
 
     t.is(hasMinifiedFile, false);
