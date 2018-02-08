@@ -49,7 +49,7 @@ Add the following config to the `estatico-handlebars`'s options:
 };
 ```
 
-Include partial in `src/preview/partials/test.hbs`, e.g.:
+Use helper in `src/preview/partials/test.hbs`, e.g.:
 ```hbs
 {{{qunit mainTestScript="/preview/assets/js/test.js" testScripts=meta.testScripts}}}
 ```
