@@ -1,10 +1,29 @@
-const chalk = require('chalk');
-const merge = require('lodash.merge');
-const { Logger } = require('@unic/estatico-utils');
+/* eslint-disable global-require, no-await-in-loop */
+const { Plugin, Logger } = require('@unic/estatico-utils');
+const Joi = require('joi');
 
-const logger = new Logger('estatico-watch');
+// Config schema used for validation
+const schema = Joi.object().keys({
+  src: [Joi.string().required(), Joi.array().required()],
+  task: Joi.func().required(),
+  name: Joi.string().required(),
+  once: Joi.boolean(),
+  plugins: {
+    chokidar: Joi.object().allow(null),
+  },
+  logger: Joi.object().keys({
+    info: Joi.func(),
+    error: Joi.func(),
+    debug: Joi.func(),
+  }),
+});
 
-const defaults = {
+/**
+ * Default config
+ * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @return {object}
+ */
+const defaults = (/* env */) => ({
   src: null,
   task: null,
   name: null,
@@ -15,88 +34,89 @@ const defaults = {
       usePolling: false,
     },
   },
-  logger,
-};
+  logger: new Logger('estatico-watch'),
+});
 
-module.exports = (options, dev) => {
-  let config = {};
+/**
+ * Task function
+ * @param {object} config - Complete task config
+ * @param {object} env - Environment config, e.g. { dev: true }
+ * @param {object} [watcher] - Watch file events
+ * @return {object} gulp stream
+ */
+const task = (config /* , env = {} */) => {
+  const gulp = require('gulp'); // eslint-disable-line global-require
+  const path = require('path'); // eslint-disable-line global-require
+  const decache = require('decache'); // eslint-disable-line global-require
 
-  if (typeof options === 'function') {
-    config = options(defaults);
-  } else {
-    config = merge({}, defaults, options);
+  const DependencyGraph = require('./lib/dependencygraph'); // eslint-disable-line global-require
+
+  let dependencyGraph;
+
+  if (config.dependencyGraph) {
+    dependencyGraph = new DependencyGraph(Object.assign({
+      paths: config.src,
+    }, config.dependencyGraph));
   }
 
-  if (!config.src) {
-    config.logger.error(new Error(`${chalk.bold('options.src')} is missing for ${chalk.cyan(options.name)}`), dev);
-  }
-  if (!config.task) {
-    config.logger.error(new Error(`${chalk.bold('options.task')}' is missing for ${chalk.cyan(options.name)}`), dev);
-  }
-  if (!config.name) {
-    config.logger.error(new Error(`${chalk.bold('options.nam')}' is missing for ${chalk.cyan(options.name)}`), dev);
-  }
+  let events = [];
 
-  return () => {
-    const gulp = require('gulp'); // eslint-disable-line global-require
-    const path = require('path'); // eslint-disable-line global-require
-    const decache = require('decache'); // eslint-disable-line global-require
+  // Create named callback function for gulp-cli to be able to log it
+  const cb = {
+    [config.name]() {
+      const resolvedGraph = dependencyGraph ? events.map((event) => {
+        const resolvedPath = path.resolve(config.dependencyGraph.srcBase, event.path);
+        const ancestors = dependencyGraph.getAncestors(resolvedPath);
 
-    const DependencyGraph = require('./lib/dependencygraph'); // eslint-disable-line global-require
+        return ancestors.concat(resolvedPath);
+      }).reduce((curr, acc) => acc.concat(curr), []) : [];
 
-    let dependencyGraph;
+      // Remove data files from require cache
+      resolvedGraph.forEach(decache);
 
-    if (config.dependencyGraph) {
-      dependencyGraph = new DependencyGraph(Object.assign({
-        paths: config.src,
-      }, config.dependencyGraph));
-    }
-
-    let events = [];
-
-    // Create named callback function for gulp-cli to be able to log it
-    const cb = {
-      [config.name]() {
-        const resolvedGraph = dependencyGraph ? events.map((event) => {
-          const resolvedPath = path.resolve(config.dependencyGraph.srcBase, event.path);
-          const ancestors = dependencyGraph.getAncestors(resolvedPath);
-
-          return ancestors.concat(resolvedPath);
-        }).reduce((curr, acc) => acc.concat(curr), []) : [];
-
-        // Remove data files from require cache
-        resolvedGraph.forEach(decache);
-
-        // Run task function with queued events as parameter
-        const task = config.task({
-          events,
-          resolvedGraph,
-        });
-
-        config.logger.debug(config.name, `Resolving the following events: ${events}`);
-
-        // Reset events
-        events = [];
-
-        return task;
-      },
-    };
-
-    const watcher = gulp.watch(config.src, config.plugins.chokidar, cb[config.name]);
-
-    watcher.on('all', (event, filePath) => {
-      events.push({
-        event,
-        path: filePath,
+      // Run task function with queued events as parameter
+      const watchedTask = config.task({
+        events,
+        resolvedGraph,
       });
 
-      // Close after first run if `once` is true
-      // Useful when starting a task having its own file watcher (i.e. webpack)
-      if (config.once) {
-        watcher.close();
-      }
+      config.logger.debug(config.name, `Resolving the following events: ${events}`);
+
+      // Reset events
+      events = [];
+
+      return watchedTask;
+    },
+  };
+
+  const watcher = gulp.watch(config.src, config.plugins.chokidar, cb[config.name]);
+
+  watcher.on('all', (event, filePath) => {
+    events.push({
+      event,
+      path: filePath,
     });
 
-    return watcher;
-  };
+    // Close after first run if `once` is true
+    // Useful when starting a task having its own file watcher (i.e. webpack)
+    if (config.once) {
+      watcher.close();
+    }
+  });
+
+  return watcher;
 };
+
+/**
+ * @param {object|func} options - Custom config
+ *  Either deep-merged (object) or called (func) with defaults
+ * @param {object} env - Optional environment config, e.g. { dev: true }, passed to defaults
+ * @return {func} Task function from above with bound config and env
+ */
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});
