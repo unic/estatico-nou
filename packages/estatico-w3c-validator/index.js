@@ -1,69 +1,99 @@
-const chalk = require('chalk');
-const merge = require('lodash.merge');
-const { Logger } = require('@unic/estatico-utils');
+/* eslint-disable global-require, no-await-in-loop */
+const { Plugin, Logger } = require('@unic/estatico-utils');
+const Joi = require('joi');
 
-const logger = new Logger('estatico-w3c-validator');
+// Config schema used for validation
+const schema = Joi.object().keys({
+  src: [Joi.string().required(), Joi.array().required()],
+  srcBase: Joi.string().required(),
+  watch: Joi.object().keys({
+    src: [Joi.string().required(), Joi.array().required()],
+    name: Joi.string().required(),
+  }).allow(null),
+  plugins: {
+    w3cjs: Joi.object().allow(null),
+  },
+  logger: Joi.object().keys({
+    info: Joi.func(),
+    error: Joi.func(),
+    debug: Joi.func(),
+  }),
+});
 
-const defaults = (/* dev */) => ({
+/**
+ * Default config
+ * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @return {object}
+ */
+const defaults = (/* env */) => ({
   src: null,
   srcBase: null,
+  watch: null,
   plugins: {
     w3cjs: {
       // url: 'http://localhost:8888'
     },
   },
-  logger,
+  logger: new Logger('estatico-w3c-validator'),
 });
 
-module.exports = (options, dev) => {
-  let config = {};
+/**
+ * Task function
+ * @param {object} config - Complete task config
+ * @param {object} env - Environment config, e.g. { dev: true }
+ * @param {object} [watcher] - Watch file events
+ * @return {object} gulp stream
+ */
+const task = (config, env = {}) => {
+  const gulp = require('gulp');
+  const plumber = require('gulp-plumber');
+  const changed = require('gulp-changed-in-place');
+  const w3cjs = require('gulp-w3cjs');
+  const through = require('through2');
+  const PluginError = require('plugin-error');
+  const chalk = require('chalk');
 
-  if (typeof options === 'function') {
-    config = options(defaults(dev));
-  } else {
-    config = merge({}, defaults(dev), options);
-  }
+  return gulp.src(config.src, {
+    base: config.srcBase,
+  })
 
-  if (!config.src) {
-    throw new Error('\'options.src\' is missing');
-  }
+    // Prevent stream from unpiping on error
+    .pipe(plumber())
 
-  return () => {
-    const gulp = require('gulp'); // eslint-disable-line global-require
-    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
-    const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
-    const w3cjs = require('gulp-w3cjs'); // eslint-disable-line global-require
-    const through = require('through2'); // eslint-disable-line global-require
-    const PluginError = require('plugin-error'); // eslint-disable-line global-require
+    // Do not pass unchanged files
+    .pipe(changed({
+      firstPass: true,
+    }))
 
-    return gulp.src(config.src, {
-      base: config.srcBase,
-    })
+    // Send to validation API
+    .pipe(w3cjs(config.plugins.w3cjs))
 
-      // Prevent stream from unpiping on error
-      .pipe(plumber())
+    // Handle errors
+    .pipe(through.obj((file, enc, done) => {
+      config.logger.info(`Tested ${chalk.yellow(file.path)}`);
 
-      // Do not pass unchanged files
-      .pipe(changed({
-        firstPass: true,
-      }))
+      if (!file.w3cjs.success) {
+        const err = new PluginError('reporter', 'Linting error (details above)');
 
-      // Send to validation API
-      .pipe(w3cjs(config.plugins.w3cjs))
+        err.fileName = file.path;
 
-      // Handle errors
-      .pipe(through.obj((file, enc, done) => {
-        config.logger.info(`Tested ${chalk.yellow(file.path)}`);
+        return done(err, file);
+      }
 
-        if (!file.w3cjs.success) {
-          const err = new PluginError('reporter', 'Linting error (details above)');
-
-          err.fileName = file.path;
-
-          return done(err, file);
-        }
-
-        return done(null, file);
-      }).on('error', err => config.logger.error(err, dev)));
-  };
+      return done(null, file);
+    }).on('error', err => config.logger.error(err, env.dev)));
 };
+
+/**
+ * @param {object|func} options - Custom config
+ *  Either deep-merged (object) or called (func) with defaults
+ * @param {object} env - Optional environment config, e.g. { dev: true }, passed to defaults
+ * @return {func} Task function from above with bound config and env
+ */
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});

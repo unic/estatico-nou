@@ -12,25 +12,33 @@ $ npm install --save-dev @unic/estatico-w3c-validator
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-w3c-validator');
+const estaticoHtmlValidate = require('@unic/estatico-w3c-validator');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * HTML validation task
+ * Sends HTML pages through the [w3c validator](https://validator.w3.org/).
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('html:validate', estaticoHtmlValidate({
   src: [
-    './src/*.hbs',
-    './src/pages/**/*.hbs',
-    './src/demo/pages/**/*.hbs',
-    './src/modules/**/!(_)*.hbs',
-    './src/demo/modules/**/!(_)*.hbs',
-    './src/preview/styleguide/*.hbs',
+    './dist/*.html',
+    './dist/modules/**/*.html',
+    './dist/pages/**/*.html',
   ],
-  srcBase: './src',
-};
-
-gulp.task('htmlValidate', () => task(options, env.dev));
+  srcBase: './dist/',
+  watch: {
+    src: [
+      './dist/*.html',
+      './dist/modules/**/*.html',
+      './dist/pages/**/*.html',
+    ],
+    name: 'html:validate',
+  },
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
@@ -38,7 +46,7 @@ Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": 
 
 ## API
 
-`task(options, isDev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
 
@@ -58,12 +66,12 @@ Passed as `base` option to `gulp.src`.
 
 Recommendation for Estático: `'./dist'`
 
-#### logger
+#### watch
 
-Type: `{ info: Function, debug: Function, error: Function }`<br>
-Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
+Type: `Object`<br>
+Default: `null`
 
-Set of logger utility functions used within the task.
+Passed to file watcher when `--watch` is used.
 
 #### plugins
 
@@ -79,12 +87,19 @@ Default:
 
 Passed to [`gulp-w3cjs`](https://www.npmjs.com/package/gulp-w3cjs).
 
-### dev
+#### logger
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Whether we are in dev mode. Some defaults might be affected by this.
+Set of logger utility functions used within the task.
+
+### env
+
+Type: `Object`<br>
+Default: `{}`
+
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Some defaults are affected by this, see above.
 
 ## License
 

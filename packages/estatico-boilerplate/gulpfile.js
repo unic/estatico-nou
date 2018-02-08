@@ -119,6 +119,29 @@ gulp.task('html', estaticoHandlebars({
 }, env));
 
 /**
+ * HTML validation task
+ * Sends HTML pages through the [w3c validator](https://validator.w3.org/).
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('html:validate', estaticoHtmlValidate({
+  src: [
+    './dist/*.html',
+    './dist/modules/**/*.html',
+    './dist/pages/**/*.html',
+  ],
+  srcBase: './dist/',
+  watch: {
+    src: [
+      './dist/*.html',
+      './dist/modules/**/*.html',
+      './dist/pages/**/*.html',
+    ],
+    name: 'html:validate',
+  },
+}, env));
+
+/**
  * CSS task
  * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
  *
@@ -301,21 +324,6 @@ gulp.task('serve', estaticoBrowsersync({
 
 // Exemplary custom config
 const config = {
-  htmlValidate: {
-    src: [
-      './dist/*.html',
-      './dist/modules/**/*.html',
-      './dist/pages/**/*.html',
-    ],
-    srcBase: './dist/',
-    watch: {
-      src: [
-        './dist/*.html',
-        './dist/modules/**/*.html',
-        './dist/pages/**/*.html',
-      ],
-    },
-  },
   js: defaults => ({
     webpack: [
       merge({}, defaults.webpack, {
@@ -379,7 +387,6 @@ const config = {
 
 // Exemplary tasks
 const tasks = {
-  htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
   js: estaticoWebpack(config.js, env.dev),
   clean: () => del('./dist'),
 };
