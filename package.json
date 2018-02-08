@@ -13,6 +13,6 @@
   "scripts": {
     "lint": "eslint --fix \"{,**,**/**}*.js\"",
     "update-dependencies": "npx npm-check-updates -u -a",
-    "test": "lerna exec -- npm run test"
+    "test": "lerna exec -- npm test"
   }
 }

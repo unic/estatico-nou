@@ -11,7 +11,7 @@ Every package in `packages/` can be developed separately. However, they can shar
 
 ### Manage npm dependencies
 
-Since lerna does magic things with packages (symlinking local ones etc.), we need to use `lerna add` to add new dependencies to a package. Examples: `lerna add node-sass --scope=estatico-sass` or `lerna add left-pad --dev --scope=estatico-boilerplate`.
+Since lerna does magic things with packages (symlinking local ones etc.), we need to use `lerna add` to add new dependencies to a package. Examples: `lerna add node-sass --scope=@unic/estatico-sass` or `lerna add left-pad --dev --scope=@unic/estatico-boilerplate`.
 
 To remove dependencies, delete them from the corresponding `package.json`.
 
@@ -25,4 +25,4 @@ In the boilerplate, existing gulp tasks (see [gulpfile.js](packages/estatico-boi
 
 ### Tests
 
-To run all tests in every package we can call `lerna run test`. For a specific one we can use `lerna exec --scope estatico-stylelint -- npm run test`.
+To run all tests in every package we can call `lerna exec -- npm test`. For a specific one we can use `lerna exec --scope=@unic/estatico-stylelint -- npm test`.
