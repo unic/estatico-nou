@@ -1,6 +1,6 @@
 # @unic/estatico-sass
 
-Transforms `Sass` to `CSS`.
+Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
 
 ## Installation
 
@@ -31,6 +31,12 @@ gulp.task('css', estaticoSass({
   ],
   srcBase: './src/',
   dest: './dist',
+  watch: {
+    src: [
+      './src/**/*.scss',
+    ],
+    name: 'css', // Displayed in watch log
+  },
   plugins: {
     sass: {
       includePaths: [
@@ -42,12 +48,6 @@ gulp.task('css', estaticoSass({
         require('node-sass-json-importer'),
       ],
     },
-  },
-  watch: {
-    src: [
-      './src/**/*.scss',
-    ],
-    name: 'css', // Displayed in watch log
   },
 }, env));
 ```
@@ -84,6 +84,13 @@ Type: `String`<br>
 Default: `null`
 
 Passed to `gulp.dest`.
+
+#### watch
+
+Type: `Array` or `String`<br>
+Default: `null`
+
+Passed to file watcher when `--watch` is used.
 
 #### minifiedSuffix
 
