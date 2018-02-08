@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\""
   },
   "author": "Unic AG",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
   },
   "dependencies": {

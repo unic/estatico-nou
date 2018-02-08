@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\""
   },
   "author": "Unic AG",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@unic/estatico-utils": "^0.0.1",
     "browser-sync": "^2.23.6",

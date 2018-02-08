@@ -8,7 +8,7 @@
     "lerna-test": "lerna exec --scope @unic/estatico-stylelint -- npm test"
   },
   "author": "Unic AG",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {},
   "dependencies": {
     "chalk": "^2.3.0",

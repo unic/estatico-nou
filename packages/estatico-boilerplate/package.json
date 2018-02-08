@@ -8,7 +8,7 @@
     "gulp": "gulp"
   },
   "author": "Unic AG",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "del": "^3.0.0",
     "@unic/estatico-browsersync": "0.0.1",
