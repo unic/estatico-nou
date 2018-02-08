@@ -1,6 +1,6 @@
 # @unic/estatico-svgsprite
 
-Transforms `SVGs` into sprites.
+Uses `svgstore` to create a sprite from multiple SVGs.
 
 ## Installation
 
@@ -12,28 +12,27 @@ $ npm install --save-dev @unic/estatico-svgsprite
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-svgsprite');
+const estaticoSvgsprite = require('@unic/estatico-svgsprite');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * SVG spriting task
+ * Uses svgstore to create a sprite from multiple SVGs
+ */
+gulp.task('svgsprite', estaticoSvgsprite({
   src: {
     main: './src/assets/media/svg/**/*.svg',
+    demo: './src/demo/modules/svgsprite/svg/*.svg',
   },
   srcBase: './src',
   dest: './dist',
-};
-
-gulp.task('svgsprite', () => task(options, env.dev));
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp svgsprite`
-
-Run with debug info (showing you the autoprefixer setup, e.g.):
-`$ NODE_DEBUG=estatico-svgsprite npm run gulp svgsprite`
 
 ## API
 
@@ -62,12 +61,12 @@ Default: `null`
 
 Passed to `gulp.dest`.
 
-#### logger
+#### watch
 
-Type: `{ info: Function, debug: Function, error: Function }`<br>
-Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
+Type: `Object`<br>
+Default: `null`
 
-Set of logger utility functions used within the task.
+Passed to file watcher when `--watch` is used.
 
 #### plugins
 
@@ -115,12 +114,19 @@ imagemin: {
 
 Passed to [`imagemin`](https://www.npmjs.com/package/imagemin) via [`gulp-imagemin`](https://www.npmjs.com/package/gulp-imagemin). Setting to `null` will disable this step. Otherwise it will run before piping the files to `svgstore`.
 
-### dev
+#### logger
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Whether we are in dev mode. Some defaults are affected by this.
+Set of logger utility functions used within the task.
+
+### env
+
+Type: `Object`<br>
+Default: `{}`
+
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Some defaults are affected by this, see above.
 
 ## License
 

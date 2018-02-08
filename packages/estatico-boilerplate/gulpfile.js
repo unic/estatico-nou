@@ -272,6 +272,18 @@ gulp.task('js:test', estaticoPuppeteer({
   },
 }, env));
 
+/**
+ * SVG spriting task
+ * Uses svgstore to create a sprite from multiple SVGs
+ */
+gulp.task('svgsprite', estaticoSvgsprite({
+  src: {
+    main: './src/assets/media/svg/**/*.svg',
+    demo: './src/demo/modules/svgsprite/svg/*.svg',
+  },
+  srcBase: './src',
+  dest: './dist',
+}, env));
 
 /**
  * Serve task
@@ -363,21 +375,12 @@ const config = {
     ],
     logger: defaults.logger,
   }),
-  svgsprite: {
-    src: {
-      main: './src/assets/media/svg/**/*.svg',
-      demo: './src/demo/modules/svgsprite/svg/*.svg',
-    },
-    srcBase: './src',
-    dest: './dist',
-  },
 };
 
 // Exemplary tasks
 const tasks = {
   htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
   js: estaticoWebpack(config.js, env.dev),
-  svgsprite: estaticoSvgsprite(config.svgsprite, env.dev),
   clean: () => del('./dist'),
 };
 
