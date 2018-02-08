@@ -17,7 +17,9 @@ test.cb('default', (t) => {
 });
 
 test.cb('unminified', (t) => {
-  task(defaults, true)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/unminified/*')));
+  task(defaults, {
+    dev: true,
+  })().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/unminified/*')));
 });
 
 test.cb('error', (t) => {
@@ -27,7 +29,9 @@ test.cb('error', (t) => {
 
   const spy = sinon.spy(console, 'log');
 
-  task(options, true)().on('end', () => {
+  task(options, {
+    dev: true,
+  })().on('end', () => {
     spy.restore();
 
     const log = utils.stripLogs(spy);

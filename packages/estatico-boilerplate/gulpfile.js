@@ -1,10 +1,11 @@
+/* eslint-disable global-require */
+
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
 const parseArgs = require('minimist');
 const merge = require('lodash.merge');
 const glob = require('glob');
-const jsonImporter = require('node-sass-json-importer');
 const del = require('del');
 const inquirer = require('inquirer');
 
@@ -22,6 +23,41 @@ const estaticoBrowsersync = require('@unic/estatico-browsersync');
 
 const env = parseArgs(process.argv.slice(2));
 const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
+
+
+/**
+ * CSS task
+ * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
+ *
+ * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('css', estaticoSass({
+  src: [
+    './src/assets/css/**/*.scss',
+    './src/preview/assets/css/**/*.scss',
+  ],
+  srcBase: './src/',
+  dest: './dist',
+  plugins: {
+    sass: {
+      includePaths: [
+        './src/',
+        './src/assets/css/',
+      ],
+      importer: [
+        // Add importer being able to deal with json files like colors, e.g.
+        require('node-sass-json-importer'),
+      ],
+    },
+  },
+  watch: {
+    src: [
+      './src/**/*.scss',
+    ],
+    name: 'css', // Displayed in watch log
+  },
+}, env));
 
 // Exemplary custom config
 const config = {
@@ -123,28 +159,6 @@ const config = {
         './dist/*.html',
         './dist/modules/**/*.html',
         './dist/pages/**/*.html',
-      ],
-    },
-  },
-  css: {
-    src: [
-      './src/assets/css/**/*.scss',
-      './src/preview/assets/css/**/*.scss',
-    ],
-    srcBase: './src/',
-    dest: './dist',
-    plugins: {
-      sass: {
-        includePaths: [
-          './src/',
-          './src/assets/css/',
-        ],
-        importer: [jsonImporter],
-      },
-    },
-    watch: {
-      src: [
-        './src/**/*.scss',
       ],
     },
   },
@@ -276,7 +290,6 @@ const config = {
 const tasks = {
   html: estaticoHandlebars(config.html, env.dev),
   htmlValidate: estaticoHtmlValidate(config.htmlValidate, env.dev),
-  css: estaticoSass(config.css, env.dev),
   cssLint: estaticoStylelint(config.cssLint, env.dev),
   js: estaticoWebpack(config.js, env.dev),
   jsTest: estaticoPuppeteer(config.jsTest, env.dev),

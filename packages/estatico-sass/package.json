@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/index.js --serial --verbose"
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-sass -- npm test"
   },
   "author": "Unic AG",
   "license": "MIT",
   "dependencies": {
     "@unic/estatico-utils": "^0.0.1",
+    "@unic/estatico-watch": "^0.0.1",
     "autoprefixer": "^7.2.5",
     "chalk": "^2.3.0",
     "gulp": "github:gulpjs/gulp#4.0",
@@ -18,9 +20,8 @@
     "gulp-sass": "^3.1.0",
     "gulp-size": "^3.0.0",
     "gulp-sourcemaps": "^1.12.1",
-    "lazypipe": "^1.0.1",
+    "joi": "^13.1.2",
     "lodash.merge": "^4.6.0",
-    "plugin-error": "^0.1.2",
     "postcss-clean": "^1.1.0",
     "postcss-filter-stream": "^0.0.6",
     "through2": "^2.0.3"
