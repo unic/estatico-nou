@@ -36,7 +36,7 @@ Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": 
 
 ## API
 
-`task(options, isDev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
 
