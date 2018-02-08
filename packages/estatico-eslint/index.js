@@ -31,7 +31,7 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (/* dev */) => ({
+const defaults = (/* env */) => ({
   src: null,
   srcBase: null,
   dest: null,
