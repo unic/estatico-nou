@@ -35,6 +35,24 @@ logger.debug('Step X', 'Something is happening', { /* Additional log info */ });
 logger.error('Step X', new Error('Something went wrong'), env.dev);
 ```
 
+### Plugin
+
+```js
+const { Plugin } = require('@unic/estatico-utils');
+
+// Set up details, schema and task
+// …
+
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});
+```
+
+
 ### Test
 
 #### compareFiles(t, fileGlob)
