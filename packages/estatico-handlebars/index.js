@@ -1,28 +1,65 @@
-const Handlebars = require('handlebars');
-const handlebarsWax = require('handlebars-wax');
-const { Logger } = require('@unic/estatico-utils');
-const path = require('path');
-const fs = require('fs');
-const chalk = require('chalk');
-const merge = require('lodash.merge');
+/* eslint-disable global-require */
+const { Plugin, Logger } = require('@unic/estatico-utils');
+const Joi = require('joi');
 
-const logger = new Logger('estatico-handlebars');
-const handlebars = Handlebars.create();
-const wax = handlebarsWax(handlebars);
+// We need an exportable handlebars instance to be reused in other tasks
+const handlebars = require('handlebars').create();
 
-const defaults = dev => ({
+// Config schema used for validation
+const schema = Joi.object().keys({
+  src: [Joi.string().required(), Joi.array().required()],
+  srcBase: Joi.string().required(),
+  dest: Joi.string().required(),
+  watch: Joi.object().keys({
+    src: [Joi.string().required(), Joi.array().required()],
+    name: Joi.string().required(),
+  }).allow(null),
+  plugins: {
+    handlebars: Joi.object().keys({
+      handlebars: Joi.object().allow(null),
+      partials: Joi.any().allow(null),
+      helpers: Joi.any().allow(null),
+    }),
+    transformBefore: Joi.func().allow(null),
+    transformAfter: Joi.func().allow(null),
+    data: Joi.func().allow(null),
+    prettify: Joi.object().allow(null),
+    clone: Joi.object().keys({
+      data: Joi.object().allow(null),
+      rename: Joi.func(),
+    }).allow(null),
+  },
+  logger: Joi.object().keys({
+    info: Joi.func(),
+    error: Joi.func(),
+    debug: Joi.func(),
+  }),
+});
+
+/**
+ * Default config
+ * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @return {object}
+ */
+const defaults = env => ({
   src: null,
   srcBase: null,
   dest: null,
+  watch: null,
   plugins: {
     handlebars: {
-      handlebars,
+      handlebars: null,
       partials: null,
       helpers: null,
     },
     transformBefore: null,
     transformAfter: null,
-    data: (file) => {
+    data: (file, logger) => {
+      const path = require('path');
+      const fs = require('fs');
+      const chalk = require('chalk');
+      const merge = require('lodash.merge');
+
       // Find .data.js file with same name
       const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
 
@@ -38,40 +75,47 @@ const defaults = dev => ({
       indent_with_tabs: false,
       max_preserve_newlines: 1,
     },
-    clone: dev ? null : {
+    clone: env.dev ? null : {
       data: {
         env: {
           dev: false,
         },
       },
-      rename: filePath => filePath.replace(path.extname(filePath), `.prod${path.extname(filePath)}`),
+      rename: (filePath) => {
+        const path = require('path');
+
+        return filePath.replace(path.extname(filePath), `.prod${path.extname(filePath)}`);
+      },
     },
   },
-  logger,
+  logger: new Logger('estatico-handlebars'),
 });
 
-module.exports = (options, dev) => {
-  let config = {};
+/**
+ * Task function
+ * @param {object} config - Complete task config
+ * @param {object} env - Environment config, e.g. { dev: true }
+ * @param {object} [watcher] - Watch file events
+ * @return {object} gulp stream
+ */
+const task = (config, env = {}, watcher) => {
+  const gulp = require('gulp');
+  const plumber = require('gulp-plumber');
+  const prettify = require('gulp-prettify');
+  const gulpHandlebars = require('gulp-hb');
+  const through = require('through2');
+  const PluginError = require('plugin-error');
+  const chalk = require('chalk');
+  const path = require('path');
+  const merge = require('lodash.merge');
+  const handlebarsWax = require('handlebars-wax');
 
-  if (typeof options === 'function') {
-    config = options(defaults(dev));
-  } else {
-    config = merge({}, defaults(dev), options);
-  }
+  const wax = handlebarsWax(handlebars);
 
-  // Validate options
-  if (!config.src) {
-    throw new Error('\'options.src\' is missing');
-  }
-  if (!config.srcBase) {
-    throw new Error('\'options.srcBase\' is missing');
-  }
-  if (!config.dest) {
-    throw new Error('\'options.dest\' is missing');
-  }
+  config.plugins.handlebars.handlebars = handlebars; // eslint-disable-line no-param-reassign
 
   // Register partials
-  if (config.plugins.handlebars && config.plugins.handlebars.partials) {
+  if (config.plugins.handlebars.partials) {
     const waxOptions = {};
 
     if (config.plugins.handlebars.parsePartialName) {
@@ -82,142 +126,148 @@ module.exports = (options, dev) => {
   }
 
   // Register helpers
-  wax.helpers(require('handlebars-layouts')); // eslint-disable-line global-require
+  wax.helpers(require('handlebars-layouts'));
 
-  if (config.plugins.handlebars && config.plugins.handlebars.helpers) {
+  if (config.plugins.handlebars.helpers) {
     const waxOptions = {};
 
     if (config.plugins.handlebars.parseHelperName) {
-      waxOptions.parsePartialName = config.plugins.handlebars.parseHelperName;
+      waxOptions.parseHelperName = config.plugins.handlebars.parseHelperName;
     }
 
     wax.helpers(config.plugins.handlebars.helpers, waxOptions);
   }
 
-  return (watcher) => {
-    const gulp = require('gulp'); // eslint-disable-line global-require
-    const plumber = require('gulp-plumber'); // eslint-disable-line global-require
-    const prettify = require('gulp-prettify'); // eslint-disable-line global-require
-    const gulpHandlebars = require('gulp-hb'); // eslint-disable-line global-require
-    const through = require('through2'); // eslint-disable-line global-require
-    const PluginError = require('plugin-error'); // eslint-disable-line global-require
+  return gulp.src(config.src, {
+    base: config.srcBase,
+  })
 
-    return gulp.src(config.src, {
-      base: config.srcBase,
-    })
+    // Prevent stream from unpiping on error
+    .pipe(plumber())
 
-      // Prevent stream from unpiping on error
-      .pipe(plumber())
+    // Decide based on watcher dependency graph which files to pass through
+    .pipe(through.obj((file, enc, done) => {
+      // TODO: Make sure HTML is rebuilt if corresponding data file changed
+      if (watcher && watcher.resolvedGraph) {
+        config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
 
-      // Decide based on watcher dependency graph which files to pass through
-      .pipe(through.obj((file, enc, done) => {
-        // TODO: Make sure HTML is rebuilt if corresponding data file changed
-        if (watcher && watcher.resolvedGraph) {
-          config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
+        if (!watcher.resolvedGraph.includes(file.path)) {
+          config.logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
 
-          if (!watcher.resolvedGraph.includes(file.path)) {
-            config.logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
-
-            return done();
-          }
+          return done();
         }
+      }
 
-        // config.logger.debug('watcher', `Passing ${chalk.yellow(file.path)} to next steps`);
+      return done(null, file);
+    }))
 
-        return done(null, file);
-      }))
+    // Optional template transformation
+    .pipe(through.obj((file, enc, done) => {
+      if (config.plugins.transformBefore) {
+        const content = config.plugins.transformBefore(file);
 
-      // Optional template transformation
-      .pipe(through.obj((file, enc, done) => {
-        if (config.plugins.transformBefore) {
-          const content = config.plugins.transformBefore(file);
+        file.contents = content; // eslint-disable-line no-param-reassign
 
-          file.contents = content; // eslint-disable-line no-param-reassign
+        config.logger.debug('transformBefore', `Transformed ${chalk.yellow(file.path)}`, chalk.gray(content.toString()), true);
+      }
 
-          config.logger.debug('transformBefore', `Transformed ${chalk.yellow(file.path)}`, chalk.gray(content.toString()), true);
-        }
+      done(null, file);
+    }).on('error', err => config.logger.error(err, env.dev)))
+
+    // Find data and assign it to file object
+    .pipe(through.obj((file, enc, done) => {
+      try {
+        const data = config.plugins.data(file, config.logger);
+
+        file.data = data; // eslint-disable-line no-param-reassign
+
+        config.logger.debug('data', `Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')), true);
 
         done(null, file);
-      }).on('error', err => config.logger.error(err, dev)))
+      } catch (err) {
+        err.fileName = file.path;
 
-      // Find data and assign it to file object
-      .pipe(through.obj((file, enc, done) => {
-        try {
-          const data = config.plugins.data(file);
+        done(new PluginError('data', err), file);
+      }
+    }).on('error', err => config.logger.error(err, env.dev)))
 
-          file.data = data; // eslint-disable-line no-param-reassign
+    // Optionally clone file
+    .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
+      if (config.plugins.clone) {
+        const clone = file.clone();
 
-          config.logger.debug('data', `Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')), true);
+        // Extend default data
+        clone.data = merge({}, file.data, config.plugins.clone.data);
 
-          done(null, file);
-        } catch (err) {
-          err.fileName = file.path;
-
-          done(new PluginError('data', err), file);
-        }
-      }).on('error', err => config.logger.error(err, dev)))
-
-      // Optionally clone file
-      .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
-        if (config.plugins.clone) {
-          const clone = file.clone();
-
-          // Extend default data
-          clone.data = merge({}, file.data, config.plugins.clone.data);
-
-          // Rename
-          if (config.plugins.clone.rename) {
-            clone.path = config.plugins.clone.rename(file.path);
-          }
-
-          config.logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
-
-          this.push(clone);
+        // Rename
+        if (config.plugins.clone.rename) {
+          clone.path = config.plugins.clone.rename(file.path);
         }
 
-        done(null, file);
-      }).on('error', err => config.logger.error(err, dev)))
+        config.logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
 
-      // Handlebars
-      .pipe(gulpHandlebars(config.plugins.handlebars).on('error', err => config.logger.error(err, dev)))
+        this.push(clone);
+      }
 
-      // Optional HTML transformation
-      .pipe(through.obj((file, enc, done) => {
-        if (config.plugins.transformAfter) {
-          const content = config.plugins.transformAfter(file);
+      done(null, file);
+    }).on('error', err => config.logger.error(err, env.dev)))
 
-          file.contents = content; // eslint-disable-line
+    // Handlebars
+    .pipe(gulpHandlebars(config.plugins.handlebars).on('error', err => config.logger.error(err, env.dev)))
 
-          config.logger.debug('transformAfter', `Transformed ${chalk.yellow(file.path)}`);
-        }
+    // Optional HTML transformation
+    .pipe(through.obj((file, enc, done) => {
+      if (config.plugins.transformAfter) {
+        const content = config.plugins.transformAfter(file);
 
-        done(null, file);
-      }).on('error', err => config.logger.error(err, dev)))
+        file.contents = content; // eslint-disable-line
 
-      // Formatting
-      .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
+        config.logger.debug('transformAfter', `Transformed ${chalk.yellow(file.path)}`);
+      }
 
-      // Rename to .html
-      .pipe(through.obj((file, enc, done) => {
-        const renamedPath = file.path.replace(path.extname(file.path), '.html');
+      done(null, file);
+    }).on('error', err => config.logger.error(err, env.dev)))
 
-        config.logger.debug('rename', `Renaming ${file.path} to ${chalk.yellow(renamedPath)}`);
+    // Formatting
+    .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
 
-        file.path = renamedPath; // eslint-disable-line no-param-reassign
+    // Rename to .html
+    .pipe(through.obj((file, enc, done) => {
+      const renamedPath = file.path.replace(path.extname(file.path), '.html');
 
-        done(null, file);
-      }))
+      config.logger.debug('rename', `Renaming ${file.path} to ${chalk.yellow(renamedPath)}`);
 
-      // Log
-      .pipe(through.obj((file, enc, done) => {
-        config.logger.info(`Saving ${chalk.yellow(path.relative(config.srcBase, file.path))}`);
+      file.path = renamedPath; // eslint-disable-line no-param-reassign
 
-        return done(null, file);
-      }))
+      done(null, file);
+    }))
 
-      // Save
-      .pipe(gulp.dest(config.dest));
-  };
+    // Log
+    .pipe(through.obj((file, enc, done) => {
+      config.logger.info(`Saving ${chalk.yellow(path.relative(config.srcBase, file.path))}`);
+
+      return done(null, file);
+    }))
+
+    // Save
+    .pipe(gulp.dest(config.dest));
 };
 
+/**
+ * @param {object|func} options - Custom config
+ *  Either deep-merged (object) or called (func) with defaults
+ * @param {object} env - Optional environment config, e.g. { dev: true }, passed to defaults
+ * @return {func} Task function from above with bound config and env
+ */
+module.exports = (options, env = {}) => new Plugin({
+  defaults,
+  schema,
+  options,
+  task,
+  env,
+});
+
+/**
+ * Handlebars instance
+ */
 module.exports.handlebars = handlebars;

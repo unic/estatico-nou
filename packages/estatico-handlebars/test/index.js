@@ -19,7 +19,7 @@ const defaults = {
       // Use tabs over spaces
       indent_with_tabs: true,
     },
-    clone: false,
+    clone: null,
   },
 };
 
@@ -78,7 +78,9 @@ test.cb('error', (t) => {
 
   const spy = sinon.spy(console, 'log');
 
-  task(options, true)().on('end', () => {
+  task(options, {
+    dev: true,
+  })().on('end', () => {
     spy.restore();
 
     const log = utils.stripLogs(spy);

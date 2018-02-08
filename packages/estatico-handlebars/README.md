@@ -12,29 +12,106 @@ $ npm install --save-dev @unic/estatico-handlebars
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-handlebars');
+const estaticoHandlebars = require('@unic/estatico-handlebars');
+const path = require('path');
+const estaticoQunit = require('@unic/estatico-qunit');
 
 // Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
-// Options, deep-merged into defaults via _.merge
-const options = {
+/**
+ * HTML task
+ * Transforms Handlebars to HTML
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('html', estaticoHandlebars({
   src: [
     './src/*.hbs',
     './src/pages/**/*.hbs',
+    './src/demo/pages/**/*.hbs',
+    '!./src/demo/pages/handlebars/*.hbs',
     './src/modules/**/!(_)*.hbs',
+    './src/demo/modules/**/!(_)*.hbs',
     './src/preview/styleguide/*.hbs',
+    '!./src/preview/styleguide/colors.hbs',
   ],
   srcBase: './src',
   dest: './dist',
-  plugins: {
-    handlebars: {
-      partials: './src/**/*.hbs',
+  watch: {
+    src: [
+      './src/**/*.hbs',
+    ],
+    name: 'html',
+    dependencyGraph: {
+      srcBase: './',
+      resolver: {
+        hbs: {
+          match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
+          resolve: (match /* , filePath */) => {
+            if (!match[1]) {
+              return null;
+            }
+
+            let resolvedPath = path.resolve('./src', match[1]);
+
+            // Add extension
+            resolvedPath = `${resolvedPath}.hbs`;
+
+            return resolvedPath;
+          },
+        },
+        js: {
+          match: /require\('(.*?\.data\.js)'\)/g,
+          resolve: (match, filePath) => {
+            if (!match[1]) {
+              return null;
+            }
+
+            return path.resolve(path.dirname(filePath), match[1]);
+          },
+        },
+      },
     },
   },
-};
+  plugins: {
+    clone: null,
+    handlebars: {
+      partials: [
+        './src/**/*.hbs',
+        './node_modules/estatico-qunit/**/*.hbs',
+      ],
+      helpers: {
+        register: (handlebars) => {
+          handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+        },
+      },
+    },
+    // Wrap with module layout
+    transformBefore: (file) => {
+      if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
+        return Buffer.from(moduleTemplate);
+      }
 
-gulp.task('html', () => task(options, env.dev));
+      return file.contents;
+    },
+    // Relativify absolute paths
+    transformAfter: (file) => {
+      let content = file.contents.toString();
+      let relPathPrefix = path.join(path.relative(file.path, './src'));
+
+      relPathPrefix = relPathPrefix
+        .replace(new RegExp(`\\${path.sep}g`), '/') // Normalize path separator
+        .replace(/\.\.$/, ''); // Remove trailing ..
+
+      content = content.replace(/('|")\/(?!\^)/g, `$1${relPathPrefix}`);
+
+      content = Buffer.from(content);
+
+      return content;
+    },
+  },
+}, env));
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
@@ -49,7 +126,7 @@ Run with extended debug info (showing you the data used for every template, e.g.
 
 ## API
 
-`task(options, isDev)`
+`plugin(options, env)` => `taskFn`
 
 ### options
 
@@ -74,12 +151,12 @@ Default: `null`
 
 Passed to `gulp.dest`.
 
-#### logger
+#### watch
 
-Type: `{ info: Function, debug: Function, error: Function }`<br>
-Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
+Type: `Object`<br>
+Default: `null`
 
-Set of logger utility functions used within the task.
+Passed to file watcher when `--watch` is used.
 
 #### plugins
 
@@ -178,12 +255,19 @@ This potentially speeds up CI builds (where the same templates are built with bo
 
 The CI needs to take care of moving & renaming the `.prod.html` files.
 
-### dev
+#### logger
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `{ info: Function, debug: Function, error: Function }`<br>
+Default: Instance of [`estatico-utils`](../estatico-utils)'s `Logger` utility.
 
-Whether we are in dev mode. Some defaults are affected by this.
+Set of logger utility functions used within the task.
+
+### env
+
+Type: `Object`<br>
+Default: `{}`
+
+Result from parsing CLI arguments via `minimist`, e.g. `{ dev: true, watch: true }`. Some defaults are affected by this, see above.
 
 ## License
 
