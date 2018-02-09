@@ -73,7 +73,7 @@ const task = (config, env = {}) => {
     .pipe(config.plugins.changed ? changed(config.plugins.changed) : through.obj())
 
     // Stylelint verification
-    .pipe(eslint(config.plugins.eslint).on('error', err => config.config.logger.error(err, env.dev)))
+    .pipe(eslint(config.plugins.eslint).on('error', err => config.logger.error(err, env.dev)))
     .pipe(eslint.formatEach())
     .pipe(through.obj((file, enc, done) => {
       if (file.eslint && (file.eslint.errorCount > 0 || file.eslint.fixed)) {
@@ -84,7 +84,7 @@ const task = (config, env = {}) => {
         }
 
         // Only keep file in stream if it was fixed
-        if (eslint.eslint.fixed) {
+        if (file.eslint.fixed) {
           config.logger.info(`Fixed linting issues in ${chalk.yellow(relFilePath)}`);
 
           return done(null, file);
