@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-boilerplate",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "devDependencies": {
     "@unic/estatico-browsersync": "^0.0.4",
     "@unic/estatico-data": "^0.0.4",
-    "@unic/estatico-eslint": "^0.0.4",
+    "@unic/estatico-eslint": "0.0.5",
     "@unic/estatico-handlebars": "^0.0.4",
     "@unic/estatico-puppeteer": "^0.0.4",
     "@unic/estatico-qunit": "^0.0.4",
@@ -22,7 +22,7 @@
     "@unic/estatico-svgsprite": "^0.0.4",
     "@unic/estatico-w3c-validator": "^0.0.4",
     "@unic/estatico-watch": "^0.0.4",
-    "@unic/estatico-webpack": "^0.0.4",
+    "@unic/estatico-webpack": "0.0.5",
     "autoprefixer": "^7.2.5",
     "del": "^3.0.0",
     "glob": "^7.1.2",
