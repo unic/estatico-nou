@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-browsersync",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "Unic AG",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.1",
+    "@unic/estatico-utils": "0.0.2",
     "browser-sync": "^2.23.6",
     "joi": "^13.1.2"
   },
