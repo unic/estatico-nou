@@ -8,12 +8,16 @@ Demo repo based on old Estático. Tasks were completely replaced with new ones a
 $ git clone https://github.com/unic/estatico-nou.git
 $ cd estatico-nou
 $ git filter-branch --subdirectory-filter packages/estatico-boilerplate
+$ nvm use 8.9.4
 $ npm i
 ```
 
-## Usage
+## Usage (UNTESTED outside of the monorepo!)
 
-See `gulpfile.js`.
+- Run default task, building everything and starting web server: `$ npm run gulp -- --dev --watch`
+- Run specific task: `$ npm run html -- --dev`
+
+See `gulpfile.js` for details.
 
 ## License
 
