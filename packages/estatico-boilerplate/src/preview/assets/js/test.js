@@ -1,1 +1,1 @@
-import 'estatico-qunit/lib/browser';
+import '@unic/estatico-qunit/lib/browser';
