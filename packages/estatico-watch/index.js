@@ -45,11 +45,11 @@ const defaults = (/* env */) => ({
  * @return {object} gulp stream
  */
 const task = (config /* , env = {} */) => {
-  const gulp = require('gulp'); // eslint-disable-line global-require
-  const path = require('path'); // eslint-disable-line global-require
-  const decache = require('decache'); // eslint-disable-line global-require
+  const gulp = require('gulp');
+  const path = require('path');
+  // const decache = require('decache');
 
-  const DependencyGraph = require('./lib/dependencygraph'); // eslint-disable-line global-require
+  const DependencyGraph = require('./lib/dependencygraph');
 
   let dependencyGraph;
 
@@ -72,7 +72,7 @@ const task = (config /* , env = {} */) => {
       }).reduce((curr, acc) => acc.concat(curr), []) : [];
 
       // Remove data files from require cache
-      resolvedGraph.forEach(decache);
+      resolvedGraph.forEach(filePath => delete require.cache[require.resolve(filePath)]);
 
       // Run task function with queued events as parameter
       const watchedTask = config.task({
