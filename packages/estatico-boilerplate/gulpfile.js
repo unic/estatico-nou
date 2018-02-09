@@ -165,7 +165,7 @@ gulp.task('css', estaticoSass({
       resolver: {
         scss: {
           match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
-          resolve: (match, filePath, log) => {
+          resolve: (match, filePath) => {
             if (!match[1]) {
               return null;
             }
@@ -210,40 +210,12 @@ gulp.task('css', estaticoSass({
         require('node-sass-json-importer'),
       ],
     },
-  },
-}, env));
-
-/**
- * CSS task
- * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
- *
- * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
- */
-gulp.task('css', estaticoSass({
-  src: [
-    './src/assets/css/**/*.scss',
-    './src/preview/assets/css/**/*.scss',
-  ],
-  srcBase: './src/',
-  dest: './dist',
-  watch: {
-    src: [
-      './src/**/*.scss',
+    postcss: [
+      require('autoprefixer')({
+        // Custom autoprefixer config
+        browsers: ['last 10 versions'],
+      }),
     ],
-    name: 'css',
-  },
-  plugins: {
-    sass: {
-      includePaths: [
-        './src/',
-        './src/assets/css/',
-      ],
-      importer: [
-        // Add importer being able to deal with json files like colors, e.g.
-        require('node-sass-json-importer'),
-      ],
-    },
   },
 }, env));
 

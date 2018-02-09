@@ -10,7 +10,6 @@
   "author": "Unic AG",
   "license": "Apache-2.0",
   "devDependencies": {
-    "del": "^3.0.0",
     "@unic/estatico-browsersync": "0.0.1",
     "@unic/estatico-data": "0.0.1",
     "@unic/estatico-eslint": "0.0.1",
@@ -23,6 +22,8 @@
     "@unic/estatico-w3c-validator": "0.0.1",
     "@unic/estatico-watch": "0.0.1",
     "@unic/estatico-webpack": "0.0.1",
+    "autoprefixer": "^7.2.5",
+    "del": "^3.0.0",
     "glob": "^7.1.2",
     "gulp": "github:gulpjs/gulp#4.0",
     "inquirer": "^5.1.0",

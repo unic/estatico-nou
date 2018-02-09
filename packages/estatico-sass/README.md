@@ -35,7 +35,46 @@ gulp.task('css', estaticoSass({
     src: [
       './src/**/*.scss',
     ],
-    name: 'css', // Displayed in watch log
+    name: 'css',
+    dependencyGraph: {
+      srcBase: './',
+      resolver: {
+        scss: {
+          match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
+          resolve: (match, filePath) => {
+            if (!match[1]) {
+              return null;
+            }
+
+            // Find possible path candidates
+            // Try different directories, file endings and with "_" prefix
+            const candidates = [
+              path.dirname(filePath),
+              './src/',
+              './src/assets/css/',
+            ].map((dir) => {
+              const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
+              const candidatePath = path.resolve(dir, match[1]);
+              const candidatePartialPath = path.resolve(dir, partialPath);
+              const candidatePaths = [
+                candidatePath,
+                candidatePartialPath,
+                // .scss extension
+                path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
+                path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
+                // .css extension
+                path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
+              ];
+
+              // Remove duplicates
+              return [...new Set(candidatePaths)];
+            }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
+
+            return candidates.find(fs.existsSync) || null;
+          },
+        },
+      },
+    },
   },
   plugins: {
     sass: {
@@ -48,6 +87,12 @@ gulp.task('css', estaticoSass({
         require('node-sass-json-importer'),
       ],
     },
+    postcss: [
+      require('autoprefixer')({
+        // Custom autoprefixer config
+        browsers: ['last 10 versions'],
+      }),
+    ],
   },
 }, env));
 ```
@@ -115,24 +160,30 @@ Default:
 
 Passed to [`node-sass`](https://www.npmjs.com/package/node-sass) via [`gulp-sass`](https://www.npmjs.com/package/gulp-sass). `includePaths` is resolved first since we cannot pass a function there.
 
-##### plugins.autoprefixer
+##### plugins.postcss
 
-Type: `Object`<br>
+Type: `Array`<br>
 Default:
 ```js
-{
-  browsers: ['last 1 version'],
-}
+[
+  // Run autoprefixer
+  autoprefixer({
+    browsers: ['last 1 version'],
+  }),
+].concat(env.dev ? [] : 
+  // Minifiy files with .min in their name, has to correspond to `config.minifiedSuffix`
+  filterStream(['**/*', '!**/*.min*'], clean()
+))
 ```
 
-Passed to [`autoprefixer`](https://www.npmjs.com/package/autoprefixer) via [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
+Passed to [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
 
-##### plugins.clean
+##### plugins.clone
 
-Type: `Object`<br>
-Default: `env.dev ? null : {}`
+Type: `Boolean`<br>
+Default: `!env.dev`
 
-Passed to [`postcss-clean`](https://www.npmjs.com/package/postcss-clean) via [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting to `null` will disable this step.
+If true, every input file will be duplicated (with `config.minifiedSuffix` added to their name). This allows us to create both minified and unminified versions in one single go.
 
 #### logger
 

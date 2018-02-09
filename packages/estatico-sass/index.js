@@ -13,10 +13,7 @@ const schema = Joi.object().keys({
       includePaths: Joi.array().allow(null),
       importer: Joi.array(),
     }),
-    autoprefixer: Joi.object().keys({
-      browsers: Joi.array().default(['last 1 version']),
-    }).allow(null),
-    clean: Joi.object().allow(null),
+    postcss: Joi.array(),
   },
   watch: Joi.object().keys({
     src: [Joi.string().required(), Joi.array().required()],
@@ -34,23 +31,31 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (env = {}) => ({
-  src: null,
-  srcBase: null,
-  dest: null,
-  watch: null,
-  minifiedSuffix: '.min',
-  plugins: {
-    sass: {
-      includePaths: null,
+const defaults = (env = {}) => {
+  const autoprefixer = require('autoprefixer');
+  const clean = require('postcss-clean');
+  const filterStream = require('postcss-filter-stream');
+
+  return {
+    src: null,
+    srcBase: null,
+    dest: null,
+    watch: null,
+    minifiedSuffix: '.min',
+    plugins: {
+      sass: {
+        includePaths: null,
+      },
+      clone: !env.dev,
+      postcss: [
+        autoprefixer({
+          browsers: ['last 1 version'],
+        }),
+      ].concat(env.dev ? [] : filterStream(['**/*', '!**/*.min*'], clean())),
     },
-    autoprefixer: {
-      browsers: ['last 1 version'],
-    },
-    clean: env.dev ? null : {},
-  },
-  logger: new Logger('estatico-sass'),
-});
+    logger: new Logger('estatico-sass'),
+  };
+};
 
 /**
  * Task function
@@ -66,15 +71,14 @@ const task = (config, env = {}, watcher) => {
   const plumber = require('gulp-plumber');
   const sass = require('gulp-sass');
   const postcss = require('gulp-postcss');
-  const autoprefixer = require('autoprefixer');
-  const clean = require('postcss-clean');
   const sourcemaps = require('gulp-sourcemaps');
   const through = require('through2');
   const size = require('gulp-size');
-  const filterStream = require('postcss-filter-stream');
 
-  if (config.plugins.autoprefixer) {
-    const info = autoprefixer(config.plugins.autoprefixer).info();
+  const autoprefixer = config.plugins.postcss.find(plugin => plugin.postcssPlugin === 'autoprefixer');
+
+  if (autoprefixer) {
+    const info = autoprefixer.info();
 
     config.logger.debug('autoprefixer', info);
   }
@@ -108,7 +112,7 @@ const task = (config, env = {}, watcher) => {
 
     // Clone for production version
     .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
-      if (config.plugins.clean) {
+      if (config.plugins.clone) {
         const clone = file.clone();
 
         clone.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`);
@@ -122,9 +126,7 @@ const task = (config, env = {}, watcher) => {
     }))
 
     // PostCSS
-    .pipe(postcss([]
-      .concat(config.plugins.autoprefixer ? autoprefixer(config.plugins.autoprefixer) : [])
-      .concat(config.plugins.clean ? filterStream(['**/*', `!**/*${config.minifiedSuffix}*`], clean(config.plugins.clean)) : [])))
+    .pipe(postcss(config.plugins.postcss))
 
     // Add sourcemaps files to stream
     .pipe(sourcemaps.write('.', {

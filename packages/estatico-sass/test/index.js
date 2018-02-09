@@ -42,4 +42,18 @@ test.cb('error', (t) => {
   });
 });
 
+test.cb('custom autoprefixer options', (t) => {
+  const options = merge({}, defaults, {
+    plugins: {
+      postcss: [
+        require('autoprefixer')({
+          browsers: ['last 10 versions'],
+        }),
+      ],
+    },
+  });
+
+  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/autoprefixer/*')));
+});
+
 test.afterEach(() => del(path.join(__dirname, '/results')));
