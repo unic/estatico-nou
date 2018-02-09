@@ -12,11 +12,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@unic/estatico-browsersync": "0.0.3",
-    "@unic/estatico-data": "0.0.3",
+    "@unic/estatico-data": "0.0.2",
     "@unic/estatico-eslint": "0.0.3",
     "@unic/estatico-handlebars": "0.0.3",
     "@unic/estatico-puppeteer": "0.0.3",
-    "@unic/estatico-qunit": "0.0.3",
+    "@unic/estatico-qunit": "0.0.2",
     "@unic/estatico-sass": "0.0.3",
     "@unic/estatico-stylelint": "0.0.3",
     "@unic/estatico-svgsprite": "0.0.3",
@@ -41,5 +41,8 @@
   },
   "engines": {
     "node": ">=8 <9"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
