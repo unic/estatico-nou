@@ -154,7 +154,6 @@ const task = (config, env = {}, watcher) => {
 
     // Decide based on watcher dependency graph which files to pass through
     .pipe(through.obj((file, enc, done) => {
-      // TODO: Make sure HTML is rebuilt if corresponding data file changed
       if (watcher && watcher.resolvedGraph) {
         const resolvedGraph = watcher.resolvedGraph.map(getSimplifiedFilePath);
         const simplifiedFilePath = getSimplifiedFilePath(file.path);
