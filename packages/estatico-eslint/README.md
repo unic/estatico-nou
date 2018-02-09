@@ -12,24 +12,33 @@ $ npm install --save-dev @unic/estatico-eslint
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-eslint');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
  * JavaScript linting task
- * Uses ESLint to lint and automatically fix code
+ * Uses ESLint to lint and autofix files
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('js:lint', estaticoEslint({
-  src: [
-    './src/**/*.js',
-  ],
-  srcBase: './src',
-  dest: './src',
-}, env));
+gulp.task('js:lint', () => {
+  const task = require('@unic/estatico-eslint');
+
+  const instance = task({
+    src: [
+      './src/**/*.js',
+    ],
+    srcBase: './src',
+    dest: './src',
+    watch: {
+      src: [
+        './src/**/*.js',
+      ],
+      name: 'js:lint',
+    },
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

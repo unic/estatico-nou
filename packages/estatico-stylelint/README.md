@@ -12,9 +12,6 @@ $ npm install --save-dev @unic/estatico-stylelint
 
 ```js
 const gulp = require('gulp');
-const estaticoStylelint = require('@unic/estatico-stylelint');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
@@ -23,19 +20,25 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('css:lint', estaticoStylelint({
-  src: [
-    './src/**/*.scss',
-  ],
-  srcBase: './src/',
-  dest: './dist',
-  watch: {
+gulp.task('css:lint', () => {
+  const task = require('@unic/estatico-stylelint');
+
+  const instance = task({
     src: [
       './src/**/*.scss',
     ],
-    name: 'css:lint',
-  },
-}, env));
+    srcBase: './src/',
+    dest: './dist',
+    watch: {
+      src: [
+        './src/**/*.scss',
+      ],
+      name: 'css:lint',
+    },
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

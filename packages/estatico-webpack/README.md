@@ -12,9 +12,6 @@ $ npm install --save-dev @unic/estatico-webpack
 
 ```js
 const gulp = require('gulp');
-const task = estaticoWebpack('@unic/estatico-webpack');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
@@ -23,65 +20,73 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('js', estaticoWebpack(defaults => ({
-  webpack: [
-    merge({}, defaults.webpack, {
-      entry: Object.assign({
-        head: './src/assets/js/head.js',
-        main: './src/assets/js/main.js',
-      }, env.dev ? {
-        dev: './src/assets/js/dev.js',
-      } : {}),
-      output: {
-        path: path.resolve('./dist/assets/js'),
-      },
-    }),
-    {
-      entry: {
-        test: './src/preview/assets/js/test.js',
-      },
-      module: {
-        rules: defaults.webpack.module.rules.concat([
-          {
-            test: /qunit\.js$/,
-            loader: 'expose-loader?QUnit',
-          },
-          {
-            test: /\.css$/,
-            loader: 'style-loader!css-loader',
-          },
-        ]),
-      },
-      externals: {
-        jquery: 'jQuery',
-      },
-      output: {
-        path: path.resolve('./dist/preview/assets/js'),
-      },
-      mode: 'development',
-    },
-    {
-      // Create object of fileName:filePath pairs
-      entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
-        const key = path.basename(item, path.extname(item));
+gulp.task('js', (cb) => {
+  const task = require('@unic/estatico-webpack');
+  const merge = require('lodash.merge');
+  const glob = require('glob');
 
-        obj[key] = item; // eslint-disable-line no-param-reassign
+  const instance = task(defaults => ({
+    webpack: [
+      merge({}, defaults.webpack, {
+        entry: Object.assign({
+          head: './src/assets/js/head.js',
+          main: './src/assets/js/main.js',
+        }, env.dev ? {
+          dev: './src/assets/js/dev.js',
+        } : {}),
+        output: {
+          path: path.resolve('./dist/assets/js'),
+        },
+      }),
+      {
+        entry: {
+          test: './src/preview/assets/js/test.js',
+        },
+        module: {
+          rules: defaults.webpack.module.rules.concat([
+            {
+              test: /qunit\.js$/,
+              loader: 'expose-loader?QUnit',
+            },
+            {
+              test: /\.css$/,
+              loader: 'style-loader!css-loader',
+            },
+          ]),
+        },
+        externals: {
+          jquery: 'jQuery',
+        },
+        output: {
+          path: path.resolve('./dist/preview/assets/js'),
+        },
+        mode: 'development',
+      },
+      {
+        // Create object of fileName:filePath pairs
+        entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
+          const key = path.basename(item, path.extname(item));
 
-        return obj;
-      }, {}),
-      module: defaults.webpack.module,
-      externals: {
-        jquery: 'jQuery',
-        qunit: 'QUnit',
+          obj[key] = item; // eslint-disable-line no-param-reassign
+
+          return obj;
+        }, {}),
+        module: defaults.webpack.module,
+        externals: {
+          jquery: 'jQuery',
+          qunit: 'QUnit',
+        },
+        output: {
+          path: path.resolve('./dist/preview/assets/js/test'),
+        },
+        mode: 'development',
       },
-      output: {
-        path: path.resolve('./dist/preview/assets/js/test'),
-      },
-      mode: 'development',
-    },
-  ],
-  logger: defaults.logger,
-}), env));
+    ],
+    logger: defaults.logger,
+  }), env);
+
+  return instance(cb);
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

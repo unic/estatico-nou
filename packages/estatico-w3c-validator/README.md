@@ -12,9 +12,6 @@ $ npm install --save-dev @unic/estatico-w3c-validator
 
 ```js
 const gulp = require('gulp');
-const estaticoHtmlValidate = require('@unic/estatico-w3c-validator');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
@@ -23,22 +20,28 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('html:validate', estaticoHtmlValidate({
-  src: [
-    './dist/*.html',
-    './dist/modules/**/*.html',
-    './dist/pages/**/*.html',
-  ],
-  srcBase: './dist/',
-  watch: {
+gulp.task('html:validate', () => {
+  const task = require('@unic/estatico-w3c-validator');
+
+  const instance = task({
     src: [
       './dist/*.html',
       './dist/modules/**/*.html',
       './dist/pages/**/*.html',
     ],
-    name: 'html:validate',
-  },
-}, env));
+    srcBase: './dist/',
+    watch: {
+      src: [
+        './dist/*.html',
+        './dist/modules/**/*.html',
+        './dist/pages/**/*.html',
+      ],
+      name: 'html:validate',
+    },
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

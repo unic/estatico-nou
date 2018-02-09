@@ -12,23 +12,26 @@ $ npm install --save-dev @unic/estatico-browsersync
 
 ```js
 const gulp = require('gulp');
-const estaticoBrowsersync = require('@unic/estatico-browsersync');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
  * Serve task
  * Uses Browsersync to serve the build directory, reloads on changes
  */
-gulp.task('serve', estaticoBrowsersync({
-  plugins: {
-    browsersync: {
-      server: './dist',
-      watch: './dist/**/*.{html,css,js}',
+gulp.task('serve', () => {
+  const task = require('@unic/estatico-browsersync');
+
+  const instance = task({
+    plugins: {
+      browsersync: {
+        server: './dist',
+        watch: './dist/**/*.{html,css,js}',
+      },
     },
-  },
-}, env));
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

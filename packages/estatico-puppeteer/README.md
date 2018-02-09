@@ -12,9 +12,6 @@ $ npm install --save-dev @unic/estatico-puppeteer
 
 ```js
 const gulp = require('gulp');
-const task = require('@unic/estatico-puppeteer');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
@@ -23,45 +20,52 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('js:test', estaticoPuppeteer({
-  src: [
-    './dist/{pages,modules,demo}/**/*.html',
-  ],
-  srcBase: './dist',
-  watch: {
+gulp.task('js:test', () => {
+  const task = require('@unic/estatico-puppeteer');
+  const estaticoQunit = require('@unic/estatico-qunit');
+
+  const instance = task({
     src: [
       './dist/{pages,modules,demo}/**/*.html',
     ],
-    name: 'js:test', // Displayed in watch log
-  },
-  viewports: {
-    mobile: {
-      width: 400,
-      height: 1000,
-      isMobile: true,
+    srcBase: './dist',
+    watch: {
+      src: [
+        './src/**/*.test.js',
+      ],
+      name: 'js:test',
     },
-    // tablet: {
-    //   width: 700,
-    //   height: 1000,
-    //   isMobile: true,
-    // },
-    desktop: {
-      width: 1400,
-      height: 1000,
+    viewports: {
+      mobile: {
+        width: 400,
+        height: 1000,
+        isMobile: true,
+      },
+      // tablet: {
+      //   width: 700,
+      //   height: 1000,
+      //   isMobile: true,
+      // },
+      desktop: {
+        width: 1400,
+        height: 1000,
+      },
     },
-  },
-  plugins: {
-    interact: async (page) => {
-      // Run tests
-      const results = await estaticoQunit.puppeteer.run(page);
+    plugins: {
+      interact: async (page) => {
+        // Run tests
+        const results = await estaticoQunit.puppeteer.run(page);
 
-      // Report results
-      if (results) {
-        estaticoQunit.puppeteer.log(results);
-      }
+        // Report results
+        if (results) {
+          estaticoQunit.puppeteer.log(results);
+        }
+      },
     },
-  },
-}, env));
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

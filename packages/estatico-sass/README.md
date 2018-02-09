@@ -12,9 +12,6 @@ $ npm install --save-dev @unic/estatico-sass
 
 ```js
 const gulp = require('gulp');
-const estaticoSass = require('@unic/estatico-sass');
-
-// Get CLI arguments, will return { dev: true } if --dev is set, e.g.
 const env = require('minimist')(process.argv.slice(2));
 
 /**
@@ -24,77 +21,84 @@ const env = require('minimist')(process.argv.slice(2));
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('css', estaticoSass({
-  src: [
-    './src/assets/css/**/*.scss',
-    './src/preview/assets/css/**/*.scss',
-  ],
-  srcBase: './src/',
-  dest: './dist',
-  watch: {
+gulp.task('css', () => {
+  const task = require('@unic/estatico-sass');
+  const nodeSassJsonImporter = require('node-sass-json-importer');
+  const autoprefixer = require('autoprefixer');
+
+  const instance = task({
     src: [
-      './src/**/*.scss',
+      './src/assets/css/**/*.scss',
+      './src/preview/assets/css/**/*.scss',
     ],
-    name: 'css',
-    dependencyGraph: {
-      srcBase: './',
-      resolver: {
-        scss: {
-          match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
-          resolve: (match, filePath) => {
-            if (!match[1]) {
-              return null;
-            }
+    srcBase: './src/',
+    dest: './dist',
+    watch: {
+      src: [
+        './src/**/*.scss',
+      ],
+      name: 'css',
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          scss: {
+            match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
+            resolve: (match, filePath) => {
+              if (!match[1]) {
+                return null;
+              }
 
-            // Find possible path candidates
-            // Try different directories, file endings and with "_" prefix
-            const candidates = [
-              path.dirname(filePath),
-              './src/',
-              './src/assets/css/',
-            ].map((dir) => {
-              const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
-              const candidatePath = path.resolve(dir, match[1]);
-              const candidatePartialPath = path.resolve(dir, partialPath);
-              const candidatePaths = [
-                candidatePath,
-                candidatePartialPath,
-                // .scss extension
-                path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
-                path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
-                // .css extension
-                path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
-              ];
+              // Find possible path candidates
+              const candidates = [
+                path.dirname(filePath),
+                './src/',
+                './src/assets/css/',
+              ].map((dir) => {
+                const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
+                const candidatePath = path.resolve(dir, match[1]);
+                const candidatePartialPath = path.resolve(dir, partialPath);
+                const candidatePaths = [
+                  candidatePath,
+                  candidatePartialPath,
+                  // .scss extension
+                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
+                  path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
+                  // .css extension
+                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
+                ];
 
-              // Remove duplicates
-              return [...new Set(candidatePaths)];
-            }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
+                // Remove duplicates
+                return [...new Set(candidatePaths)];
+              }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
 
-            return candidates.find(fs.existsSync) || null;
+              return candidates.find(fs.existsSync) || null;
+            },
           },
         },
       },
     },
-  },
-  plugins: {
-    sass: {
-      includePaths: [
-        './src/',
-        './src/assets/css/',
-      ],
-      importer: [
-        // Add importer being able to deal with json files like colors, e.g.
-        require('node-sass-json-importer'),
+    plugins: {
+      sass: {
+        includePaths: [
+          './src/',
+          './src/assets/css/',
+        ],
+        importer: [
+          // Add importer being able to deal with json files like colors, e.g.
+          nodeSassJsonImporter,
+        ],
+      },
+      postcss: [
+        autoprefixer({
+          // Custom autoprefixer config
+          browsers: ['last 10 versions'],
+        }),
       ],
     },
-    postcss: [
-      require('autoprefixer')({
-        // Custom autoprefixer config
-        browsers: ['last 10 versions'],
-      }),
-    ],
-  },
-}, env));
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

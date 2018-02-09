@@ -12,23 +12,28 @@ $ npm install --save-dev @unic/estatico-svgsprite
 
 ```js
 const gulp = require('gulp');
-const estaticoSvgsprite = require('@unic/estatico-svgsprite');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
  * SVG spriting task
  * Uses svgstore to create a sprite from multiple SVGs
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('svgsprite', estaticoSvgsprite({
-  src: {
-    main: './src/assets/media/svg/**/*.svg',
-    demo: './src/demo/modules/svgsprite/svg/*.svg',
-  },
-  srcBase: './src',
-  dest: './dist',
-}, env));
+gulp.task('svgsprite', () => {
+  const task = require('@unic/estatico-svgsprite');
+
+  const instance = task({
+    src: {
+      main: './src/assets/media/svg/**/*.svg',
+      demo: './src/demo/modules/svgsprite/svg/*.svg',
+    },
+    srcBase: './src',
+    dest: './dist',
+  }, env);
+
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):

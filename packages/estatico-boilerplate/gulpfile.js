@@ -2,25 +2,7 @@
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
-const parseArgs = require('minimist');
-const merge = require('lodash.merge');
-const glob = require('glob');
-const del = require('del');
-const inquirer = require('inquirer');
-
-const estaticoHandlebars = require('@unic/estatico-handlebars');
-const estaticoHtmlValidate = require('@unic/estatico-w3c-validator');
-const estaticoSass = require('@unic/estatico-sass');
-const estaticoStylelint = require('@unic/estatico-stylelint');
-const estaticoWebpack = require('@unic/estatico-webpack');
-const estaticoPuppeteer = require('@unic/estatico-puppeteer');
-const estaticoQunit = require('@unic/estatico-qunit');
-const estaticoSvgsprite = require('@unic/estatico-svgsprite');
-const estaticoEslint = require('@unic/estatico-eslint');
-const estaticoBrowsersync = require('@unic/estatico-browsersync');
-
-const env = parseArgs(process.argv.slice(2));
-const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
+const env = require('minimist')(process.argv.slice(2));
 
 
 /**
@@ -29,94 +11,102 @@ const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('html', estaticoHandlebars({
-  src: [
-    './src/*.hbs',
-    './src/pages/**/*.hbs',
-    './src/demo/pages/**/*.hbs',
-    '!./src/demo/pages/handlebars/*.hbs',
-    './src/modules/**/!(_)*.hbs',
-    './src/demo/modules/**/!(_)*.hbs',
-    './src/preview/styleguide/*.hbs',
-    '!./src/preview/styleguide/colors.hbs',
-  ],
-  srcBase: './src',
-  dest: './dist',
-  watch: {
+gulp.task('html', () => {
+  const task = require('@unic/estatico-handlebars');
+  const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
+  const estaticoQunit = require('@unic/estatico-qunit');
+
+  const instance = task({
     src: [
-      './src/**/*.hbs',
-      './src/**/*.data.js',
+      './src/*.hbs',
+      './src/pages/**/*.hbs',
+      './src/demo/pages/**/*.hbs',
+      '!./src/demo/pages/handlebars/*.hbs',
+      './src/modules/**/!(_)*.hbs',
+      './src/demo/modules/**/!(_)*.hbs',
+      './src/preview/styleguide/*.hbs',
+      '!./src/preview/styleguide/colors.hbs',
     ],
-    name: 'html',
-    dependencyGraph: {
-      srcBase: './',
-      resolver: {
-        hbs: {
-          match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
-          resolve: (match /* , filePath */) => {
-            if (!match[1]) {
-              return null;
-            }
-
-            let resolvedPath = path.resolve('./src', match[1]);
-
-            // Add extension
-            resolvedPath = `${resolvedPath}.hbs`;
-
-            return resolvedPath;
-          },
-        },
-        js: {
-          match: /require\('(.*?\.data\.js)'\)/g,
-          resolve: (match, filePath) => {
-            if (!match[1]) {
-              return null;
-            }
-
-            return path.resolve(path.dirname(filePath), match[1]);
-          },
-        },
-      },
-    },
-  },
-  plugins: {
-    clone: null,
-    handlebars: {
-      partials: [
+    srcBase: './src',
+    dest: './dist',
+    watch: {
+      src: [
         './src/**/*.hbs',
-        './node_modules/estatico-qunit/**/*.hbs',
+        './src/**/*.data.js',
       ],
-      helpers: {
-        register: (handlebars) => {
-          handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+      name: 'html',
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          hbs: {
+            match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
+            resolve: (match /* , filePath */) => {
+              if (!match[1]) {
+                return null;
+              }
+
+              let resolvedPath = path.resolve('./src', match[1]);
+
+              // Add extension
+              resolvedPath = `${resolvedPath}.hbs`;
+
+              return resolvedPath;
+            },
+          },
+          js: {
+            match: /require\('(.*?\.data\.js)'\)/g,
+            resolve: (match, filePath) => {
+              if (!match[1]) {
+                return null;
+              }
+
+              return path.resolve(path.dirname(filePath), match[1]);
+            },
+          },
         },
       },
     },
-    // Wrap with module layout
-    transformBefore: (file) => {
-      if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
-        return Buffer.from(moduleTemplate);
-      }
+    plugins: {
+      clone: null,
+      handlebars: {
+        partials: [
+          './src/**/*.hbs',
+          './node_modules/estatico-qunit/**/*.hbs',
+        ],
+        helpers: {
+          register: (handlebars) => {
+            handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+          },
+        },
+      },
+      // Wrap with module layout
+      transformBefore: (file) => {
+        if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
+          return Buffer.from(moduleTemplate);
+        }
 
-      return file.contents;
+        return file.contents;
+      },
+      // Relativify absolute paths
+      transformAfter: (file) => {
+        let content = file.contents.toString();
+        let relPathPrefix = path.join(path.relative(file.path, './src'));
+
+        relPathPrefix = relPathPrefix
+          .replace(new RegExp(`\\${path.sep}g`), '/') // Normalize path separator
+          .replace(/\.\.$/, ''); // Remove trailing ..
+
+        content = content.replace(/('|")\/(?!\^)/g, `$1${relPathPrefix}`);
+
+        content = Buffer.from(content);
+
+        return content;
+      },
     },
-    // Relativify absolute paths
-    transformAfter: (file) => {
-      let content = file.contents.toString();
-      let relPathPrefix = path.join(path.relative(file.path, './src'));
+  }, env);
 
-      relPathPrefix = relPathPrefix
-        .replace(new RegExp(`\\${path.sep}g`), '/') // Normalize path separator
-        .replace(/\.\.$/, ''); // Remove trailing ..
-
-      content = content.replace(/('|")\/(?!\^)/g, `$1${relPathPrefix}`);
-
-      content = Buffer.from(content);
-
-      return content;
-    },
-  },
-}, env));
+  return instance();
+});
 
 /**
  * HTML validation task
@@ -124,22 +114,28 @@ gulp.task('html', estaticoHandlebars({
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('html:validate', estaticoHtmlValidate({
-  src: [
-    './dist/*.html',
-    './dist/modules/**/*.html',
-    './dist/pages/**/*.html',
-  ],
-  srcBase: './dist/',
-  watch: {
+gulp.task('html:validate', () => {
+  const task = require('@unic/estatico-w3c-validator');
+
+  const instance = task({
     src: [
       './dist/*.html',
       './dist/modules/**/*.html',
       './dist/pages/**/*.html',
     ],
-    name: 'html:validate',
-  },
-}, env));
+    srcBase: './dist/',
+    watch: {
+      src: [
+        './dist/*.html',
+        './dist/modules/**/*.html',
+        './dist/pages/**/*.html',
+      ],
+      name: 'html:validate',
+    },
+  }, env);
+
+  return instance();
+});
 
 /**
  * CSS task
@@ -148,76 +144,84 @@ gulp.task('html:validate', estaticoHtmlValidate({
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('css', estaticoSass({
-  src: [
-    './src/assets/css/**/*.scss',
-    './src/preview/assets/css/**/*.scss',
-  ],
-  srcBase: './src/',
-  dest: './dist',
-  watch: {
+gulp.task('css', () => {
+  const task = require('@unic/estatico-sass');
+  const nodeSassJsonImporter = require('node-sass-json-importer');
+  const autoprefixer = require('autoprefixer');
+
+  const instance = task({
     src: [
-      './src/**/*.scss',
+      './src/assets/css/**/*.scss',
+      './src/preview/assets/css/**/*.scss',
     ],
-    name: 'css',
-    dependencyGraph: {
-      srcBase: './',
-      resolver: {
-        scss: {
-          match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
-          resolve: (match, filePath) => {
-            if (!match[1]) {
-              return null;
-            }
+    srcBase: './src/',
+    dest: './dist',
+    watch: {
+      src: [
+        './src/**/*.scss',
+      ],
+      name: 'css',
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          scss: {
+            match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
+            resolve: (match, filePath) => {
+              if (!match[1]) {
+                return null;
+              }
 
-            // Find possible path candidates
-            const candidates = [
-              path.dirname(filePath),
-              './src/',
-              './src/assets/css/',
-            ].map((dir) => {
-              const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
-              const candidatePath = path.resolve(dir, match[1]);
-              const candidatePartialPath = path.resolve(dir, partialPath);
-              const candidatePaths = [
-                candidatePath,
-                candidatePartialPath,
-                // .scss extension
-                path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
-                path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
-                // .css extension
-                path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
-              ];
+              // Find possible path candidates
+              const candidates = [
+                path.dirname(filePath),
+                './src/',
+                './src/assets/css/',
+              ].map((dir) => {
+                const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
+                const candidatePath = path.resolve(dir, match[1]);
+                const candidatePartialPath = path.resolve(dir, partialPath);
+                const candidatePaths = [
+                  candidatePath,
+                  candidatePartialPath,
+                  // .scss extension
+                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
+                  path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
+                  // .css extension
+                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
+                ];
 
-              // Remove duplicates
-              return [...new Set(candidatePaths)];
-            }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
+                // Remove duplicates
+                return [...new Set(candidatePaths)];
+              }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
 
-            return candidates.find(fs.existsSync) || null;
+              return candidates.find(fs.existsSync) || null;
+            },
           },
         },
       },
     },
-  },
-  plugins: {
-    sass: {
-      includePaths: [
-        './src/',
-        './src/assets/css/',
-      ],
-      importer: [
-        // Add importer being able to deal with json files like colors, e.g.
-        require('node-sass-json-importer'),
+    plugins: {
+      sass: {
+        includePaths: [
+          './src/',
+          './src/assets/css/',
+        ],
+        importer: [
+          // Add importer being able to deal with json files like colors, e.g.
+          nodeSassJsonImporter,
+        ],
+      },
+      postcss: [
+        autoprefixer({
+          // Custom autoprefixer config
+          browsers: ['last 10 versions'],
+        }),
       ],
     },
-    postcss: [
-      require('autoprefixer')({
-        // Custom autoprefixer config
-        browsers: ['last 10 versions'],
-      }),
-    ],
-  },
-}, env));
+  }, env);
+
+  return instance();
+});
 
 /**
  * CSS linting task
@@ -225,19 +229,25 @@ gulp.task('css', estaticoSass({
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('css:lint', estaticoStylelint({
-  src: [
-    './src/**/*.scss',
-  ],
-  srcBase: './src/',
-  dest: './dist',
-  // watch: {
-  //   src: [
-  //     './src/**/*.scss',
-  //   ],
-  //   name: 'css:lint',
-  // },
-}, env));
+gulp.task('css:lint', () => {
+  const task = require('@unic/estatico-stylelint');
+
+  const instance = task({
+    src: [
+      './src/**/*.scss',
+    ],
+    srcBase: './src/',
+    dest: './dist',
+    // watch: {
+    //   src: [
+    //     './src/**/*.scss',
+    //   ],
+    //   name: 'css:lint',
+    // },
+  }, env);
+
+  return instance();
+});
 
 /**
  * JavaScript bundling task
@@ -245,65 +255,73 @@ gulp.task('css:lint', estaticoStylelint({
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('js', estaticoWebpack(defaults => ({
-  webpack: [
-    merge({}, defaults.webpack, {
-      entry: Object.assign({
-        head: './src/assets/js/head.js',
-        main: './src/assets/js/main.js',
-      }, env.dev ? {
-        dev: './src/assets/js/dev.js',
-      } : {}),
-      output: {
-        path: path.resolve('./dist/assets/js'),
-      },
-    }),
-    {
-      entry: {
-        test: './src/preview/assets/js/test.js',
-      },
-      module: {
-        rules: defaults.webpack.module.rules.concat([
-          {
-            test: /qunit\.js$/,
-            loader: 'expose-loader?QUnit',
-          },
-          {
-            test: /\.css$/,
-            loader: 'style-loader!css-loader',
-          },
-        ]),
-      },
-      externals: {
-        jquery: 'jQuery',
-      },
-      output: {
-        path: path.resolve('./dist/preview/assets/js'),
-      },
-      mode: 'development',
-    },
-    {
-      // Create object of fileName:filePath pairs
-      entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
-        const key = path.basename(item, path.extname(item));
+gulp.task('js', (cb) => {
+  const task = require('@unic/estatico-webpack');
+  const merge = require('lodash.merge');
+  const glob = require('glob');
 
-        obj[key] = item; // eslint-disable-line no-param-reassign
+  const instance = task(defaults => ({
+    webpack: [
+      merge({}, defaults.webpack, {
+        entry: Object.assign({
+          head: './src/assets/js/head.js',
+          main: './src/assets/js/main.js',
+        }, env.dev ? {
+          dev: './src/assets/js/dev.js',
+        } : {}),
+        output: {
+          path: path.resolve('./dist/assets/js'),
+        },
+      }),
+      {
+        entry: {
+          test: './src/preview/assets/js/test.js',
+        },
+        module: {
+          rules: defaults.webpack.module.rules.concat([
+            {
+              test: /qunit\.js$/,
+              loader: 'expose-loader?QUnit',
+            },
+            {
+              test: /\.css$/,
+              loader: 'style-loader!css-loader',
+            },
+          ]),
+        },
+        externals: {
+          jquery: 'jQuery',
+        },
+        output: {
+          path: path.resolve('./dist/preview/assets/js'),
+        },
+        mode: 'development',
+      },
+      {
+        // Create object of fileName:filePath pairs
+        entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
+          const key = path.basename(item, path.extname(item));
 
-        return obj;
-      }, {}),
-      module: defaults.webpack.module,
-      externals: {
-        jquery: 'jQuery',
-        qunit: 'QUnit',
+          obj[key] = item; // eslint-disable-line no-param-reassign
+
+          return obj;
+        }, {}),
+        module: defaults.webpack.module,
+        externals: {
+          jquery: 'jQuery',
+          qunit: 'QUnit',
+        },
+        output: {
+          path: path.resolve('./dist/preview/assets/js/test'),
+        },
+        mode: 'development',
       },
-      output: {
-        path: path.resolve('./dist/preview/assets/js/test'),
-      },
-      mode: 'development',
-    },
-  ],
-  logger: defaults.logger,
-}), env));
+    ],
+    logger: defaults.logger,
+  }), env);
+
+  return instance(cb);
+});
 
 /**
  * JavaScript linting task
@@ -311,19 +329,25 @@ gulp.task('js', estaticoWebpack(defaults => ({
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('js:lint', estaticoEslint({
-  src: [
-    './src/**/*.js',
-  ],
-  srcBase: './src',
-  dest: './src',
-  watch: {
+gulp.task('js:lint', () => {
+  const task = require('@unic/estatico-eslint');
+
+  const instance = task({
     src: [
       './src/**/*.js',
     ],
-    name: 'js:lint',
-  },
-}, env));
+    srcBase: './src',
+    dest: './src',
+    watch: {
+      src: [
+        './src/**/*.js',
+      ],
+      name: 'js:lint',
+    },
+  }, env);
+
+  return instance();
+});
 
 /**
  * JavaScript testing task
@@ -331,45 +355,52 @@ gulp.task('js:lint', estaticoEslint({
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('js:test', estaticoPuppeteer({
-  src: [
-    './dist/{pages,modules,demo}/**/*.html',
-  ],
-  srcBase: './dist',
-  watch: {
-    src: [
-      './src/**/*.test.js',
-    ],
-    name: 'js:test',
-  },
-  viewports: {
-    mobile: {
-      width: 400,
-      height: 1000,
-      isMobile: true,
-    },
-    // tablet: {
-    //   width: 700,
-    //   height: 1000,
-    //   isMobile: true,
-    // },
-    desktop: {
-      width: 1400,
-      height: 1000,
-    },
-  },
-  plugins: {
-    interact: async (page) => {
-      // Run tests
-      const results = await estaticoQunit.puppeteer.run(page);
+gulp.task('js:test', () => {
+  const task = require('@unic/estatico-puppeteer');
+  const estaticoQunit = require('@unic/estatico-qunit');
 
-      // Report results
-      if (results) {
-        estaticoQunit.puppeteer.log(results);
-      }
+  const instance = task({
+    src: [
+      './dist/{pages,modules,demo}/**/*.html',
+    ],
+    srcBase: './dist',
+    watch: {
+      src: [
+        './src/**/*.test.js',
+      ],
+      name: 'js:test',
     },
-  },
-}, env));
+    viewports: {
+      mobile: {
+        width: 400,
+        height: 1000,
+        isMobile: true,
+      },
+      // tablet: {
+      //   width: 700,
+      //   height: 1000,
+      //   isMobile: true,
+      // },
+      desktop: {
+        width: 1400,
+        height: 1000,
+      },
+    },
+    plugins: {
+      interact: async (page) => {
+        // Run tests
+        const results = await estaticoQunit.puppeteer.run(page);
+
+        // Report results
+        if (results) {
+          estaticoQunit.puppeteer.log(results);
+        }
+      },
+    },
+  }, env);
+
+  return instance();
+});
 
 /**
  * SVG spriting task
@@ -377,32 +408,48 @@ gulp.task('js:test', estaticoPuppeteer({
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('svgsprite', estaticoSvgsprite({
-  src: {
-    main: './src/assets/media/svg/**/*.svg',
-    demo: './src/demo/modules/svgsprite/svg/*.svg',
-  },
-  srcBase: './src',
-  dest: './dist',
-}, env));
+gulp.task('svgsprite', () => {
+  const task = require('@unic/estatico-svgsprite');
+
+  const instance = task({
+    src: {
+      main: './src/assets/media/svg/**/*.svg',
+      demo: './src/demo/modules/svgsprite/svg/*.svg',
+    },
+    srcBase: './src',
+    dest: './dist',
+  }, env);
+
+  return instance();
+});
 
 /**
  * Serve task
  * Uses Browsersync to serve the build directory, reloads on changes
  */
-gulp.task('serve', estaticoBrowsersync({
-  plugins: {
-    browsersync: {
-      server: './dist',
-      watch: './dist/**/*.{html,css,js}',
+gulp.task('serve', () => {
+  const task = require('@unic/estatico-browsersync');
+
+  const instance = task({
+    plugins: {
+      browsersync: {
+        server: './dist',
+        watch: './dist/**/*.{html,css,js}',
+      },
     },
-  },
-}, env));
+  }, env);
+
+  return instance();
+});
 
 /**
  * Clean build directory
  */
-gulp.task('clean', () => del('./dist'));
+gulp.task('clean', () => {
+  const del = require('del');
+
+  return del('./dist');
+});
 
 /**
  * Test & lint / validate
@@ -422,6 +469,8 @@ gulp.task('build', gulp.series('clean', 'lint', gulp.parallel('html', 'css', 'js
  * --noInteractive / --skipBuild will bypass the prompt
  */
 gulp.task('default', (done) => {
+  const inquirer = require('inquirer');
+
   const cb = (skipBuild) => {
     if (skipBuild) {
       return gulp.series('serve')(done);

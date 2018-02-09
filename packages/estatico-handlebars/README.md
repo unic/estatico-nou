@@ -12,11 +12,7 @@ $ npm install --save-dev @unic/estatico-handlebars
 
 ```js
 const gulp = require('gulp');
-const estaticoHandlebars = require('@unic/estatico-handlebars');
 const path = require('path');
-const estaticoQunit = require('@unic/estatico-qunit');
-
-// Get CLI arguments
 const env = require('minimist')(process.argv.slice(2));
 
 /**
@@ -25,94 +21,102 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('html', estaticoHandlebars({
-  src: [
-    './src/*.hbs',
-    './src/pages/**/*.hbs',
-    './src/demo/pages/**/*.hbs',
-    '!./src/demo/pages/handlebars/*.hbs',
-    './src/modules/**/!(_)*.hbs',
-    './src/demo/modules/**/!(_)*.hbs',
-    './src/preview/styleguide/*.hbs',
-    '!./src/preview/styleguide/colors.hbs',
-  ],
-  srcBase: './src',
-  dest: './dist',
-  watch: {
+gulp.task('html', () => {
+  const task = require('@unic/estatico-handlebars');
+  const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
+  const estaticoQunit = require('@unic/estatico-qunit');
+
+  const instance = task({
     src: [
-      './src/**/*.hbs',
-      './src/**/*.data.js',
+      './src/*.hbs',
+      './src/pages/**/*.hbs',
+      './src/demo/pages/**/*.hbs',
+      '!./src/demo/pages/handlebars/*.hbs',
+      './src/modules/**/!(_)*.hbs',
+      './src/demo/modules/**/!(_)*.hbs',
+      './src/preview/styleguide/*.hbs',
+      '!./src/preview/styleguide/colors.hbs',
     ],
-    name: 'html',
-    dependencyGraph: {
-      srcBase: './',
-      resolver: {
-        hbs: {
-          match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
-          resolve: (match /* , filePath */) => {
-            if (!match[1]) {
-              return null;
-            }
-
-            let resolvedPath = path.resolve('./src', match[1]);
-
-            // Add extension
-            resolvedPath = `${resolvedPath}.hbs`;
-
-            return resolvedPath;
-          },
-        },
-        js: {
-          match: /require\('(.*?\.data\.js)'\)/g,
-          resolve: (match, filePath) => {
-            if (!match[1]) {
-              return null;
-            }
-
-            return path.resolve(path.dirname(filePath), match[1]);
-          },
-        },
-      },
-    },
-  },
-  plugins: {
-    clone: null,
-    handlebars: {
-      partials: [
+    srcBase: './src',
+    dest: './dist',
+    watch: {
+      src: [
         './src/**/*.hbs',
-        './node_modules/estatico-qunit/**/*.hbs',
+        './src/**/*.data.js',
       ],
-      helpers: {
-        register: (handlebars) => {
-          handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+      name: 'html',
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          hbs: {
+            match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
+            resolve: (match /* , filePath */) => {
+              if (!match[1]) {
+                return null;
+              }
+
+              let resolvedPath = path.resolve('./src', match[1]);
+
+              // Add extension
+              resolvedPath = `${resolvedPath}.hbs`;
+
+              return resolvedPath;
+            },
+          },
+          js: {
+            match: /require\('(.*?\.data\.js)'\)/g,
+            resolve: (match, filePath) => {
+              if (!match[1]) {
+                return null;
+              }
+
+              return path.resolve(path.dirname(filePath), match[1]);
+            },
+          },
         },
       },
     },
-    // Wrap with module layout
-    transformBefore: (file) => {
-      if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
-        return Buffer.from(moduleTemplate);
-      }
+    plugins: {
+      clone: null,
+      handlebars: {
+        partials: [
+          './src/**/*.hbs',
+          './node_modules/estatico-qunit/**/*.hbs',
+        ],
+        helpers: {
+          register: (handlebars) => {
+            handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+          },
+        },
+      },
+      // Wrap with module layout
+      transformBefore: (file) => {
+        if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
+          return Buffer.from(moduleTemplate);
+        }
 
-      return file.contents;
+        return file.contents;
+      },
+      // Relativify absolute paths
+      transformAfter: (file) => {
+        let content = file.contents.toString();
+        let relPathPrefix = path.join(path.relative(file.path, './src'));
+
+        relPathPrefix = relPathPrefix
+          .replace(new RegExp(`\\${path.sep}g`), '/') // Normalize path separator
+          .replace(/\.\.$/, ''); // Remove trailing ..
+
+        content = content.replace(/('|")\/(?!\^)/g, `$1${relPathPrefix}`);
+
+        content = Buffer.from(content);
+
+        return content;
+      },
     },
-    // Relativify absolute paths
-    transformAfter: (file) => {
-      let content = file.contents.toString();
-      let relPathPrefix = path.join(path.relative(file.path, './src'));
+  }, env);
 
-      relPathPrefix = relPathPrefix
-        .replace(new RegExp(`\\${path.sep}g`), '/') // Normalize path separator
-        .replace(/\.\.$/, ''); // Remove trailing ..
-
-      content = content.replace(/('|")\/(?!\^)/g, `$1${relPathPrefix}`);
-
-      content = Buffer.from(content);
-
-      return content;
-    },
-  },
-}, env));
+  return instance();
+});
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
