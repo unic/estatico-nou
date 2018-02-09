@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,11 +8,12 @@
     "lerna-test": "lerna exec --scope @unic/estatico-webpack -- npm test"
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-webpack",
   "license": "Apache-2.0",
   "dependencies": {
     "@babel/core": "^7.0.0-beta.38",
     "@babel/preset-env": "^7.0.0-beta.38",
-    "@unic/estatico-utils": "0.0.2",
+    "@unic/estatico-utils": "0.0.3",
     "babel-loader": "^8.0.0-beta.0",
     "chalk": "^2.3.0",
     "css-loader": "^0.28.9",

@@ -1,12 +1,13 @@
 {
   "name": "@unic/estatico-qunit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-qunit",
   "license": "Apache-2.0",
   "dependencies": {
     "chalk": "^2.3.0",

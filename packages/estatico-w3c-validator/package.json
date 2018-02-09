@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-w3c-validator",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,10 @@
     "lerna-test": "lerna exec --scope @unic/estatico-w3c-validator -- npm test"
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-w3c-validator",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.2",
+    "@unic/estatico-utils": "0.0.3",
     "chalk": "^2.3.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-changed-in-place": "^2.2.0",

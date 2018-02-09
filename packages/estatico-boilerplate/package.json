@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-boilerplate",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,20 +8,21 @@
     "gulp": "gulp"
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@unic/estatico-browsersync": "0.0.2",
-    "@unic/estatico-data": "0.0.2",
-    "@unic/estatico-eslint": "0.0.2",
-    "@unic/estatico-handlebars": "0.0.2",
-    "@unic/estatico-puppeteer": "0.0.2",
-    "@unic/estatico-qunit": "0.0.2",
-    "@unic/estatico-sass": "0.0.2",
-    "@unic/estatico-stylelint": "0.0.2",
-    "@unic/estatico-svgsprite": "0.0.2",
-    "@unic/estatico-w3c-validator": "0.0.2",
-    "@unic/estatico-watch": "0.0.2",
-    "@unic/estatico-webpack": "0.0.2",
+    "@unic/estatico-browsersync": "0.0.3",
+    "@unic/estatico-data": "0.0.3",
+    "@unic/estatico-eslint": "0.0.3",
+    "@unic/estatico-handlebars": "0.0.3",
+    "@unic/estatico-puppeteer": "0.0.3",
+    "@unic/estatico-qunit": "0.0.3",
+    "@unic/estatico-sass": "0.0.3",
+    "@unic/estatico-stylelint": "0.0.3",
+    "@unic/estatico-svgsprite": "0.0.3",
+    "@unic/estatico-w3c-validator": "0.0.3",
+    "@unic/estatico-watch": "0.0.3",
+    "@unic/estatico-webpack": "0.0.3",
     "autoprefixer": "^7.2.5",
     "del": "^3.0.0",
     "glob": "^7.1.2",
@@ -40,8 +41,5 @@
   },
   "engines": {
     "node": ">=8 <9"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-handlebars",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,10 @@
     "lerna-test": "lerna exec --scope @unic/estatico-handlebars -- npm test"
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-handlebars",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.2",
+    "@unic/estatico-utils": "0.0.3",
     "chalk": "^2.3.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-hb": "^6.0.2",

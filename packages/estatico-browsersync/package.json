@@ -1,15 +1,16 @@
 {
   "name": "@unic/estatico-browsersync",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-browsersync",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.2",
+    "@unic/estatico-utils": "0.0.3",
     "browser-sync": "^2.23.6",
     "joi": "^13.1.2"
   },

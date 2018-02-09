@@ -1,12 +1,13 @@
 {
   "name": "@unic/estatico-data",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
   "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-data",
   "license": "Apache-2.0",
   "dependencies": {
     "callsite": "^1.0.0",
