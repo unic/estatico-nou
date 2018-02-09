@@ -12,7 +12,7 @@ $ nvm use
 $ npm i
 ```
 
-## Usage (UNTESTED outside of the monorepo!)
+## Usage
 
 - Run default task, building everything and starting web server: `$ npm run gulp -- --dev --watch`
 - Run specific task: `$ npm run html -- --dev`
