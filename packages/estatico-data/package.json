@@ -8,8 +8,6 @@
   },
   "author": "Unic AG",
   "license": "Apache-2.0",
-  "devDependencies": {
-  },
   "dependencies": {
     "callsite": "^1.0.0",
     "glob": "^7.1.2",
