@@ -8,7 +8,7 @@ Demo repo based on old Estático. Tasks were completely replaced with new ones a
 $ git clone https://github.com/unic/estatico-nou.git
 $ cd estatico-nou
 $ git filter-branch --subdirectory-filter packages/estatico-boilerplate
-$ nvm use 8.9.4
+$ nvm use
 $ npm i
 ```
 
