@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "dependencies": {
     "@babel/core": "^7.0.0-beta.38",
     "@babel/preset-env": "^7.0.0-beta.38",
-    "@unic/estatico-utils": "0.0.3",
+    "@unic/estatico-utils": "0.0.4",
     "babel-loader": "^8.0.0-beta.0",
     "chalk": "^2.3.0",
     "css-loader": "^0.28.9",

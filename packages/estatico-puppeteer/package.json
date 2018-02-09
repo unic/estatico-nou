@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-puppeteer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-puppeteer",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.3",
+    "@unic/estatico-utils": "0.0.4",
     "chalk": "^2.3.0",
     "glob": "^7.1.2",
     "lodash.merge": "^4.6.0",
