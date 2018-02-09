@@ -18,5 +18,8 @@
   },
   "engines": {
     "node": ">=8 <9"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
