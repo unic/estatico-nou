@@ -45,6 +45,7 @@ gulp.task('html', estaticoHandlebars({
   watch: {
     src: [
       './src/**/*.hbs',
+      './src/**/*.data.js',
     ],
     name: 'html',
     dependencyGraph: {

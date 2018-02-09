@@ -110,6 +110,13 @@ const task = (config, env = {}, watcher) => {
   const merge = require('lodash.merge');
   const handlebarsWax = require('handlebars-wax');
 
+  // Remove file extension from path, including complex ones like .data.js
+  const getSimplifiedFilePath = (filePath) => {
+    const fileName = path.basename(filePath).split('.')[0];
+
+    return filePath.replace(path.basename(filePath), fileName);
+  };
+
   const wax = handlebarsWax(handlebars);
 
   config.plugins.handlebars.handlebars = handlebars; // eslint-disable-line no-param-reassign
@@ -149,10 +156,13 @@ const task = (config, env = {}, watcher) => {
     .pipe(through.obj((file, enc, done) => {
       // TODO: Make sure HTML is rebuilt if corresponding data file changed
       if (watcher && watcher.resolvedGraph) {
+        const resolvedGraph = watcher.resolvedGraph.map(getSimplifiedFilePath);
+        const simplifiedFilePath = getSimplifiedFilePath(file.path);
+
         config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
 
-        if (!watcher.resolvedGraph.includes(file.path)) {
-          config.logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
+        if (!resolvedGraph.includes(simplifiedFilePath)) {
+          config.logger.debug('watcher', `${chalk.yellow(simplifiedFilePath)} not found in resolved graph. It will not be rebuilt.`);
 
           return done();
         }
