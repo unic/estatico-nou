@@ -74,7 +74,11 @@ class DependencyGraph {
     while (match = resolver.match.exec(content)) { // eslint-disable-line no-cond-assign
       const matchedFilePath = resolver.resolve(match, filePath);
 
-      matches.push(matchedFilePath);
+      if (matchedFilePath) {
+        matches.push(matchedFilePath);
+      } else {
+        log('DependencyGraph', `'${match[0]}' not found`);
+      }
     }
 
     // Add new matches to graph

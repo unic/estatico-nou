@@ -160,6 +160,44 @@ gulp.task('css', estaticoSass({
       './src/**/*.scss',
     ],
     name: 'css',
+    dependencyGraph: {
+      srcBase: './',
+      resolver: {
+        scss: {
+          match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
+          resolve: (match, filePath, log) => {
+            if (!match[1]) {
+              return null;
+            }
+
+            // Find possible path candidates
+            const candidates = [
+              path.dirname(filePath),
+              './src/',
+              './src/assets/css/',
+            ].map((dir) => {
+              const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
+              const candidatePath = path.resolve(dir, match[1]);
+              const candidatePartialPath = path.resolve(dir, partialPath);
+              const candidatePaths = [
+                candidatePath,
+                candidatePartialPath,
+                // .scss extension
+                path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
+                path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
+                // .css extension
+                path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
+              ];
+
+              // Remove duplicates
+              return [...new Set(candidatePaths)];
+            }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
+
+            return candidates.find(fs.existsSync) || null;
+          },
+        },
+      },
+    },
   },
   plugins: {
     sass: {

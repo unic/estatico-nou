@@ -56,9 +56,10 @@ const defaults = (env = {}) => ({
  * Task function
  * @param {object} config - Complete task config
  * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @param {object} [watcher] - Watch file events
  * @return {object} gulp stream
  */
-const task = (config, env = {}) => {
+const task = (config, env = {}, watcher) => {
   const chalk = require('chalk');
   const path = require('path');
   const gulp = require('gulp');
@@ -85,10 +86,20 @@ const task = (config, env = {}) => {
     // Prevent stream from unpiping on error
     .pipe(plumber())
 
-    // TODO: Add dependency graph and decide based on fileEvents which files to pass through
-    // .pipe(through.obj((file, enc, done) => {
-    //   done(null, file)
-    // }))
+    // Decide based on watcher dependency graph which files to pass through
+    .pipe(through.obj((file, enc, done) => {
+      if (watcher && watcher.resolvedGraph) {
+        config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
+
+        if (!watcher.resolvedGraph.includes(file.path)) {
+          config.logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
+
+          return done();
+        }
+      }
+
+      return done(null, file);
+    }))
 
     .pipe(sourcemaps.init())
 
