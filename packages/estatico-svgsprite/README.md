@@ -29,7 +29,7 @@ gulp.task('svgsprite', () => {
       demo: './src/demo/modules/svgsprite/svg/*.svg',
     },
     srcBase: './src',
-    dest: './dist',
+    dest: './dist/assets/media/svgsprite',
   }, env);
 
   return instance();
@@ -38,6 +38,19 @@ gulp.task('svgsprite', () => {
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp svgsprite`
+
+### Client
+
+```js
+import loadSvgSprites from '@unic/estatico-svgsprite/lib/loader';
+
+document.addEventListener('DOMContentLoaded', loadSvgSprites());
+```
+
+Add config to template:
+```html
+<body data-svgsprites-options='["/assets/media/svgsprite/main.svg", "/assets/media/svgsprite/demo.svg"]'>
+```
 
 ## API
 

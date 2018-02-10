@@ -417,7 +417,7 @@ gulp.task('svgsprite', () => {
       demo: './src/demo/modules/svgsprite/svg/*.svg',
     },
     srcBase: './src',
-    dest: './dist',
+    dest: './dist/assets/media/svgsprite',
   }, env);
 
   return instance();

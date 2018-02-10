@@ -1,4 +1,4 @@
-/* global ActiveXObject: false */
+/* globals document, window, ActiveXObject */
 
 /**
  * SVG Icon Sprite Loader
@@ -6,7 +6,6 @@
  * @author Unic AG
  * @copyright Unic AG
  */
-
 
 function loadSvgSprites() {
   const id = 'mod_svgsprites';
@@ -79,7 +78,4 @@ function loadSvgSprites() {
   }, 100);
 }
 
-/**
- * Load the SVG Sprite
- */
-document.addEventListener('DOMContentLoaded', loadSvgSprites());
+export default loadSvgSprites;

@@ -8,8 +8,8 @@ const data = {
   env,
   props: {
     svgSprites: JSON.stringify([
-      // Disabled since there are no icons by default
-      // '/assets/media/svg/base.svg'
+      '/assets/media/svg/base.svg',
+      '/assets/media/svg/demo.svg',
     ]),
   },
 };
