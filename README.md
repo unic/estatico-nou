@@ -49,3 +49,7 @@ In the boilerplate, existing gulp tasks (see [gulpfile.js](packages/estatico-boi
 ### Tests
 
 To run all tests in every package we can call `lerna exec -- npm test`. For a specific one we can use `lerna exec --scope=@unic/estatico-stylelint -- npm test` (or `npm run lerna-test` after navigating into a package).
+
+### Release
+
+[`lerna publish`](https://github.com/lerna/lerna#publish) and lots of magic.
