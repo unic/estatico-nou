@@ -1,4 +1,4 @@
-# @unic/estatico-svgsprite
+# @unic/estatico-font-datauri
 
 Uses `gulp-simplefont64` to inline font files into base64-encoded data URIs
 
