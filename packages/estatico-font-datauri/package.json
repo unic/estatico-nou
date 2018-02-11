@@ -1,0 +1,32 @@
+{
+  "name": "@unic/estatico-font-datauri",
+  "version": "0.0.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-font-datauri -- npm test"
+  },
+  "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-font-datauri",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@unic/estatico-utils": "0.0.4",
+    "chalk": "^2.3.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-plumber": "^1.1.0",
+    "gulp-simplefont64": "github:unic/gulp-simplefont64",
+    "gulp-size": "^3.0.0",
+    "lodash.merge": "^4.6.0",
+    "merge-stream": "^1.0.1",
+    "plugin-error": "^0.1.2",
+    "through2": "^2.0.3"
+  },
+  "engines": {
+    "node": ">=8 <9"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

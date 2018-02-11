@@ -250,6 +250,34 @@ gulp.task('css:lint', () => {
 });
 
 /**
+ * CSS font inlining task
+ * Uses `gulp-simplefont64` to inline font files into base64-encoded data URIs
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('css:fonts', () => {
+  const task = require('@unic/estatico-font-datauri');
+
+  const instance = task({
+    src: [
+      './src/assets/fonts/**/*',
+    ],
+    dest: './src/assets/.tmp',
+    plugins: {
+      concat: 'fonts.scss',
+    },
+    watch: {
+      src: [
+        './src/assets/fonts/**/*',
+      ],
+      name: 'css:fonts',
+    },
+  }, env);
+
+  return instance();
+});
+
+/**
  * JavaScript bundling task
  * Uses Webpack with Babel to transpile and bundle JavaScript.
  *
@@ -448,7 +476,7 @@ gulp.task('serve', () => {
 gulp.task('clean', () => {
   const del = require('del');
 
-  return del('./dist');
+  return del(['./dist', './src/assets/.tmp']);
 });
 
 /**
@@ -465,7 +493,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  */
 gulp.task('build', (done) => {
   const inquirer = require('inquirer');
-  const build = gulp.parallel('html', 'css', 'js', 'svgsprite');
+  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'svgsprite');
 
   const cb = (skipTests) => {
     if (skipTests) {
