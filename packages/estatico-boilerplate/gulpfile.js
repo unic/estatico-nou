@@ -476,7 +476,7 @@ gulp.task('serve', () => {
 gulp.task('clean', () => {
   const del = require('del');
 
-  return del('./dist');
+  return del(['./dist', './src/assets/.tmp']);
 });
 
 /**
@@ -493,7 +493,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  */
 gulp.task('build', (done) => {
   const inquirer = require('inquirer');
-  const build = gulp.parallel('html', 'css', 'js', 'svgsprite');
+  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'svgsprite');
 
   const cb = (skipTests) => {
     if (skipTests) {
