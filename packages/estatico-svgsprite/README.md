@@ -20,7 +20,7 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('svgsprite', () => {
+gulp.task('media:svgsprite', () => {
   const task = require('@unic/estatico-svgsprite');
 
   const instance = task({

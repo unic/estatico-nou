@@ -462,7 +462,7 @@ gulp.task('js:mocks', () => {
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
  */
-gulp.task('svgsprite', () => {
+gulp.task('media:svgsprite', () => {
   const task = require('@unic/estatico-svgsprite');
 
   const instance = task({
@@ -519,7 +519,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  */
 gulp.task('build', (done) => {
   const inquirer = require('inquirer');
-  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'svgsprite');
+  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'media:svgsprite');
 
   const cb = (skipTests) => {
     if (skipTests) {
