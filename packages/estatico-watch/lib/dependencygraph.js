@@ -1,8 +1,7 @@
 const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
-const log = require('fancy-log');
-// const chalk = require('chalk');
+const chalk = require('chalk');
 const graphlib = require('graphlib');
 
 const Graph = graphlib.Graph; // eslint-disable-line prefer-destructuring
@@ -16,7 +15,7 @@ class DependencyGraph {
     this.options = Object.assign({
       paths: [],
       resolver: {},
-      log: false,
+      logger: null,
     }, options);
 
     this.graph = new Graph();
@@ -42,8 +41,8 @@ class DependencyGraph {
 
     // Skip missing resolvers
     if (!resolver) {
-      if (this.options.log) {
-        log('DependencyGraph', `Resolver '${path.extname(filePath)}' not found`);
+      if (this.options.logger) {
+        this.options.logger.debug(`Dependency graph: Resolver '${path.extname(filePath)}' not found`);
       }
 
       return [];
@@ -51,8 +50,8 @@ class DependencyGraph {
 
     // Skip missing files
     if (!content) {
-      if (this.options.log) {
-        log('DependencyGraph', `'${filePath}' not found`);
+      if (this.options.logger) {
+        this.options.logger.debug(`Dependency graph: ${chalk.yellow(filePath)} not found`);
       }
 
       return [];
@@ -76,8 +75,8 @@ class DependencyGraph {
 
       if (matchedFilePath) {
         matches.push(matchedFilePath);
-      } else {
-        log('DependencyGraph', `'${match[0]}' not found`);
+      } else if (this.options.logger) {
+        this.options.logger.debug(`Dependency graph: ${chalk.yellow(match[0])} not found`);
       }
     }
 

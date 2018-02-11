@@ -20,6 +20,7 @@ const env = require('minimist')(process.argv.slice(2));
  *
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `-LLLL` will display debug info like detailed autoprefixer configs
  */
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
@@ -91,7 +92,7 @@ gulp.task('css', () => {
       postcss: [
         autoprefixer({
           // Custom autoprefixer config
-          browsers: ['last 10 versions'],
+          browsers: ['last 2 versions'],
         }),
       ],
     },
@@ -104,8 +105,7 @@ gulp.task('css', () => {
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp css`
 
-Run with debug info (showing you the autoprefixer setup, e.g.):
-`$ NODE_DEBUG=estatico-sass npm run gulp css`
+See possible flags specified above.
 
 ## API
 

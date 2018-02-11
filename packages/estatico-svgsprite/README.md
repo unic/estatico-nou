@@ -39,6 +39,8 @@ gulp.task('svgsprite', () => {
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp svgsprite`
 
+See possible flags specified above.
+
 ### Client
 
 ```js

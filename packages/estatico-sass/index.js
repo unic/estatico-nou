@@ -93,10 +93,10 @@ const task = (config, env = {}, watcher) => {
     // Decide based on watcher dependency graph which files to pass through
     .pipe(through.obj((file, enc, done) => {
       if (watcher && watcher.resolvedGraph) {
-        config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
+        config.logger.debug('Resolved watch graph:', watcher.resolvedGraph);
 
         if (!watcher.resolvedGraph.includes(file.path)) {
-          config.logger.debug('watcher', `${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
+          config.logger.debug(`${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
 
           return done();
         }
@@ -117,7 +117,7 @@ const task = (config, env = {}, watcher) => {
 
         clone.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`);
 
-        config.logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
+        config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)} to keep unminified files`);
 
         this.push(clone);
       }

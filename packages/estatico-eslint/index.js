@@ -85,7 +85,7 @@ const task = (config, env = {}) => {
 
         // Only keep file in stream if it was fixed
         if (file.eslint.fixed) {
-          config.logger.info(`Fixed linting issues in ${chalk.yellow(relFilePath)}`);
+          config.logger.info(`Automatically fixed linting issues in ${chalk.yellow(relFilePath)}. Set "plugins.eslint.fix" to false to disable this functionality.`);
 
           return done(null, file);
         }

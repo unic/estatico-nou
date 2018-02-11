@@ -45,7 +45,9 @@ gulp.task('html:validate', () => {
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
-`$ npm run gulp htmlValidate`
+`$ npm run gulp html:validate`
+
+See possible flags specified above.
 
 ## API
 

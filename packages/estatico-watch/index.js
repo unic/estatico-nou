@@ -56,6 +56,7 @@ const task = (config /* , env = {} */) => {
   if (config.dependencyGraph) {
     dependencyGraph = new DependencyGraph(Object.assign({
       paths: config.src,
+      logger: config.logger,
     }, config.dependencyGraph));
   }
 
@@ -80,7 +81,7 @@ const task = (config /* , env = {} */) => {
         resolvedGraph,
       });
 
-      config.logger.debug(config.name, `Resolving the following events: ${events}`);
+      config.logger.debug(`Resolving the following events for "${config.name}": ${events}`);
 
       // Reset events
       events = [];

@@ -21,7 +21,7 @@ test.cb('default', (t) => {
 
     const log = utils.stripLogs(spy);
 
-    t.regex(log, /HTML Error: index.html Line 9, Column 15: End tag “h3” seen, but there were open elements./);
+    t.regex(log, /index\.html Linting error \(details above\)/);
 
     t.end();
   });

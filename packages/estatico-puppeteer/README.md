@@ -71,6 +71,8 @@ gulp.task('js:test', () => {
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp js:test`
 
+See possible flags specified above.
+
 ## API
 
 `plugin(options, env)` => `taskFn`
