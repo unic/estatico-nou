@@ -64,7 +64,7 @@ const defaults = env => ({
       const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
 
       if (!fs.existsSync(dataFilePath)) {
-        logger.debug('data', `Data file ${chalk.yellow(dataFilePath)} not found for ${chalk.yellow(file.path)}. This will not break anything, but the template will receive no data.`);
+        logger.debug(`Data file ${chalk.yellow(dataFilePath)} not found for ${chalk.yellow(file.path)}. This will not break anything, but the template will receive no data.`);
       }
 
       const data = require(dataFilePath); // eslint-disable-line
@@ -158,10 +158,10 @@ const task = (config, env = {}, watcher) => {
         const resolvedGraph = watcher.resolvedGraph.map(getSimplifiedFilePath);
         const simplifiedFilePath = getSimplifiedFilePath(file.path);
 
-        config.logger.debug('watcher', 'Resolved watch graph:', watcher.resolvedGraph);
+        config.logger.debug('Resolved watch graph:', watcher.resolvedGraph);
 
         if (!resolvedGraph.includes(simplifiedFilePath)) {
-          config.logger.debug('watcher', `${chalk.yellow(simplifiedFilePath)} not found in resolved graph. It will not be rebuilt.`);
+          config.logger.debug(`${chalk.yellow(simplifiedFilePath)} not found in resolved graph. It will not be rebuilt.`);
 
           return done();
         }
@@ -177,7 +177,7 @@ const task = (config, env = {}, watcher) => {
 
         file.contents = content; // eslint-disable-line no-param-reassign
 
-        config.logger.debug('transformBefore', `Transformed ${chalk.yellow(file.path)}`, chalk.gray(content.toString()), true);
+        config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformBefore"` /* , chalk.gray(content.toString()) */);
       }
 
       done(null, file);
@@ -190,7 +190,7 @@ const task = (config, env = {}, watcher) => {
 
         file.data = data; // eslint-disable-line no-param-reassign
 
-        config.logger.debug('data', `Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')), true);
+        config.logger.debug(`Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')));
 
         done(null, file);
       } catch (err) {
@@ -213,7 +213,7 @@ const task = (config, env = {}, watcher) => {
           clone.path = config.plugins.clone.rename(file.path);
         }
 
-        config.logger.debug('clone', `Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
+        config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
 
         this.push(clone);
       }
@@ -231,7 +231,7 @@ const task = (config, env = {}, watcher) => {
 
         file.contents = content; // eslint-disable-line
 
-        config.logger.debug('transformAfter', `Transformed ${chalk.yellow(file.path)}`);
+        config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformAfter"`);
       }
 
       done(null, file);
@@ -244,9 +244,9 @@ const task = (config, env = {}, watcher) => {
     .pipe(through.obj((file, enc, done) => {
       const renamedPath = file.path.replace(path.extname(file.path), '.html');
 
-      config.logger.debug('rename', `Renaming ${file.path} to ${chalk.yellow(renamedPath)}`);
-
       file.path = renamedPath; // eslint-disable-line no-param-reassign
+
+      config.logger.debug(`Renamed ${chalk.yellow(file.path)} to ${chalk.yellow(renamedPath)}`);
 
       done(null, file);
     }))

@@ -20,6 +20,7 @@ const env = require('minimist')(process.argv.slice(2));
  * Transforms Handlebars to HTML
  *
  * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `-LLLL` will display debug info like the data used for every template
  */
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
@@ -122,11 +123,7 @@ gulp.task('html', () => {
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp html`
 
-Run with debug info (showing you which file is passed through which step, e.g.):
-`$ NODE_DEBUG=estatico-handlebars npm run gulp html`
-
-Run with extended debug info (showing you the data used for every template, e.g.):
-`$ NODE_DEBUG=estatico-handlebars-extended npm run gulp html`
+See possible flags specified above.
 
 
 ## API

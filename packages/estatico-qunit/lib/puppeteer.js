@@ -1,5 +1,4 @@
 /* globals QUnit */
-const log = require('fancy-log');
 const chalk = require('chalk');
 
 module.exports = {
@@ -37,15 +36,15 @@ module.exports = {
 
     return results;
   },
-  log: (results) => {
+  log: (results, logger) => {
     results.details.forEach((test) => {
       if (test.failed === 0) {
-        log(chalk.green(`✓ ${test.name}`));
+        logger.info(chalk.green(`✓ ${test.name}`));
       } else {
-        log(chalk.red(`× ${test.name}`));
+        logger.info(chalk.red(`× ${test.name}`));
 
         test.assertions.filter(assertion => !assertion.result).forEach((assertion) => {
-          log(chalk.red(`Failing assertion: ${assertion.message}`));
+          logger.info(chalk.red(`Failing assertion: ${assertion.message}`));
         });
       }
     });

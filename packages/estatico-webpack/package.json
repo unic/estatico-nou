@@ -19,7 +19,6 @@
     "chalk": "^2.3.0",
     "css-loader": "^0.28.9",
     "expose-loader": "^0.7.4",
-    "fancy-log": "^1.3.0",
     "handlebars-loader": "github:unic/handlebars-loader",
     "lodash.merge": "^4.6.0",
     "lodash.once": "^4.1.1",

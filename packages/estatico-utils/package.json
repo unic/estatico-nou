@@ -12,7 +12,8 @@
   "dependencies": {
     "@unic/estatico-watch": "0.0.4",
     "chalk": "^2.3.0",
-    "fancy-log": "^1.3.0",
+    "fancy-log": "^1.3.2",
+    "gulplog": "^1.0.0",
     "joi": "^13.1.2",
     "lodash.merge": "^4.6.0"
   },

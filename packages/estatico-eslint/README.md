@@ -44,6 +44,8 @@ gulp.task('js:lint', () => {
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp js:lint`
 
+See possible flags specified above.
+
 ## API
 
 `plugin(options, env)` => `taskFn`

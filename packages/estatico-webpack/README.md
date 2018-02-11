@@ -92,8 +92,7 @@ gulp.task('js', (cb) => {
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
 `$ npm run gulp js`
 
-Run with debug info:
-`$ NODE_DEBUG=estatico-webpack npm run gulp js`
+See possible flags specified above.
 
 ### Options
 

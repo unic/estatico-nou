@@ -34,7 +34,7 @@ const defaults = (/* env */) => ({
   plugins: {
     puppeteer: {
     },
-    // interact: async (page) => {
+    // interact: async (page, logger) => {
     // },
   },
   logger: new Logger('estatico-puppeteer'),
@@ -94,10 +94,10 @@ const task = (config, env = {}) => {
               config.logger.info(`Testing viewport ${chalk.yellow(viewport)}`);
 
               await page.setViewport(config.viewports[viewport]);
-              await config.plugins.interact(page);
+              await config.plugins.interact(page, config.logger);
             }
           } else {
-            await config.plugins.interact(page);
+            await config.plugins.interact(page, config.logger);
           }
         } catch (err) {
           error = err;
