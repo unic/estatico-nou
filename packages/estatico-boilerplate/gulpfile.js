@@ -478,6 +478,26 @@ gulp.task('media:svgsprite', () => {
 });
 
 /**
+ * Generate image versions
+ * Uses GraphicsMagick to create resized and optionally cropped image variants
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('media:imageversions', () => {
+  const task = require('@unic/estatico-imageversions');
+
+  const instance = task({
+    src: [
+      './src/**/imageversions.config.js',
+    ],
+    srcBase: './src',
+    dest: './dist/',
+  }, env);
+
+  return instance();
+});
+
+/**
  * Serve task
  * Uses Browsersync to serve the build directory, reloads on changes
  */
