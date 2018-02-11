@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\""
+    "test": "echo \"@unic/estatico-qunit: No tests specified\""
   },
   "author": "Unic AG",
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-qunit",
