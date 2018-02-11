@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"No tests specified\"",
+    "test": "gulp build --noInteractive",
     "gulp": "gulp"
   },
   "author": "Unic AG",

@@ -2,4 +2,11 @@ language: node_js
 node_js:
   - "8.9.4"
   - "9"
-script: lerna bootstrap && npm test
+cache:
+  directories:
+    - node_modules
+script:
+  - lerna bootstrap
+  - npm test
+# https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
+sudo: required

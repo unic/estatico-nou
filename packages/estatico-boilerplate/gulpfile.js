@@ -459,8 +459,33 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
 
 /**
  * Create complete build
+ * Prompts whether tests and linting should run
+ *
+ * --noInteractive / --skipTests will bypass the prompt
  */
-gulp.task('build', gulp.series('clean', 'lint', gulp.parallel('html', 'css', 'js', 'svgsprite'), 'test'));
+gulp.task('build', (done) => {
+  const inquirer = require('inquirer');
+  const build = gulp.parallel('html', 'css', 'js', 'svgsprite');
+
+  const cb = (skipTests) => {
+    if (skipTests) {
+      gulp.series('clean', build)(done);
+    } else {
+      gulp.series('clean', 'lint', build, 'test')(done);
+    }
+  };
+
+  if (!env.noInteractive && !env.skipTests) {
+    inquirer.prompt([{
+      type: 'confirm',
+      name: 'skipTests',
+      message: 'Do you want to skip tests and linting?',
+      default: false,
+    }]).then(answers => cb(answers.skipTests));
+  } else {
+    cb(env.skipTests);
+  }
+});
 
 /**
  * Default development task
@@ -473,20 +498,20 @@ gulp.task('default', (done) => {
 
   const cb = (skipBuild) => {
     if (skipBuild) {
-      return gulp.series('serve')(done);
+      gulp.series('serve')(done);
+    } else {
+      gulp.series('build', 'serve')(done);
     }
-
-    return gulp.series('build', 'serve')(done);
   };
 
   if (!env.noInteractive && !env.skipBuild) {
-    return inquirer.prompt([{
+    inquirer.prompt([{
       type: 'confirm',
       name: 'skipBuild',
       message: 'Do you want to skip the build before starting the server?',
       default: false,
     }]).then(answers => cb(answers.skipBuild));
+  } else {
+    cb(env.skipBuild);
   }
-
-  return cb(env.skipBuild);
 });
