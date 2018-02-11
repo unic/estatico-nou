@@ -79,7 +79,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = void 0;\nvar _default = 'hello';\nexports.default = _default;\n\n//////////////////\n// WEBPACK FOOTER\n// ./test/fixtures/bar.js\n// module id = ./test/fixtures/bar.js\n// module chunks = main\n\n//# sourceURL=webpack:///./test/fixtures/bar.js?");
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = void 0;\nvar _default = 'hello';\nexports.default = _default;\n\n//# sourceURL=webpack:///./test/fixtures/bar.js?");
 
 /***/ }),
 
@@ -91,7 +91,7 @@ eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nvar _bar = _interopRequireDefault(__webpack_require__(/*! ./bar */ \"./test/fixtures/bar.js\"));\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nconsole.log(_bar.default);\n\n//////////////////\n// WEBPACK FOOTER\n// ./test/fixtures/main.js\n// module id = ./test/fixtures/main.js\n// module chunks = main\n\n//# sourceURL=webpack:///./test/fixtures/main.js?");
+eval("\n\nvar _bar = _interopRequireDefault(__webpack_require__(/*! ./bar */ \"./test/fixtures/bar.js\"));\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nconsole.log(_bar.default);\n\n//# sourceURL=webpack:///./test/fixtures/main.js?");
 
 /***/ })
 
