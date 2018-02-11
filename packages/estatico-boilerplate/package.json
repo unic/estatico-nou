@@ -14,6 +14,7 @@
     "@unic/estatico-browsersync": "^0.0.4",
     "@unic/estatico-data": "^0.0.4",
     "@unic/estatico-eslint": "0.0.5",
+    "@unic/estatico-font-datauri": "^0.0.4",
     "@unic/estatico-handlebars": "^0.0.4",
     "@unic/estatico-puppeteer": "^0.0.4",
     "@unic/estatico-qunit": "^0.0.4",
