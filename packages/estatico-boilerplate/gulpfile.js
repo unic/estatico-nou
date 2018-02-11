@@ -498,7 +498,12 @@ gulp.task('default', (done) => {
 
   const cb = (skipBuild) => {
     if (skipBuild) {
-      gulp.series('serve')(done);
+      if (env.watch) {
+        // Webpack tasks need to run to be able to start watcher
+        gulp.series('js', 'serve')(done);
+      } else {
+        gulp.series('serve')(done);
+      }
     } else {
       gulp.series('build', 'serve')(done);
     }

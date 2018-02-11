@@ -123,7 +123,7 @@ const task = (config, env = {}, cb) => {
     const callback = (err, stats) => {
       let done = cb;
 
-      if (config.watch) {
+      if (env.watch) {
         done = once(done);
       }
 
