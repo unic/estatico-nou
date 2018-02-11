@@ -2,4 +2,12 @@ language: node_js
 node_js:
   - "8.9.4"
   - "9"
-script: lerna bootstrap && npm test
+dist: trusty
+env:
+  - DISABLE_CHROMIUM_SANDBOX=true
+cache:
+  directories:
+    - node_modules
+script:
+  - lerna bootstrap
+  - npm test
