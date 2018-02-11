@@ -16,6 +16,7 @@
     "@unic/estatico-eslint": "0.0.5",
     "@unic/estatico-font-datauri": "^0.0.4",
     "@unic/estatico-handlebars": "^0.0.4",
+    "@unic/estatico-json-mocks": "^0.0.4",
     "@unic/estatico-puppeteer": "^0.0.4",
     "@unic/estatico-qunit": "^0.0.4",
     "@unic/estatico-sass": "^0.0.4",

@@ -431,6 +431,32 @@ gulp.task('js:test', () => {
 });
 
 /**
+ * JavaScript data mocks
+ * Creates static JSON data mocks
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('js:mocks', () => {
+  const task = require('@unic/estatico-json-mocks');
+
+  const instance = task({
+    src: [
+      './src/**/*.mock.js',
+    ],
+    srcBase: './src',
+    dest: './dist/mocks',
+    watch: {
+      src: [
+        './src/**/*.mock.js',
+      ],
+      name: 'js:mocks',
+    },
+  }, env);
+
+  return instance();
+});
+
+/**
  * SVG spriting task
  * Uses svgstore to create a sprite from multiple SVGs
  *
