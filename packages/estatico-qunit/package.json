@@ -14,7 +14,7 @@
     "qunitjs": "^2.4.1"
   },
   "engines": {
-    "node": ">=8 <9"
+    "node": ">=8"
   },
   "publishConfig": {
     "access": "public"

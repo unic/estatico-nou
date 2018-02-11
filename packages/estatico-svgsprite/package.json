@@ -24,7 +24,7 @@
     "through2": "^2.0.3"
   },
   "engines": {
-    "node": ">=8 <9"
+    "node": ">=8"
   },
   "publishConfig": {
     "access": "public"
