@@ -5,6 +5,8 @@ node_js:
 dist: trusty
 env:
   - DISABLE_CHROMIUM_SANDBOX=true
+addons:
+  chrome: stable
 cache:
   directories:
     - node_modules
