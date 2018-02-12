@@ -8,7 +8,10 @@ const schema = Joi.object().keys({
   srcBase: Joi.string().required(),
   dest: Joi.string().required(),
   plugins: {
-    gm: Joi.object(),
+    resize: Joi.object().keys({
+      addSizeWatermark: Joi.boolean(),
+    }),
+    rename: Joi.func().required(),
     imagemin: Joi.object().allow(null),
   },
   watch: Joi.object().keys({
@@ -32,7 +35,15 @@ const defaults = (/* env */) => ({
   srcBase: null,
   dest: null,
   plugins: {
-    gm: {},
+    rename: (filePath, resizeConfig) => {
+      const path = require('path');
+      const baseName = path.basename(filePath, path.extname(filePath));
+
+      return filePath.replace(baseName, `${baseName}_${resizeConfig.postfix}`);
+    },
+    resize: {
+      addSizeWatermark: true,
+    },
     imagemin: {},
   },
   logger: new Logger('estatico-imageversions'),
@@ -56,9 +67,13 @@ const task = (config, env = {}) => {
   const plumber = require('gulp-plumber');
   const through = require('through2');
   const gm = require('gm');
+  const buffer = require('vinyl-buffer');
+  const imagemin = require('gulp-imagemin');
   const Vinyl = require('vinyl');
   const path = require('path');
   const merge = require('lodash.merge');
+  const size = require('gulp-size');
+
   const resize = require('./lib/resize');
   const extractConfig = require('./lib/config');
 
@@ -98,11 +113,13 @@ const task = (config, env = {}) => {
           base: config.srcBase,
           path: imagePath,
           contents: image.stream(),
+          image, // Attach gm file instance for reuse
         });
 
         // Read image size, attach to file object and add file to stream
         try {
-          const imageSize = await new Promise((resolve, reject) => {
+          // Attach size object to `image.data`
+          await new Promise((resolve, reject) => {
             image.size((err, size) => {
               if (err) {
                 return reject(err);
@@ -111,8 +128,6 @@ const task = (config, env = {}) => {
               return resolve(size);
             });
           });
-
-          imageFile.imageSize = imageSize;
 
           this.push(imageFile);
         } catch (err) {
@@ -125,22 +140,31 @@ const task = (config, env = {}) => {
 
     // Generate resized images
     .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
-      console.log(file.path);
-
       // eslint-disable-next-line no-restricted-syntax
-      for (const resizeConfig of images[file.path]) {
-        console.log(extractConfig(file.imageSize, resizeConfig));
+      for (const rawConfig of images[file.path]) {
+        const resizeConfig = extractConfig(file.image.data.size, rawConfig);
+        const resizedImage = resize(file.image, resizeConfig, config.plugins.resize);
 
-        // const imageFile = new Vinyl({
-        //   base: config.srcBase,
-        //   path: imagePath,
-        //   contents: image.stream(),
-        // });
+        const resizedFile = new Vinyl({
+          base: config.srcBase,
+          path: config.plugins.rename(file.path, resizeConfig),
+          contents: resizedImage.stream(),
+        });
 
-        // this.push(imageFile);
+        this.push(resizedFile);
       }
 
-      return done();
+      return done(null, file);
+    }))
+
+    // Imagemin
+    .pipe(buffer())
+    .pipe(config.plugins.imagemin ? imagemin(config.plugins.imagemin).on('error', err => config.logger.error(err, env.dev)) : through.obj())
+
+    // Log
+    .pipe(size({
+      showFiles: true,
+      title: 'estatico-font-datauri',
     }))
 
     // Save

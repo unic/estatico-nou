@@ -1,33 +1,44 @@
-function generateImage(imgData, focus, size, options) {
-  const ratio = size.width / size.height;
+/**
+ * Resize / crop gm file
+ * @param {object} image - original gm file
+ * @param {object} focus - crop focus (width/height)
+ * @param {object} size - target size (width/height)
+ * @param {object} [options]
+ * @return {object} gm file
+ */
+function resizeImage(image, resizeConfig, options) {
+  const originalSize = image.data.size;
+  const ratio = resizeConfig.size.width / resizeConfig.size.height;
 
   // Calculating necessary crop values
-  let { width } = imgData.imgSize;
-  let height = Math.round(imgData.imgSize.width / ratio);
+  let { width } = originalSize;
+  let height = Math.round(originalSize.width / ratio);
 
-  if (height > imgData.imgSize.height) {
-    ({ height } = imgData.imgSize.height);
-    width = Math.round(imgData.imgSize.height * ratio);
+  if (height > originalSize.height) {
+    ({ height } = originalSize.height);
+    width = Math.round(originalSize.height * ratio);
   }
 
-  const fx = Math.round((focus.width * width) / imgData.imgSize.width);
-  const fy = Math.round((focus.height * height) / imgData.imgSize.height);
+  const fx = Math.round((resizeConfig.focusPoint.width * width) / originalSize.width);
+  const fy = Math.round((resizeConfig.focusPoint.height * height) / originalSize.height);
 
   // Crop
-  // Params: resulting width, resulting height, left top corner x coordinate,
-  // left top corner y coordinate
-  imgData.img.crop(width, height, focus.width - fx, focus.height - fy);
+  const resizedImage = image.crop(
+    width, height,
+    resizeConfig.focusPoint.width - fx, // left top corner x coordinate
+    resizeConfig.focusPoint.height - fy, // // left top corner y coordinate
+  );
 
   // Resize crop result to requested size
-  imgData.img.resize(size.width, size.height, '!');
+  resizedImage.resize(resizeConfig.size.width, resizeConfig.size.height, '!');
 
   // Draw size on image to allow for easier testing of responsive images
   if (options && options.addSizeWatermark) {
-    imgData.img.fontSize(16).box('#fff').fill('#000')
-      .drawText(20, 16, `${size.width}x${size.height}`, 'southeast');
+    resizedImage.fontSize(16).box('#fff').fill('#000')
+      .drawText(20, 16, `${resizeConfig.size.width}x${resizeConfig.size.height}`, 'southeast');
   }
 
-  return imgData.img;
+  return resizedImage;
 }
 
-module.exports = generateImage;
+module.exports = resizeImage;

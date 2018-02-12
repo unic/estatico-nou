@@ -6,7 +6,7 @@ const task = require('../index.js');
 
 const defaults = {
   src: [
-    './test/fixtures/default/*',
+    './test/fixtures/default/imageversions.config.js',
   ],
   srcBase: './test/fixtures/default/',
   dest: './test/results/',
@@ -16,4 +16,4 @@ test.cb('default', (t) => {
   task(defaults)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
 });
 
-test.afterEach(() => del(path.join(__dirname, '/results')));
+// test.afterEach(() => del(path.join(__dirname, '/results')));

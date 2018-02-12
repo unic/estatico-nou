@@ -17,8 +17,10 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-imagemin": "^4.1.0",
     "gulp-plumber": "^1.1.0",
+    "gulp-size": "^3.0.0",
     "through2": "^2.0.3",
-    "vinyl": "^2.1.0"
+    "vinyl": "^2.1.0",
+    "vinyl-buffer": "^1.0.1"
   },
   "engines": {
     "node": ">=8 <9"
