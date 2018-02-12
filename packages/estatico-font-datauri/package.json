@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-font-datauri",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-font-datauri",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.5",
+    "@unic/estatico-utils": "0.0.6",
     "chalk": "^2.3.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-concat": "^2.6.1",
