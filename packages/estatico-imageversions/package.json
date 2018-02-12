@@ -1,0 +1,31 @@
+{
+  "name": "@unic/estatico-imageversions",
+  "version": "0.0.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-imageversions -- npm test"
+  },
+  "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-imageversions",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@unic/estatico-utils": "0.0.4",
+    "chalk": "^2.3.0",
+    "gm": "^1.23.1",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-size": "^3.0.0",
+    "through2": "^2.0.3",
+    "vinyl": "^2.1.0",
+    "vinyl-buffer": "^1.0.1"
+  },
+  "engines": {
+    "node": ">=8 <9"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

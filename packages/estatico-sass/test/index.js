@@ -36,7 +36,7 @@ test.cb('error', (t) => {
 
     const log = utils.stripLogs(spy);
 
-    t.regex(log, /estatico-sass test\/fixtures\/error\.scssError: Invalid CSS after "a"/);
+    t.regex(log, /estatico-sass \(gulp-sass\) test\/fixtures\/error\.scssError: Invalid CSS after "a"/);
 
     t.end();
   });
@@ -46,7 +46,7 @@ test.cb('custom autoprefixer options', (t) => {
   const options = merge({}, defaults, {
     plugins: {
       postcss: [
-        require('autoprefixer')({
+        require('autoprefixer')({ // eslint-disable-line global-require
           browsers: ['last 10 versions'],
         }),
       ],

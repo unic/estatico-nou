@@ -27,11 +27,11 @@ function Logger(pluginName) {
    * @param {boolean} [dev] - Whether we are in dev mode. Process exits otherwise.
    */
   const error = (err, dev) => {
-    const stack = err.stack && err.showStack ? `\n${chalk.red(err.stack)}` : '';
+    const stack = err.stack /* && err.showStack */ ? `\n${chalk.red(err.stack)}` : '';
 
     // We cannot properly use `gulplog.error` outside of `gulp-cli` (i.e. in tests)
     // Falling back to fancy-log instead
-    fancyLog(chalk.cyan(pluginName), err.fileName ? chalk.yellow(err.fileName) : '', chalk.red(err.message), stack);
+    fancyLog(chalk.cyan(pluginName), err.plugin ? chalk.cyan(`(${err.plugin})`) : '', err.fileName ? chalk.yellow(err.fileName) : '', chalk.red(err.message), stack);
 
     if (!dev) {
       process.exit(1);

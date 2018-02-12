@@ -67,15 +67,15 @@ const defaults = (/* env */) => ({
  * @return {object} gulp stream
  */
 const task = (config, env = {}) => {
-  const gulp = require('gulp'); // eslint-disable-line global-require
-  const plumber = require('gulp-plumber'); // eslint-disable-line global-require
-  const svgstore = require('gulp-svgstore'); // eslint-disable-line global-require
-  const imagemin = require('gulp-imagemin'); // eslint-disable-line global-require
-  const mergeStream = require('merge-stream'); // eslint-disable-line global-require
-  const through = require('through2'); // eslint-disable-line global-require
-  const size = require('gulp-size'); // eslint-disable-line global-require
-  const chalk = require('chalk'); // eslint-disable-line global-require
-  const path = require('path'); // eslint-disable-line global-require
+  const gulp = require('gulp');
+  const plumber = require('gulp-plumber');
+  const svgstore = require('gulp-svgstore');
+  const imagemin = require('gulp-imagemin');
+  const mergeStream = require('merge-stream');
+  const through = require('through2');
+  const size = require('gulp-size');
+  const chalk = require('chalk');
+  const path = require('path');
 
   const sprites = Object.keys(config.src).map(spriteName => gulp.src(config.src[spriteName], {
     base: config.srcBase,
