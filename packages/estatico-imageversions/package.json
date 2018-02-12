@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-imageversions",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-imageversions",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.4",
+    "@unic/estatico-utils": "0.0.5",
     "chalk": "^2.3.0",
     "gm": "^1.23.1",
     "gulp": "github:gulpjs/gulp#4.0",
