@@ -78,13 +78,35 @@ Passed to file watcher when `--watch` is used.
 
 Type: `Object`
 
-##### plugins.gm
+##### plugins.rename
 
+Type: `Function`<br>
+Default:
+```js
+(filePath, resizeConfig) => {
+  const path = require('path');
+  const baseName = path.basename(filePath, path.extname(filePath));
 
+  return filePath.replace(baseName, `${baseName}_${resizeConfig.postfix}`);
+}
+```
+
+##### plugins.resize
+
+Type: `Object`<br>
+Default:
+```js
+{
+  addSizeWatermark: true,
+}
+```
 
 ##### plugins.imagemin
 
+Type: `Object`<br>
+Default: `{}`
 
+Passed to [`imagemin`](https://www.npmjs.com/package/imagemin) via [`gulp-imagemin`](https://www.npmjs.com/package/gulp-imagemin). Setting to `null` will disable this step.
 
 #### logger
 
