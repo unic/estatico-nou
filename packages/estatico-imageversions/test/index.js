@@ -13,7 +13,7 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  task(defaults)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
+  task(defaults)().on('finish', () => utils.compareImages(t, path.join(__dirname, 'expected/default/*')));
 });
 
-// test.afterEach(() => del(path.join(__dirname, '/results')));
+test.afterEach(() => del(path.join(__dirname, '/results')));

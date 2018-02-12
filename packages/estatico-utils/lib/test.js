@@ -2,9 +2,7 @@ const stripAnsi = require('strip-ansi');
 const glob = require('glob');
 const fs = require('fs');
 const chalk = require('chalk');
-const Logger = require('./logger');
-
-const logger = new Logger('Testing');
+const gm = require('gm');
 
 function stripLog(str) {
   const logStr = stripAnsi(str)
@@ -37,10 +35,37 @@ function compareFiles(t, globPath) {
     const expectedFile = fs.readFileSync(filePath).toString();
     const resultedFile = fs.readFileSync(resultedFilePath).toString();
 
-    logger.info(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
+    console.log(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
 
     t.is(expectedFile, resultedFile);
   });
+
+  t.end();
+}
+
+async function compareImages(t, globPath) {
+  const expected = glob.sync(globPath, {
+    nodir: true,
+  });
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const filePath of expected) {
+    const resultedFilePath = filePath.replace(/expected\/(.*?)\//, 'results/');
+
+    const isEqual = await new Promise((resolve, reject) => { // eslint-disable-line no-await-in-loop
+      gm.compare(filePath, resultedFilePath, 0.01, (err, equal) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(equal);
+      });
+    });
+
+    console.log(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
+
+    t.is(isEqual, true);
+  }
 
   t.end();
 }
@@ -49,4 +74,5 @@ module.exports = {
   stripLog,
   stripLogs,
   compareFiles,
+  compareImages,
 };
