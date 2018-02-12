@@ -23,7 +23,7 @@ test.cb('default', (t) => {
 
     const log = utils.stripLogs(spy);
 
-    t.regex(log, /estatico-stylelint Failed with 1 error/);
+    t.regex(log, /estatico-stylelint \(gulp-stylelint\) Failed with 1 error/);
 
     t.end();
   });

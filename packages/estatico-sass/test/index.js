@@ -36,7 +36,7 @@ test.cb('error', (t) => {
 
     const log = utils.stripLogs(spy);
 
-    t.regex(log, /estatico-sass test\/fixtures\/error\.scssError: Invalid CSS after "a"/);
+    t.regex(log, /estatico-sass \(gulp-sass\) test\/fixtures\/error\.scssError: Invalid CSS after "a"/);
 
     t.end();
   });
