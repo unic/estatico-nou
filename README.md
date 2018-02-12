@@ -10,7 +10,10 @@ Refactored Estático with separate packages for every task. Mono-repo based on [
 
 - [estatico-browsersync](packages/estatico-browsersync)
 - [estatico-eslint](packages/estatico-eslint)
+- [estatico-font-datauri](packages/estatico-font-datauri)
 - [estatico-handlebars](packages/estatico-handlebars)
+- [estatico-imageversions](packages/estatico-imageversions)
+- [estatico-json-mocks](packages/estatico-json-mocks)
 - [estatico-puppeteer](packages/estatico-puppeteer)
 - [estatico-sass](packages/estatico-sass)
 - [estatico-stylelint](packages/estatico-stylelint)
