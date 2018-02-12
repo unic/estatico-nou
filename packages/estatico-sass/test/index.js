@@ -46,7 +46,7 @@ test.cb('custom autoprefixer options', (t) => {
   const options = merge({}, defaults, {
     plugins: {
       postcss: [
-        require('autoprefixer')({
+        require('autoprefixer')({ // eslint-disable-line global-require
           browsers: ['last 10 versions'],
         }),
       ],

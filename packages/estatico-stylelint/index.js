@@ -53,10 +53,10 @@ const defaults = (/* env */) => ({
  * @return {object} gulp stream
  */
 const task = (config, env = {}) => {
-  const gulp = require('gulp'); // eslint-disable-line global-require
-  const plumber = require('gulp-plumber'); // eslint-disable-line global-require
-  const changed = require('gulp-changed-in-place'); // eslint-disable-line global-require
-  const gulpStylelint = require('gulp-stylelint'); // eslint-disable-line global-require
+  const gulp = require('gulp');
+  const plumber = require('gulp-plumber');
+  const changed = require('gulp-changed-in-place');
+  const gulpStylelint = require('gulp-stylelint');
 
   return gulp.src(config.src, {
     base: config.srcBase,

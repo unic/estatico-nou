@@ -120,12 +120,12 @@ const task = (config, env = {}) => {
         try {
           // Attach size object to `image.data`
           await new Promise((resolve, reject) => {
-            image.size((err, size) => {
+            image.size((err, imageSize) => {
               if (err) {
                 return reject(err);
               }
 
-              return resolve(size);
+              return resolve(imageSize);
             });
           });
 
