@@ -539,7 +539,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  */
 gulp.task('build', (done) => {
   const inquirer = require('inquirer');
-  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'media:svgsprite');
+  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'media:svgsprite', 'media:imageversions');
 
   const cb = (skipTests) => {
     if (skipTests) {
