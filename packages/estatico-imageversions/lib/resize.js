@@ -1,8 +1,9 @@
 /**
  * Resize / crop gm file
  * @param {object} image - original gm file
- * @param {object} focus - crop focus (width/height)
- * @param {object} size - target size (width/height)
+ * @param {object} resizeConfig
+ * @param {object} resizeConfig.focusPoint - crop focus (width/height)
+ * @param {object} resizeConfig.size - target size (width/height)
  * @param {object} [options]
  * @return {object} gm file
  */
@@ -15,7 +16,7 @@ function resizeImage(image, resizeConfig, options) {
   let height = Math.round(originalSize.width / ratio);
 
   if (height > originalSize.height) {
-    ({ height } = originalSize.height);
+    ({ height } = originalSize);
     width = Math.round(originalSize.height * ratio);
   }
 
