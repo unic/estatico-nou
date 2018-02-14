@@ -528,7 +528,7 @@ gulp.task('scaffold', () => {
       {
         name: 'Module',
         src: './src/modules/.scaffold/*',
-        dist: './.tmp/modules/',
+        dist: './src/modules/',
         transformName: (name, prefix) => {
           const changeCase = require('change-case');
 
@@ -581,21 +581,21 @@ gulp.task('scaffold', () => {
                   type: 'modify',
                   path: './src/assets/js/helpers/estaticoapp.js',
                   pattern: new RegExp(`(\\s+)?this.modules.${answers.moduleName} = ${answers.className};`, 'm'),
-                  template: isRemove ? '' : `$1this.modules.${answers.newModuleName} = ${answers.newClassName};$1`,
+                  template: isRemove ? '' : `$1this.modules.${answers.newModuleName} = ${answers.newClassName};`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
                   path: './src/assets/js/helpers/estaticoapp.js',
                   pattern: new RegExp(`(\\s+)?import ${answers.className} from '../../../modules/${answers.fileName}/${answers.fileName}';`, 'm'),
-                  template: isRemove ? '' : `$1import ${answers.newClassName} from '../../../modules/${answers.newFileName}/${answers.newFileName}';$1`,
+                  template: isRemove ? '' : `$1import ${answers.newClassName} from '../../../modules/${answers.newFileName}/${answers.newFileName}';`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
                   path: './src/assets/css/main.scss',
                   pattern: new RegExp(`(\\s+)?@import "../../modules/${answers.fileName}/${answers.fileName}";`, 'm'),
-                  template: isRemove ? '' : `$1@import "../../modules/${answers.newFileName}/${answers.newFileName}";$1`,
+                  template: isRemove ? '' : `$1@import "../../modules/${answers.newFileName}/${answers.newFileName}";`,
                   abortOnFail: true,
                 },
               ];
@@ -607,7 +607,7 @@ gulp.task('scaffold', () => {
       {
         name: 'Page',
         src: './src/pages/.scaffold/*',
-        dist: './.tmp/pages/',
+        dist: './src/pages/',
         transformName: (name) => {
           const changeCase = require('change-case');
 

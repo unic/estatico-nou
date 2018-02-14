@@ -27,13 +27,13 @@ gulp.task('scaffold', () => {
         name: 'Module',
         src: './src/modules/.scaffold/*',
         dist: './src/modules/',
-        transformName: (name) => {
+        transformName: (name, prefix) => {
           const changeCase = require('change-case');
 
           return {
-            fileName: changeCase.snake(path.basename(name)),
-            className: changeCase.pascal(path.basename(name)),
-            moduleName: changeCase.camel(path.basename(name)),
+            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
+            [prefix ? 'newClassName' : 'className']: changeCase.pascal(path.basename(name)),
+            [prefix ? 'newModuleName' : 'moduleName']: changeCase.camel(path.basename(name)),
           };
         },
         modifications: (answers) => {
@@ -42,8 +42,8 @@ gulp.task('scaffold', () => {
           const fileName = answers.newFileName || answers.fileName;
 
           const isRemove = (answers.action === 'Remove');
-          const hasJs = answers.files.find(file => file.match(/{{fileName}}\.js/));
-          const hasCss = answers.files.find(file => file.match(/{{fileName}}\.scss/));
+          const hasJs = answers.files ? answers.files.find(file => file.match(/{{fileName}}\.js/)) : true;
+          const hasCss = answers.files ? answers.files.find(file => file.match(/{{fileName}}\.scss/)) : true;
 
           switch (answers.action) {
             case 'Add':
@@ -79,21 +79,21 @@ gulp.task('scaffold', () => {
                   type: 'modify',
                   path: './src/assets/js/helpers/estaticoapp.js',
                   pattern: new RegExp(`(\\s+)?this.modules.${answers.moduleName} = ${answers.className};`, 'm'),
-                  template: isRemove ? '' : `$1this.modules.${answers.newModuleName} = ${answers.newClassName};$1`,
+                  template: isRemove ? '' : `$1this.modules.${answers.newModuleName} = ${answers.newClassName};`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
                   path: './src/assets/js/helpers/estaticoapp.js',
                   pattern: new RegExp(`(\\s+)?import ${answers.className} from '../../../modules/${answers.fileName}/${answers.fileName}';`, 'm'),
-                  template: isRemove ? '' : `$1import ${answers.newClassName} from '../../../modules/${answers.newFileName}/${answers.newFileName}';$1`,
+                  template: isRemove ? '' : `$1import ${answers.newClassName} from '../../../modules/${answers.newFileName}/${answers.newFileName}';`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
                   path: './src/assets/css/main.scss',
                   pattern: new RegExp(`(\\s+)?@import "../../modules/${answers.fileName}/${answers.fileName}";`, 'm'),
-                  template: isRemove ? '' : `$1@import "../../modules/${answers.newFileName}/${answers.newFileName}";$1`,
+                  template: isRemove ? '' : `$1@import "../../modules/${answers.newFileName}/${answers.newFileName}";`,
                   abortOnFail: true,
                 },
               ];
