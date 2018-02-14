@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-boilerplate",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,17 +12,17 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@unic/estatico-browsersync": "0.0.6",
-    "@unic/estatico-copy": "0.0.6",
+    "@unic/estatico-copy": "0.0.7",
     "@unic/estatico-data": "0.0.6",
     "@unic/estatico-eslint": "0.0.7",
     "@unic/estatico-font-datauri": "0.0.6",
     "@unic/estatico-handlebars": "0.0.6",
-    "@unic/estatico-imageversions": "0.0.6",
+    "@unic/estatico-imageversions": "0.0.7",
     "@unic/estatico-json-mocks": "0.0.6",
     "@unic/estatico-puppeteer": "0.0.6",
     "@unic/estatico-qunit": "0.0.6",
     "@unic/estatico-sass": "0.0.6",
-    "@unic/estatico-scaffold": "0.0.6",
+    "@unic/estatico-scaffold": "0.0.7",
     "@unic/estatico-stylelint": "0.0.6",
     "@unic/estatico-svgsprite": "0.0.6",
     "@unic/estatico-w3c-validator": "0.0.6",
