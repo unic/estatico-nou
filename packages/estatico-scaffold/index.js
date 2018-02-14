@@ -174,9 +174,9 @@ const task = (config, env = {}) => {
             },
           ]);
         case 'Remove':
-          return [
+          return modifications.concat([
             () => del(answers.name),
-          ];
+          ]);
         case 'Copy':
           return modifications.concat([
             () => copy({
