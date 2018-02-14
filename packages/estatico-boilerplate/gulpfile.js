@@ -517,6 +517,112 @@ gulp.task('serve', () => {
 });
 
 /**
+ * Scaffolding task
+ * Uses `node-plop` to interactively scaffold files.
+ */
+gulp.task('scaffold', () => {
+  const task = require('@unic/estatico-scaffold');
+
+  const instance = task({
+    types: [
+      {
+        name: 'Module',
+        src: './src/modules/.scaffold/*',
+        dist: './.tmp/modules/',
+        transformName: (name, prefix) => {
+          const changeCase = require('change-case');
+
+          return {
+            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
+            [prefix ? 'newClassName' : 'className']: changeCase.pascal(path.basename(name)),
+            [prefix ? 'newModuleName' : 'moduleName']: changeCase.camel(path.basename(name)),
+          };
+        },
+        modifications: (answers) => {
+          const moduleName = answers.newModuleName || answers.moduleName;
+          const className = answers.newClassName || answers.className;
+          const fileName = answers.newFileName || answers.fileName;
+
+          const isRemove = (answers.action === 'Remove');
+          const hasJs = answers.files ? answers.files.find(file => file.match(/{{fileName}}\.js/)) : true;
+          const hasCss = answers.files ? answers.files.find(file => file.match(/{{fileName}}\.scss/)) : true;
+
+          switch (answers.action) {
+            case 'Add':
+            case 'Copy':
+              return [].concat(hasJs ? [
+                {
+                  type: 'modify',
+                  path: './src/assets/js/helpers/estaticoapp.js',
+                  pattern: /(\s+)(\/\* autoinsertmodule \*\/)/m,
+                  template: `$1this.modules.${moduleName} = ${className};$1$2`,
+                  abortOnFail: true,
+                },
+                {
+                  type: 'modify',
+                  path: './src/assets/js/helpers/estaticoapp.js',
+                  pattern: /(\s+)(\/\* autoinsertmodulereference \*\/)/m,
+                  template: `$1import ${className} from '../../../modules/${fileName}/${fileName}';$1$2`,
+                  abortOnFail: true,
+                },
+              ] : []).concat(hasCss ? [
+                {
+                  type: 'modify',
+                  path: './src/assets/css/main.scss',
+                  pattern: /(\s+)(\/\/\*autoinsertmodule\*)/m,
+                  template: `$1@import "../../modules/${fileName}/${fileName}";$1$2`,
+                  abortOnFail: true,
+                },
+              ] : []);
+            case 'Rename':
+            case 'Remove':
+              return [
+                {
+                  type: 'modify',
+                  path: './src/assets/js/helpers/estaticoapp.js',
+                  pattern: new RegExp(`(\\s+)?this.modules.${answers.moduleName} = ${answers.className};`, 'm'),
+                  template: isRemove ? '' : `$1this.modules.${answers.newModuleName} = ${answers.newClassName};$1`,
+                  abortOnFail: true,
+                },
+                {
+                  type: 'modify',
+                  path: './src/assets/js/helpers/estaticoapp.js',
+                  pattern: new RegExp(`(\\s+)?import ${answers.className} from '../../../modules/${answers.fileName}/${answers.fileName}';`, 'm'),
+                  template: isRemove ? '' : `$1import ${answers.newClassName} from '../../../modules/${answers.newFileName}/${answers.newFileName}';$1`,
+                  abortOnFail: true,
+                },
+                {
+                  type: 'modify',
+                  path: './src/assets/css/main.scss',
+                  pattern: new RegExp(`(\\s+)?@import "../../modules/${answers.fileName}/${answers.fileName}";`, 'm'),
+                  template: isRemove ? '' : `$1@import "../../modules/${answers.newFileName}/${answers.newFileName}";$1`,
+                  abortOnFail: true,
+                },
+              ];
+            default:
+              return [];
+          }
+        },
+      },
+      {
+        name: 'Page',
+        src: './src/pages/.scaffold/*',
+        dist: './.tmp/pages/',
+        transformName: (name) => {
+          const changeCase = require('change-case');
+
+          return {
+            fileName: changeCase.snake(path.basename(name)),
+          };
+        },
+      },
+    ],
+  }, env);
+
+  return instance();
+});
+
+/**
  * Clean build directory
  */
 gulp.task('clean', () => {

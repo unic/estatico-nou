@@ -1,0 +1,26 @@
+{
+  "name": "@unic/estatico-scaffold",
+  "version": "0.0.6",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"@unic/estatico-scaffold: No tests specified\""
+  },
+  "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-scaffold",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@unic/estatico-utils": "0.0.6",
+    "del": "^3.0.0",
+    "glob": "^7.1.2",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "node-plop": "^0.9.0",
+    "through2": "^2.0.3"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
