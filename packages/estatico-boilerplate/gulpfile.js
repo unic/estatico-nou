@@ -623,6 +623,32 @@ gulp.task('scaffold', () => {
 });
 
 /**
+ * Copy files
+ * Copies files, optionally renames them.
+ *
+ * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ */
+gulp.task('copy', () => {
+  const task = require('@unic/estatico-copy');
+
+  const instance = task({
+    src: [
+      './src/**/*.{png,gif,jpg,woff,ttf}',
+    ],
+    srcBase: './src',
+    dest: './dist',
+    watch: {
+      src: [
+        './src/**/*.{png,gif,jpg,woff,ttf}',
+      ],
+      name: 'copy',
+    },
+  }, env);
+
+  return instance();
+});
+
+/**
  * Clean build directory
  */
 gulp.task('clean', () => {
@@ -645,7 +671,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  */
 gulp.task('build', (done) => {
   const inquirer = require('inquirer');
-  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'media:svgsprite', 'media:imageversions');
+  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'media:svgsprite', 'media:imageversions', 'copy');
 
   const cb = (skipTests) => {
     if (skipTests) {
