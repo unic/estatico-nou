@@ -12,6 +12,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@unic/estatico-browsersync": "0.0.6",
+    "@unic/estatico-copy": "0.0.6",
     "@unic/estatico-data": "0.0.6",
     "@unic/estatico-eslint": "0.0.7",
     "@unic/estatico-font-datauri": "0.0.6",
