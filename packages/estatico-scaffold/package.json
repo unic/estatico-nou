@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"@unic/estatico-scaffold: No tests specified\""
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-scaffold -- npm test"
   },
   "author": "Unic AG",
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-scaffold",

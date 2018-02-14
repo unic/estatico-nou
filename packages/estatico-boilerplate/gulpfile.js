@@ -528,7 +528,7 @@ gulp.task('scaffold', () => {
       {
         name: 'Module',
         src: './src/modules/.scaffold/*',
-        dist: './src/modules/',
+        dest: './src/modules/',
         transformName: (name, prefix) => {
           const changeCase = require('change-case');
 
@@ -607,7 +607,7 @@ gulp.task('scaffold', () => {
       {
         name: 'Page',
         src: './src/pages/.scaffold/*',
-        dist: './src/pages/',
+        dest: './src/pages/',
         transformName: (name) => {
           const changeCase = require('change-case');
 

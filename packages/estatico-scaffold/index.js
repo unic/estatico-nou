@@ -7,7 +7,7 @@ const schema = Joi.object().keys({
   types: Joi.array().items(Joi.object().keys({
     name: Joi.string().required(),
     src: Joi.string().required(),
-    dist: Joi.string().required(),
+    dest: Joi.string().required(),
     transformName: Joi.func(),
     modifications: Joi.func(),
   })),
@@ -53,7 +53,7 @@ const task = (config, env = {}) => {
 
           done(null, file);
         }))
-        .pipe(gulp.dest(`${scaffoldConfig.dist}/${scaffoldConfig.name}`))
+        .pipe(gulp.dest(`${scaffoldConfig.dest}/${scaffoldConfig.name}`))
         .on('end', () => resolve());
     });
   }
@@ -119,7 +119,7 @@ const task = (config, env = {}) => {
           type: 'list',
           name: 'name',
           message: `Select ${answers.type}`,
-          choices: glob.sync(`${scaffoldConfig.dist}/*`).map(filePath => ({
+          choices: glob.sync(`${scaffoldConfig.dest}/*`).map(filePath => ({
             name: path.basename(filePath),
             value: filePath,
           })),
@@ -167,7 +167,7 @@ const task = (config, env = {}) => {
           return modifications.concat([
             {
               type: 'addMany',
-              destination: `${scaffoldConfig.dist}/${answers.fileName}`,
+              destination: `${scaffoldConfig.dest}/${answers.fileName}`,
               base: path.dirname(scaffoldConfig.src),
               templateFiles: answers.files,
               abortOnFail: true,
@@ -181,7 +181,7 @@ const task = (config, env = {}) => {
           return modifications.concat([
             () => copy({
               src: answers.name,
-              dist: scaffoldConfig.dist,
+              dest: scaffoldConfig.dest,
               name: answers.newFileName,
             }),
           ]);
@@ -189,7 +189,7 @@ const task = (config, env = {}) => {
           return modifications.concat([
             () => rename({
               src: answers.name,
-              dist: scaffoldConfig.dist,
+              dest: scaffoldConfig.dest,
               name: answers.newFileName,
             }),
           ]);
@@ -199,7 +199,15 @@ const task = (config, env = {}) => {
     },
   });
 
-  return generator.runPrompts().then(generator.runActions).then((results) => {
+  let runPlop;
+
+  if (config.answers) {
+    runPlop = generator.runActions(config.answers);
+  } else {
+    runPlop = generator.runPrompts().then(generator.runActions);
+  }
+
+  return runPlop.then((results) => {
     if (results.failures && results.failures.length && Object.keys(results.failures[0]).length) {
       config.logger.error(new Error(JSON.stringify(results.failures)), env.dev);
     }
