@@ -9,6 +9,7 @@ Refactored Estático with separate packages for every task. Mono-repo based on [
 ### Tasks
 
 - [estatico-browsersync](packages/estatico-browsersync)
+- [estatico-copy](packages/estatico-copy)
 - [estatico-eslint](packages/estatico-eslint)
 - [estatico-font-datauri](packages/estatico-font-datauri)
 - [estatico-handlebars](packages/estatico-handlebars)
@@ -16,6 +17,7 @@ Refactored Estático with separate packages for every task. Mono-repo based on [
 - [estatico-json-mocks](packages/estatico-json-mocks)
 - [estatico-puppeteer](packages/estatico-puppeteer)
 - [estatico-sass](packages/estatico-sass)
+- [estatico-scaffold](packages/estatico-scaffold)
 - [estatico-stylelint](packages/estatico-stylelint)
 - [estatico-svgsprite](packages/estatico-svgsprite)
 - [estatico-w3c-validator](packages/estatico-w3c-validator)
