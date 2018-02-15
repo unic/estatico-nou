@@ -105,6 +105,10 @@ gulp.task('html', () => {
     },
   }, env);
 
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -133,6 +137,10 @@ gulp.task('html:validate', () => {
       name: 'html:validate',
     },
   }, env);
+
+  if (env.watch && env.skipTests) {
+    return instance;
+  }
 
   return instance();
 });
@@ -220,6 +228,10 @@ gulp.task('css', () => {
     },
   }, env);
 
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -245,6 +257,10 @@ gulp.task('css:lint', () => {
     //   name: 'css:lint',
     // },
   }, env);
+
+  if (env.watch && env.skipTests) {
+    return instance;
+  }
 
   return instance();
 });
@@ -273,6 +289,10 @@ gulp.task('css:fonts', () => {
       name: 'css:fonts',
     },
   }, env);
+
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });
@@ -374,6 +394,10 @@ gulp.task('js:lint', () => {
     },
   }, env);
 
+  if (env.watch && env.skipTests) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -427,6 +451,10 @@ gulp.task('js:test', () => {
     },
   }, env);
 
+  if (env.watch && env.skipTests) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -453,6 +481,10 @@ gulp.task('js:mocks', () => {
     },
   }, env);
 
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -474,6 +506,10 @@ gulp.task('media:svgsprite', () => {
     dest: './dist/assets/media/svgsprite',
   }, env);
 
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -493,6 +529,10 @@ gulp.task('media:imageversions', () => {
     srcBase: './src',
     dest: './dist/',
   }, env);
+
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });
@@ -645,6 +685,10 @@ gulp.task('copy', () => {
     },
   }, env);
 
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
+
   return instance();
 });
 
@@ -665,64 +709,68 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
 
 /**
  * Create complete build
- * Prompts whether tests and linting should run
+ * Prompts whether tests and linting should run when in --watch mode
  *
  * --noInteractive / --skipTests will bypass the prompt
  */
 gulp.task('build', (done) => {
-  const inquirer = require('inquirer');
-  const build = gulp.parallel('html', gulp.series('css:fonts', 'css'), 'js', 'js:mocks', 'media:svgsprite', 'media:imageversions', 'copy');
+  const task = gulp.parallel(
+    'html',
+    'js',
+    'js:mocks',
+    'media:svgsprite',
+    'media:imageversions',
+    'copy',
+    // When starting watcher without building, "css:fonts" will never finish
+    // In order for "css" to still run properly, we switch from serial to parallel execution
+    (env.watch && env.skipBuild) ? gulp.parallel('css:fonts', 'css') : gulp.series('css:fonts', 'css'),
+  );
+  let readEnv = new Promise(resolve => resolve());
 
-  const cb = (skipTests) => {
-    if (skipTests) {
-      gulp.series('clean', build)(done);
-    } else {
-      gulp.series('clean', 'lint', build, 'test')(done);
-    }
-  };
+  if (env.watch && (!env.noInteractive && !env.skipTests)) {
+    const inquirer = require('inquirer');
 
-  if (!env.noInteractive && !env.skipTests) {
-    inquirer.prompt([{
+    readEnv = inquirer.prompt([{
       type: 'confirm',
       name: 'skipTests',
       message: 'Do you want to skip tests and linting?',
       default: false,
-    }]).then(answers => cb(answers.skipTests));
-  } else {
-    cb(env.skipTests);
+    }]).then((answers) => {
+      // Persist answer to env
+      env.skipTests = answers.skipTests;
+
+      return env;
+    });
   }
+
+  readEnv.then(() => task(done));
 });
 
 /**
  * Default development task
- * Prompts whether build should be created initially
+ * Prompts whether build should be created initially when in --watch mode
  *
  * --noInteractive / --skipBuild will bypass the prompt
  */
 gulp.task('default', (done) => {
-  const inquirer = require('inquirer');
+  const task = gulp.series('build', 'serve');
+  let readEnv = new Promise(resolve => resolve());
 
-  const cb = (skipBuild) => {
-    if (skipBuild) {
-      if (env.watch) {
-        // Webpack tasks need to run to be able to start watcher
-        gulp.series('js', 'serve')(done);
-      } else {
-        gulp.series('serve')(done);
-      }
-    } else {
-      gulp.series('build', 'serve')(done);
-    }
-  };
+  if (env.watch && (!env.noInteractive && !env.skipBuild)) {
+    const inquirer = require('inquirer');
 
-  if (!env.noInteractive && !env.skipBuild) {
-    inquirer.prompt([{
+    readEnv = inquirer.prompt([{
       type: 'confirm',
       name: 'skipBuild',
       message: 'Do you want to skip the build before starting the server?',
       default: false,
-    }]).then(answers => cb(answers.skipBuild));
-  } else {
-    cb(env.skipBuild);
+    }]).then((answers) => {
+      // Persist answer to env
+      env.skipBuild = answers.skipBuild;
+
+      return env;
+    });
   }
+
+  readEnv.then(() => task(done));
 });
