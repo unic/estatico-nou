@@ -48,7 +48,6 @@ module.exports = (options, env = {}) => new Plugin({
 });
 ```
 
-
 ### Test
 
 #### compareFiles(t, fileGlob)
@@ -86,6 +85,21 @@ test.cb('error', (t) => {
     t.end();
   });
 });
+```
+
+### readFileSyncCached
+
+Serve unchanged files from in-memory cache.
+
+```js
+const { readFileSyncCached } = require('@unic/estatico-utils');
+
+// First read will go to file system
+console.log(readFileSyncCached('/path/to/my/file.ext'));
+
+// Second request will be served from cache unless the file has changed in the meantime
+// fs.statSync('/path/to/my/file.ext').mtime.getTime() is used as reference
+console.log(readFileSyncCached('/path/to/my/file.ext'));
 ```
 
 ## License

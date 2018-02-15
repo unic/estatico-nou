@@ -26,6 +26,7 @@
     "@unic/estatico-scaffold": "0.0.7",
     "@unic/estatico-stylelint": "0.0.6",
     "@unic/estatico-svgsprite": "0.0.6",
+    "@unic/estatico-utils": "0.0.6",
     "@unic/estatico-w3c-validator": "0.0.6",
     "@unic/estatico-watch": "0.0.6",
     "@unic/estatico-webpack": "0.0.7",

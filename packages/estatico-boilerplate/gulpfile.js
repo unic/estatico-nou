@@ -13,8 +13,8 @@ const env = require('minimist')(process.argv.slice(2));
  */
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
-  const moduleTemplate = fs.readFileSync('./src/preview/layouts/module.hbs', 'utf8');
   const estaticoQunit = require('@unic/estatico-qunit');
+  const { readFileSyncCached } = require('@unic/estatico-utils');
 
   const instance = task({
     src: [
@@ -82,7 +82,7 @@ gulp.task('html', () => {
       // Wrap with module layout
       transformBefore: (file) => {
         if (file.path.match(/(\\|\/)modules(\\|\/)/)) {
-          return Buffer.from(moduleTemplate);
+          return Buffer.from(readFileSyncCached('./src/preview/layouts/module.hbs'));
         }
 
         return file.contents;
