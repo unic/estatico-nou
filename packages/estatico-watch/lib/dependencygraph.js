@@ -35,6 +35,11 @@ class DependencyGraph {
   }
 
   extend(filePath, parentFilePath) { // eslint-disable-line consistent-return
+    // Skip self-nesting partials
+    if (filePath === parentFilePath) {
+      return [];
+    }
+
     const content = this.getFileContent(filePath);
     const type = path.extname(filePath).replace(/\./, '');
     const resolver = this.options.resolver[type];
