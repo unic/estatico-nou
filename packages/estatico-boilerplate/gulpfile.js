@@ -521,6 +521,13 @@ gulp.task('media:svgsprite', () => {
     },
     srcBase: './src',
     dest: './dist/assets/media/svgsprite',
+    watch: {
+      src: [
+        './src/assets/media/svg/**/*.svg',
+        './src/demo/modules/svgsprite/svg/*.svg',
+      ],
+      name: 'media:svgsprite',
+    },
   }, env);
 
   // Don't immediately run task when skipping build
@@ -835,7 +842,6 @@ gulp.task('build', (done) => {
  * --noInteractive / --skipBuild will bypass the prompt
  */
 gulp.task('default', (done) => {
-  const task = gulp.series('build', 'serve');
   let readEnv = new Promise(resolve => resolve());
 
   if (env.watch && (!env.noInteractive && !env.skipBuild)) {
@@ -854,5 +860,13 @@ gulp.task('default', (done) => {
     });
   }
 
-  readEnv.then(() => task(done));
+  readEnv.then(() => {
+    // When starting watcher without building, "build" will never finish
+    // In order for "serve" to still run properly, we switch from serial to parallel execution
+    if (env.skipBuild) {
+      return gulp.parallel('build', 'serve')(done);
+    }
+
+    return gulp.series('build', 'serve')(done);
+  });
 });
