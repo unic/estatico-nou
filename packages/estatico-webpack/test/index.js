@@ -42,28 +42,15 @@ test.cb('ci', (t) => {
 });
 
 test.cb('async', (t) => {
-  const options = settings => ({
-    webpack: merge({}, settings.webpack, {
+  const options = merge({}, defaults, {
+    webpack: {
       entry: {
         main: './test/fixtures/async.js',
       },
       output: {
-        path: path.resolve('./test/results'),
         publicPath: '/expected/async/',
       },
-      module: {
-        rules: settings.webpack.module.rules.map((rule) => {
-          if (rule.loader === 'babel-loader') {
-            rule.options.plugins = [ // eslint-disable-line no-param-reassign
-              '@babel/plugin-syntax-dynamic-import',
-            ];
-          }
-
-          return rule;
-        }),
-      },
-    }),
-    logger: settings.logger,
+    },
   });
 
   task(options, {

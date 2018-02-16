@@ -328,7 +328,7 @@ gulp.task('js', (cb) => {
         } : {}),
         output: {
           path: path.resolve('./dist/assets/js'),
-          publicPath: '/assets/js/,'
+          publicPath: '/assets/js/',
         },
       }),
       {
