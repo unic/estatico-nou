@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-json-mocks",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-json-mocks",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.6",
+    "@unic/estatico-utils": "0.0.7",
     "chalk": "^2.3.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-plumber": "^1.1.0",
