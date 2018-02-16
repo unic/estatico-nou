@@ -164,7 +164,7 @@ const task = (config, env = {}) => {
     // Log
     .pipe(size({
       showFiles: true,
-      title: 'estatico-font-datauri',
+      title: 'estatico-imageversions',
     }))
 
     // Save
