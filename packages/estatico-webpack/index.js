@@ -60,7 +60,9 @@ const defaults = (env) => {
                   // loose: true,
                 }],
               ],
-              plugins: [],
+              plugins: [
+                '@babel/plugin-syntax-dynamic-import',
+              ],
             },
           },
         ],
