@@ -8,7 +8,7 @@
     "gulp": "gulp",
     "build": "gulp build --ci",
     "start": "gulp --dev --watch",
-    "deploy": "gulp build --noInteractive"
+    "netlify": "gulp build --skipTests"
   },
   "author": "Unic AG",
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate",
