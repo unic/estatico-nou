@@ -46,7 +46,7 @@ const defaults = (env = {}) => {
       sass: {
         includePaths: null,
       },
-      clone: !env.dev,
+      clone: env.ci,
       postcss: [
         autoprefixer({
           browsers: ['last 1 version'],
@@ -111,19 +111,17 @@ const task = (config, env = {}, watcher) => {
     .pipe(sass(config.plugins.sass).on('error', err => config.logger.error(err, env.dev)))
 
     // Clone for production version
-    .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
-      if (config.plugins.clone) {
-        const clone = file.clone();
+    .pipe(config.plugins.clone ? through.obj(function (file, enc, done) { // eslint-disable-line
+      const clone = file.clone();
 
-        clone.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`);
+      clone.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`);
 
-        config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)} to keep unminified files`);
+      config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)} to keep unminified files`);
 
-        this.push(clone);
-      }
+      this.push(clone);
 
       done(null, file);
-    }))
+    }) : through.obj())
 
     // PostCSS
     .pipe(postcss(config.plugins.postcss))

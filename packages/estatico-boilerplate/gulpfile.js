@@ -67,7 +67,6 @@ gulp.task('html', () => {
       },
     },
     plugins: {
-      clone: null,
       handlebars: {
         partials: [
           './src/**/*.hbs',
@@ -314,7 +313,7 @@ gulp.task('js', (cb) => {
         entry: Object.assign({
           head: './src/assets/js/head.js',
           main: './src/assets/js/main.js',
-        }, env.dev ? {
+        }, (env.dev || env.ci) ? {
           dev: './src/assets/js/dev.js',
         } : {}),
         output: {
@@ -693,6 +692,55 @@ gulp.task('copy', () => {
 });
 
 /**
+ * Create dev and prod build directories
+ * Copies specific files into `dist/ci/dev` and `dist/ci/prod`, respectively
+ */
+gulp.task('copy:ci', () => {
+  const task = require('@unic/estatico-copy');
+  const merge = require('merge-stream');
+
+  const dev = task({
+    src: [
+      './dist/**/*',
+      '!./dist/ci/**/*',
+      '!./dist/**/*.min.*',
+      '!./dist/**/*.html',
+      './dist/**/*.dev.html',
+    ],
+    srcBase: './dist',
+    dest: './dist/ci/dev',
+    plugins: {
+      changed: null,
+      rename: (filePath) => {
+        // The `html` task creates dev versions with a `.dev.html` extension
+        // They need to be renamed to `.html`
+        if (filePath.match(/\.dev\.html/)) {
+          return filePath.replace(/\.dev\.html/, '.html');
+        }
+
+        return filePath;
+      },
+    },
+  }, env);
+
+  const prod = task({
+    src: [
+      './dist/**/*',
+      '!./dist/ci/**/*',
+      '!./dist/**/*.dev.html',
+      '!./dist/**/dev.*',
+    ],
+    srcBase: './dist',
+    dest: './dist/ci/prod',
+    plugins: {
+      changed: null,
+    },
+  }, env);
+
+  return merge(dev(), prod());
+});
+
+/**
  * Clean build directory
  */
 gulp.task('clean', () => {
@@ -714,7 +762,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  * --noInteractive / --skipTests will bypass the prompt
  */
 gulp.task('build', (done) => {
-  const task = gulp.parallel(
+  let task = gulp.parallel(
     'html',
     'js',
     'js:mocks',
@@ -726,6 +774,11 @@ gulp.task('build', (done) => {
     (env.watch && env.skipBuild) ? gulp.parallel('css:fonts', 'css') : gulp.series('css:fonts', 'css'),
   );
   let readEnv = new Promise(resolve => resolve());
+
+  // Clean first
+  if (!env.skipBuild) {
+    task = gulp.series('clean', task);
+  }
 
   if (env.watch && (!env.noInteractive && !env.skipTests)) {
     const inquirer = require('inquirer');
@@ -744,6 +797,23 @@ gulp.task('build', (done) => {
   }
 
   readEnv.then(() => task(done));
+});
+
+/**
+ * Create CI build
+ * Runs `build` task with `env.ci` set to `true`,
+ * followed by `copy:ci` task generating `dist/ci/dev` and `dist/ci/prod` directories
+ */
+gulp.task('build:ci', (done) => {
+  const task = gulp.series('build', 'copy:ci');
+
+  // Persist to env
+  env.ci = true;
+
+  // Make sure we are in prod env
+  env.dev = false;
+
+  task(done);
 });
 
 /**

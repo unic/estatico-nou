@@ -75,18 +75,18 @@ const defaults = env => ({
       indent_with_tabs: false,
       max_preserve_newlines: 1,
     },
-    clone: env.dev ? null : {
+    clone: env.ci ? {
       data: {
         env: {
-          dev: false,
+          dev: true,
         },
       },
       rename: (filePath) => {
         const path = require('path');
 
-        return filePath.replace(path.extname(filePath), `.prod${path.extname(filePath)}`);
+        return filePath.replace(path.extname(filePath), `.dev${path.extname(filePath)}`);
       },
-    },
+    } : null,
   },
   logger: new Logger('estatico-handlebars'),
 });

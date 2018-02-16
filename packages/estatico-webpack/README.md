@@ -94,6 +94,10 @@ Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": 
 
 See possible flags specified above.
 
+## API
+
+`plugin(options, env)` => `taskFn`
+
 ### Options
 
 #### webpack
@@ -102,7 +106,7 @@ Type: `Object`<br>
 Default:
 ```js
 {
-  mode: dev ? 'development' : 'production',
+  mode: env.dev ? 'development' : 'production',
   entry: null,
   resolve: {
     alias: {
@@ -153,15 +157,16 @@ Default:
       reportFilename: 'report.html',
       openAnalyzer: false,
     }),
-  ].concat(dev ? [] : [
-    new UnminifiedWebpackPlugin(),
-  ]),
+  ].concat(env.ci ? [
+     // Keep unminified file when in CI mode. This allows us to create both minified and unminified versions in one single go.
+     new UnminifiedWebpackPlugin(),
+  ] : []),
   output: {
     path: null,
-    filename: `[name]${dev ? '' : '.min'}.js`,
+    filename: `[name]${env.dev ? '' : '.min'}.js`,
 
     // Save async loaded files (using require.ensurce) in special dir
-    chunkFilename: `assets/[name]${dev ? '' : '.min'}.js`,
+    chunkFilename: `assets/[name]${env.dev ? '' : '.min'}.js`,
 
     // Tell webpack about the asset path structure in the browser to be able to load async files
     // publicPath: path.join('/', path.relative(config.destBase, config.dest), '/'),

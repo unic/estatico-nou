@@ -87,9 +87,9 @@ const defaults = (env) => {
           openAnalyzer: false,
           logLevel: 'warn',
         }),
-      ].concat(env.dev ? [] : [
+      ].concat(env.ci ? [
         new UnminifiedWebpackPlugin(),
-      ]),
+      ] : []),
       output: {
         path: null,
         filename: `[name]${env.dev ? '' : '.min'}.js`,

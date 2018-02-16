@@ -185,7 +185,7 @@ Passed to [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting 
 ##### plugins.clone
 
 Type: `Boolean`<br>
-Default: `!env.dev`
+Default: `env.ci`
 
 If true, every input file will be duplicated (with `config.minifiedSuffix` added to their name). This allows us to create both minified and unminified versions in one single go.
 
