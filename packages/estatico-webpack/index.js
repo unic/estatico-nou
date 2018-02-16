@@ -94,11 +94,11 @@ const defaults = (env) => {
         path: null,
         filename: `[name]${env.dev ? '' : '.min'}.js`,
 
-        // Save async loaded files (using require.ensurce) in special dir
-        chunkFilename: `assets/[name]${env.dev ? '' : '.min'}.js`,
+        // Save async imports to special directory inside `output.path`
+        chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
 
-        // Tell webpack about the asset path structure in the browser to be able to load async files
-        // publicPath: path.join('/', path.relative(config.destBase, config.dest), '/'),
+        // Tell webpack about asset path in the browser
+        publicPath: null,
       },
     },
     logger: new Logger('estatico-webpack'),

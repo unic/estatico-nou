@@ -36,6 +36,7 @@ gulp.task('js', (cb) => {
         } : {}),
         output: {
           path: path.resolve('./dist/assets/js'),
+          publicPath: '/assets/js/',
         },
       }),
       {
@@ -165,11 +166,11 @@ Default:
     path: null,
     filename: `[name]${env.dev ? '' : '.min'}.js`,
 
-    // Save async loaded files (using require.ensurce) in special dir
-    chunkFilename: `assets/[name]${env.dev ? '' : '.min'}.js`,
+    // Save async imports to special directory inside `output.path`
+    chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
 
-    // Tell webpack about the asset path structure in the browser to be able to load async files
-    // publicPath: path.join('/', path.relative(config.destBase, config.dest), '/'),
+    // Tell webpack about asset path in the browser
+    publicPath: null,
   },
 }
 ```
