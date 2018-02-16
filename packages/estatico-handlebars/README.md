@@ -19,7 +19,7 @@ const env = require('minimist')(process.argv.slice(2));
  * HTML task
  * Transforms Handlebars to HTML
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * Using `-LLLL` will display debug info like the data used for every template
  */
 gulp.task('html', () => {

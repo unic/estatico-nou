@@ -18,7 +18,7 @@ const env = require('minimist')(process.argv.slice(2));
  * JavaScript bundling task
  * Uses Webpack with Babel to transpile and bundle JavaScript.
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('js', (cb) => {
   const task = require('@unic/estatico-webpack');

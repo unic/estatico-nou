@@ -18,7 +18,7 @@ const env = require('minimist')(process.argv.slice(2));
  * HTML validation task
  * Sends HTML pages through the [w3c validator](https://validator.w3.org/).
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('html:validate', () => {
   const task = require('@unic/estatico-w3c-validator');

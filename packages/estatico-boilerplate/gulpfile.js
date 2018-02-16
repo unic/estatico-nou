@@ -9,7 +9,7 @@ const env = require('minimist')(process.argv.slice(2));
  * HTML task
  * Transforms Handlebars to HTML
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
@@ -115,7 +115,7 @@ gulp.task('html', () => {
  * HTML validation task
  * Sends HTML pages through the [w3c validator](https://validator.w3.org/).
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('html:validate', () => {
   const task = require('@unic/estatico-w3c-validator');
@@ -149,7 +149,7 @@ gulp.task('html:validate', () => {
  * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
  *
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
@@ -238,7 +238,7 @@ gulp.task('css', () => {
  * CSS linting task
  * Uses Stylelint to lint (and possibly autofix files in the future)
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('css:lint', () => {
   const task = require('@unic/estatico-stylelint');
@@ -268,7 +268,7 @@ gulp.task('css:lint', () => {
  * CSS font inlining task
  * Uses `gulp-simplefont64` to inline font files into base64-encoded data URIs
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('css:fonts', () => {
   const task = require('@unic/estatico-font-datauri');
@@ -300,7 +300,7 @@ gulp.task('css:fonts', () => {
  * JavaScript bundling task
  * Uses Webpack with Babel to transpile and bundle JavaScript.
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('js', (cb) => {
   const task = require('@unic/estatico-webpack');
@@ -374,7 +374,7 @@ gulp.task('js', (cb) => {
  * JavaScript linting task
  * Uses ESLint to lint and autofix files
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('js:lint', () => {
   const task = require('@unic/estatico-eslint');
@@ -404,7 +404,7 @@ gulp.task('js:lint', () => {
  * JavaScript testing task
  * Uses Puppeteer to check for JS errors and run tests
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('js:test', () => {
   const task = require('@unic/estatico-puppeteer');
@@ -461,7 +461,7 @@ gulp.task('js:test', () => {
  * JavaScript data mocks
  * Creates static JSON data mocks
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('js:mocks', () => {
   const task = require('@unic/estatico-json-mocks');
@@ -491,7 +491,7 @@ gulp.task('js:mocks', () => {
  * SVG spriting task
  * Uses svgstore to create a sprite from multiple SVGs
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('media:svgsprite', () => {
   const task = require('@unic/estatico-svgsprite');
@@ -516,7 +516,7 @@ gulp.task('media:svgsprite', () => {
  * Generate image versions
  * Uses GraphicsMagick to create resized and optionally cropped image variants
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('media:imageversions', () => {
   const task = require('@unic/estatico-imageversions');
@@ -665,7 +665,7 @@ gulp.task('scaffold', () => {
  * Copy files
  * Copies files, optionally renames them.
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('copy', () => {
   const task = require('@unic/estatico-copy');

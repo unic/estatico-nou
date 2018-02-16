@@ -19,7 +19,7 @@ const env = require('minimist')(process.argv.slice(2));
  * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
  *
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * Using `-LLLL` will display debug info like detailed autoprefixer configs
  */
 gulp.task('css', () => {

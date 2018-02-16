@@ -18,7 +18,7 @@ const env = require('minimist')(process.argv.slice(2));
  * CSS linting task
  * Uses Stylelint to lint (and possibly autofix files in the future)
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('css:lint', () => {
   const task = require('@unic/estatico-stylelint');

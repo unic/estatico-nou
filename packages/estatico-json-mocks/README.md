@@ -18,7 +18,7 @@ const env = require('minimist')(process.argv.slice(2));
  * JavaScript data mocks
  * Creates static JSON data mocks
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('js:mocks', () => {
   const task = require('@unic/estatico-json-mocks');

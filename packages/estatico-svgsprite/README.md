@@ -18,7 +18,7 @@ const env = require('minimist')(process.argv.slice(2));
  * SVG spriting task
  * Uses svgstore to create a sprite from multiple SVGs
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('media:svgsprite', () => {
   const task = require('@unic/estatico-svgsprite');

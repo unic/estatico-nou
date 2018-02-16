@@ -18,7 +18,7 @@ const env = require('minimist')(process.argv.slice(2));
  * CSS font inlining task
  * Uses `gulp-simplefont64` to inline font files into base64-encoded data URIs
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  */
 gulp.task('css:fonts', () => {
   const task = require('@unic/estatico-font-datauri');
