@@ -8,7 +8,7 @@ const data = {
   env,
   props: {
     svgSprites: JSON.stringify([
-      '/assets/media/svgsprite/base.svg',
+      // '/assets/media/svgsprite/base.svg',
       '/assets/media/svgsprite/demo.svg',
     ]),
   },

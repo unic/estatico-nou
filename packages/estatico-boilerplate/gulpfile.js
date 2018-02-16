@@ -515,7 +515,7 @@ gulp.task('media:svgsprite', () => {
 
   const instance = task({
     src: {
-      main: './src/assets/media/svg/**/*.svg',
+      base: './src/assets/media/svg/**/*.svg',
       demo: './src/demo/modules/svgsprite/svg/*.svg',
     },
     srcBase: './src',
