@@ -28,7 +28,7 @@ const data = _.merge({}, defaultData, {
   },
   props: {
     svgSprites: JSON.stringify(JSON.parse(defaultData.props.svgSprites || '[]').concat([
-      '/assets/media/svg/demo.svg',
+      '/assets/media/svgsprite/demo.svg',
     ])),
     preview: sprites,
   },

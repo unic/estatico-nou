@@ -66,9 +66,13 @@ const task = (config /* , env = {} */) => {
 
     // Optionally rename
     .pipe(config.plugins.rename ? through.obj((file, enc, done) => {
-      file.path = config.plugins.rename(file.path); // eslint-disable-line no-param-reassign
+      const filePath = config.plugins.rename(file.path);
 
-      config.logger.info(`Renamed to ${chalk.yellow(file.path)}`);
+      if (filePath !== file.path) {
+        config.logger.debug(`Renamed ${chalk.yellow(file.path)} to ${chalk.yellow(filePath)}`);
+
+        file.path = filePath; // eslint-disable-line no-param-reassign
+      }
 
       return done(null, file);
     }) : through.obj())

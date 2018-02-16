@@ -18,7 +18,8 @@ const env = require('minimist')(process.argv.slice(2));
  * Generate image versions
  * Uses GraphicsMagick to create resized and optionally cropped image variants
  *
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('media:imageversions', () => {
   const task = require('@unic/estatico-imageversions');
@@ -30,6 +31,11 @@ gulp.task('media:imageversions', () => {
     srcBase: './src',
     dest: './dist/',
   }, env);
+  
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });

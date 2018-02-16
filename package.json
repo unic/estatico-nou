@@ -14,6 +14,6 @@
     "lint": "eslint --fix \"{,**,**/**}*.js\"",
     "update-dependencies": "npx npm-check-updates -u -a",
     "test": "lerna exec -- npm test",
-    "netlify": "lerna bootstrap && lerna exec --scope @unic/estatico-boilerplate -- npm run gulp build -- --skipTests"
+    "netlify": "lerna bootstrap && lerna exec --scope @unic/estatico-boilerplate -- npm run netlify"
   }
 }

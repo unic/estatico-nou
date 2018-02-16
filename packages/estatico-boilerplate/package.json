@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp build --noInteractive",
-    "gulp": "gulp"
+    "test": "npm run build",
+    "gulp": "gulp",
+    "build": "gulp build --ci",
+    "start": "gulp --dev --watch",
+    "netlify": "gulp build --skipTests"
   },
   "author": "Unic AG",
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate",
@@ -25,6 +28,7 @@
     "@unic/estatico-scaffold": "0.0.7",
     "@unic/estatico-stylelint": "0.0.6",
     "@unic/estatico-svgsprite": "0.0.6",
+    "@unic/estatico-utils": "0.0.6",
     "@unic/estatico-w3c-validator": "0.0.6",
     "@unic/estatico-watch": "0.0.6",
     "@unic/estatico-webpack": "0.0.7",

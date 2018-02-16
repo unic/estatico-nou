@@ -19,7 +19,9 @@ const env = require('minimist')(process.argv.slice(2));
  * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
  *
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
- * Using `--watch` (or manually setting `env` to `{ dev: true }`) starts file watcher
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ *
  * Using `-LLLL` will display debug info like detailed autoprefixer configs
  */
 gulp.task('css', () => {
@@ -97,6 +99,11 @@ gulp.task('css', () => {
       ],
     },
   }, env);
+  
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });
@@ -185,7 +192,7 @@ Passed to [`gulp-postcss`](https://www.npmjs.com/package/gulp-postcss). Setting 
 ##### plugins.clone
 
 Type: `Boolean`<br>
-Default: `!env.dev`
+Default: `env.ci`
 
 If true, every input file will be duplicated (with `config.minifiedSuffix` added to their name). This allows us to create both minified and unminified versions in one single go.
 

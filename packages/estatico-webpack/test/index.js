@@ -33,4 +33,10 @@ test.cb('dev', (t) => {
   });
 });
 
+test.cb('ci', (t) => {
+  task(defaults, {
+    ci: true,
+  })(() => utils.compareFiles(t, path.join(__dirname, 'expected/ci/*')));
+});
+
 test.afterEach(() => del(path.join(__dirname, '/results')));
