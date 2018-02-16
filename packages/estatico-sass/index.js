@@ -121,7 +121,13 @@ const task = (config, env = {}, watcher) => {
       this.push(clone);
 
       done(null, file);
-    }) : through.obj())
+    }) : through.obj((file, enc, done) => {
+      if (!env.dev) {
+        file.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`); // eslint-disable-line no-param-reassign
+      }
+
+      done(null, file);
+    }))
 
     // PostCSS
     .pipe(postcss(config.plugins.postcss))
