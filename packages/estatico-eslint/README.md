@@ -19,6 +19,7 @@ const env = require('minimist')(process.argv.slice(2));
  * Uses ESLint to lint and autofix files
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('js:lint', () => {
   const task = require('@unic/estatico-eslint');
@@ -36,6 +37,11 @@ gulp.task('js:lint', () => {
       name: 'js:lint',
     },
   }, env);
+  
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });

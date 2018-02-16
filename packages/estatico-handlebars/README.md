@@ -20,6 +20,8 @@ const env = require('minimist')(process.argv.slice(2));
  * Transforms Handlebars to HTML
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ *
  * Using `-LLLL` will display debug info like the data used for every template
  */
 gulp.task('html', () => {
@@ -115,6 +117,11 @@ gulp.task('html', () => {
       },
     },
   }, env);
+  
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });

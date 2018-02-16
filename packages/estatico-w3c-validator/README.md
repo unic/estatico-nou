@@ -19,6 +19,7 @@ const env = require('minimist')(process.argv.slice(2));
  * Sends HTML pages through the [w3c validator](https://validator.w3.org/).
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('html:validate', () => {
   const task = require('@unic/estatico-w3c-validator');
@@ -39,6 +40,11 @@ gulp.task('html:validate', () => {
       name: 'html:validate',
     },
   }, env);
+  
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });

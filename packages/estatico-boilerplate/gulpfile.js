@@ -10,6 +10,7 @@ const env = require('minimist')(process.argv.slice(2));
  * Transforms Handlebars to HTML
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
@@ -104,6 +105,7 @@ gulp.task('html', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
@@ -116,6 +118,7 @@ gulp.task('html', () => {
  * Sends HTML pages through the [w3c validator](https://validator.w3.org/).
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('html:validate', () => {
   const task = require('@unic/estatico-w3c-validator');
@@ -137,6 +140,7 @@ gulp.task('html:validate', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipTests) {
     return instance;
   }
@@ -150,6 +154,7 @@ gulp.task('html:validate', () => {
  *
  * Using `--dev` (or manually setting `env` to `{ dev: true }`) skips minification
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
@@ -227,6 +232,7 @@ gulp.task('css', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
@@ -239,6 +245,7 @@ gulp.task('css', () => {
  * Uses Stylelint to lint (and possibly autofix files in the future)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('css:lint', () => {
   const task = require('@unic/estatico-stylelint');
@@ -257,6 +264,7 @@ gulp.task('css:lint', () => {
     // },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipTests) {
     return instance;
   }
@@ -269,6 +277,7 @@ gulp.task('css:lint', () => {
  * Uses `gulp-simplefont64` to inline font files into base64-encoded data URIs
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('css:fonts', () => {
   const task = require('@unic/estatico-font-datauri');
@@ -289,6 +298,7 @@ gulp.task('css:fonts', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
@@ -375,6 +385,7 @@ gulp.task('js', (cb) => {
  * Uses ESLint to lint and autofix files
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('js:lint', () => {
   const task = require('@unic/estatico-eslint');
@@ -393,6 +404,7 @@ gulp.task('js:lint', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipTests) {
     return instance;
   }
@@ -405,6 +417,7 @@ gulp.task('js:lint', () => {
  * Uses Puppeteer to check for JS errors and run tests
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('js:test', () => {
   const task = require('@unic/estatico-puppeteer');
@@ -450,6 +463,7 @@ gulp.task('js:test', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipTests) {
     return instance;
   }
@@ -462,6 +476,7 @@ gulp.task('js:test', () => {
  * Creates static JSON data mocks
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('js:mocks', () => {
   const task = require('@unic/estatico-json-mocks');
@@ -480,6 +495,7 @@ gulp.task('js:mocks', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
@@ -492,6 +508,7 @@ gulp.task('js:mocks', () => {
  * Uses svgstore to create a sprite from multiple SVGs
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('media:svgsprite', () => {
   const task = require('@unic/estatico-svgsprite');
@@ -505,6 +522,7 @@ gulp.task('media:svgsprite', () => {
     dest: './dist/assets/media/svgsprite',
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
@@ -517,6 +535,7 @@ gulp.task('media:svgsprite', () => {
  * Uses GraphicsMagick to create resized and optionally cropped image variants
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('media:imageversions', () => {
   const task = require('@unic/estatico-imageversions');
@@ -529,6 +548,7 @@ gulp.task('media:imageversions', () => {
     dest: './dist/',
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
@@ -666,6 +686,7 @@ gulp.task('scaffold', () => {
  * Copies files, optionally renames them.
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('copy', () => {
   const task = require('@unic/estatico-copy');
@@ -684,6 +705,7 @@ gulp.task('copy', () => {
     },
   }, env);
 
+  // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }

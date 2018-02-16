@@ -19,6 +19,7 @@ const env = require('minimist')(process.argv.slice(2));
  * Uses Puppeteer to check for JS errors and run tests
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('js:test', () => {
   const task = require('@unic/estatico-puppeteer');
@@ -63,6 +64,11 @@ gulp.task('js:test', () => {
       },
     },
   }, env);
+  
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
 
   return instance();
 });
