@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-boilerplate",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -31,7 +31,7 @@
     "@unic/estatico-utils": "0.0.7",
     "@unic/estatico-w3c-validator": "0.0.7",
     "@unic/estatico-watch": "0.0.7",
-    "@unic/estatico-webpack": "0.0.8",
+    "@unic/estatico-webpack": "0.0.9",
     "autoprefixer": "^7.2.5",
     "change-case": "^3.0.1",
     "del": "^3.0.0",
