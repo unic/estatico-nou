@@ -782,6 +782,7 @@ gulp.task('test', gulp.parallel('html:validate', 'js:test'));
  * Prompts whether tests and linting should run when in --watch mode
  *
  * --noInteractive / --skipTests will bypass the prompt
+ * --ci will create complete builds in `dist/ci/dev` and `dist/ci/prod` directories
  */
 gulp.task('build', (done) => {
   let task = gulp.parallel(
@@ -802,7 +803,12 @@ gulp.task('build', (done) => {
     task = gulp.series('clean', task);
   }
 
-  if (env.watch && (!env.noInteractive && !env.skipTests)) {
+  // Create CI build structure
+  if (env.ci) {
+    task = gulp.series(task, 'copy:ci');
+  }
+
+  if (env.watch && (!env.noInteractive && !env.skipTests && !env.ci)) {
     const inquirer = require('inquirer');
 
     readEnv = inquirer.prompt([{
@@ -819,23 +825,6 @@ gulp.task('build', (done) => {
   }
 
   readEnv.then(() => task(done));
-});
-
-/**
- * Create CI build
- * Runs `build` task with `env.ci` set to `true`,
- * followed by `copy:ci` task generating `dist/ci/dev` and `dist/ci/prod` directories
- */
-gulp.task('build:ci', (done) => {
-  const task = gulp.series('build', 'copy:ci');
-
-  // Persist to env
-  env.ci = true;
-
-  // Make sure we are in prod env
-  env.dev = false;
-
-  task(done);
 });
 
 /**

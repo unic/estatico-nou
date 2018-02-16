@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp build --noInteractive",
+    "test": "npm run build",
     "gulp": "gulp",
-    "start": "gulp --dev --watch"
+    "build": "gulp build --ci",
+    "start": "gulp --dev --watch",
+    "deploy": "gulp build --noInteractive"
   },
   "author": "Unic AG",
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate",
