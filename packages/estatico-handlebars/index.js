@@ -28,6 +28,7 @@ const schema = Joi.object().keys({
       data: Joi.object().allow(null),
       rename: Joi.func(),
     }).allow(null),
+    sort: Joi.func().allow(null),
   },
   logger: Joi.object().keys({
     info: Joi.func(),
@@ -87,6 +88,7 @@ const defaults = env => ({
         return filePath.replace(path.extname(filePath), `.dev${path.extname(filePath)}`);
       },
     } : null,
+    sort: null,
   },
   logger: new Logger('estatico-handlebars'),
 });
@@ -145,6 +147,10 @@ const task = (config, env = {}, watcher) => {
     wax.helpers(config.plugins.handlebars.helpers, waxOptions);
   }
 
+  // Array for optional sorting
+  const files = [];
+
+  // Start streaming
   return gulp.src(config.src, {
     base: config.srcBase,
   })
@@ -168,6 +174,23 @@ const task = (config, env = {}, watcher) => {
       }
 
       return done(null, file);
+    }))
+
+    // Optional sorting of passed files
+    .pipe(through.obj((file, enc, done) => {
+      if (config.plugins.sort) {
+        // Don't immediately push files back to stream, create sortable array first
+        files.push(file);
+
+        return done();
+      }
+
+      return done(null, file);
+    }, function flush(done) {
+      // Sort array and push files back to stream
+      files.sort(config.plugins.sort).forEach(file => this.push(file));
+
+      return done();
     }))
 
     // Optional template transformation
