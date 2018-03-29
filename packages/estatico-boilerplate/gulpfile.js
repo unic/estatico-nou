@@ -107,6 +107,7 @@ gulp.task('html', () => {
 
         return content;
       },
+      // Prioritize the currently active page (as reported by BrowserSync)
       sort: (file) => {
         const currentPath = parse(env.browserSync.currentUrl).pathname || '';
         const filePath = path.relative('./src', file.path).replace(path.extname(file.path), '');
@@ -613,7 +614,7 @@ gulp.task('serve', () => {
   const browserSync = instance();
 
   // Save last requested url
-  // This can be used to decide with html page to build first
+  // This can be used to decide which html page to build first
   browserSync.emitter.on('service:running', () => {
     browserSync.sockets.on('connection', (socket) => {
       env.browserSync.currentUrl = socket.handshake.headers.referer;
