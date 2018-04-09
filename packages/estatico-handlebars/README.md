@@ -250,14 +250,25 @@ Passed to [`gulp-prettify`](https://www.npmjs.com/package/gulp-prettify). Settin
 Type: `Object`<br>
 Default:
 ```js
-clone: dev ? null : {
-  data: {
+clone: env.ci ? (file) => {
+  const path = require('path');
+  const merge = require('lodash.merge');
+
+  const clone = file.clone();
+
+  // Extend default data
+  clone.data = merge({}, file.data, {
     env: {
-      dev: false,
+      dev: true,
     },
-  },
-  rename: filePath => filePath.replace(path.extname(filePath), `.prod${path.extname(filePath)}`),
-},
+  });
+
+  // Rename
+  clone.path = file.path.replace(path.extname(file.path), `.dev${path.extname(file.path)}`);
+
+  // Return array
+  return [clone];
+} : null,
 ```
 
 This potentially speeds up CI builds (where the same templates are built with both a dev and prod config) since we only run the expensive task of setting up the data once.
