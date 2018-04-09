@@ -2,6 +2,9 @@
 const { Plugin, Logger } = require('@unic/estatico-utils');
 const Joi = require('joi');
 
+// We export webpack to allow for complete flexibility in config overwrite
+const webpack = require('webpack');
+
 // Config schema used for validation
 const schema = Joi.object().keys({
   webpack: [Joi.object(), Joi.array()],
@@ -115,7 +118,6 @@ const defaults = (env) => {
  * @return {object} gulp stream
  */
 const task = (config, env = {}, cb) => {
-  const webpack = require('webpack');
   const once = require('lodash.once');
   const { format } = require('./lib/stats');
 
@@ -165,3 +167,8 @@ module.exports = (options, env = {}) => new Plugin({
   task,
   env,
 });
+
+/**
+ * Export webpack
+ */
+module.exports.webpack = webpack;
