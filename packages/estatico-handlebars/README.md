@@ -275,6 +275,26 @@ This potentially speeds up CI builds (where the same templates are built with bo
 
 The CI needs to take care of moving & renaming the `.prod.html` files.
 
+#### plugins.sort
+
+Type: `Function`<br>
+Default: `null`
+
+Example:
+```js
+// Prioritize the currently active page (as reported by BrowserSync)
+sort: (file) => {
+  const currentPath = parse(env.browserSync.currentUrl).pathname || '';
+  const filePath = path.relative('./src', file.path).replace(path.extname(file.path), '');
+
+  if (currentPath.includes(filePath)) {
+    return -1;
+  }
+
+  return 1;
+},
+```
+
 #### logger
 
 Type: `{ info: Function, debug: Function, error: Function }`<br>
