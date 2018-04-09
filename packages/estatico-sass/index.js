@@ -73,6 +73,7 @@ const task = (config, env = {}, watcher) => {
   const postcss = require('gulp-postcss');
   const sourcemaps = require('gulp-sourcemaps');
   const through = require('through2');
+  const ignore = require('gulp-ignore');
   const size = require('gulp-size');
 
   const autoprefixer = config.plugins.postcss.find(plugin => plugin.postcssPlugin === 'autoprefixer');
@@ -138,14 +139,17 @@ const task = (config, env = {}, watcher) => {
       sourceRoot: config.srcBase,
     }))
 
+    // Save
+    .pipe(gulp.dest(config.dest))
+
+    // Remove sourcemaps before logging size
+    .pipe(ignore.exclude(file => path.extname(file.path) === '.map'))
+
     // Log size
     .pipe(size({
       showFiles: true,
       title: 'estatico-sass',
-    }))
-
-    // Save
-    .pipe(gulp.dest(config.dest));
+    }));
 };
 
 /**
