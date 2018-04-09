@@ -315,7 +315,7 @@ const task = (config, env = {}, watcher) => {
       if (!stream.continue) {
         stream.continue = true;
       }
-      console.log(file.path);
+
       return done(null, file);
     }));
 };
