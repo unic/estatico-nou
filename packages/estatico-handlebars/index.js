@@ -113,7 +113,6 @@ const task = (config, env = {}, watcher) => {
   const PluginError = require('plugin-error');
   const chalk = require('chalk');
   const path = require('path');
-  const merge = require('lodash.merge');
   const handlebarsWax = require('handlebars-wax');
 
   // Remove file extension from path, including complex ones like .data.js
@@ -151,8 +150,12 @@ const task = (config, env = {}, watcher) => {
     wax.helpers(config.plugins.handlebars.helpers, waxOptions);
   }
 
-  // Array for optional sorting
-  const files = [];
+  // Streaming helpers
+  const stream = {
+    files: [],
+    index: -1,
+    continue: false,
+  };
 
   // Start streaming
   return gulp.src(config.src, {
@@ -178,13 +181,13 @@ const task = (config, env = {}, watcher) => {
       }
 
       return done(null, file);
-    }))
+    }).on('error', err => config.logger.error(err, env.dev)))
 
     // Optional sorting of passed files
     .pipe(through.obj((file, enc, done) => {
       if (config.plugins.sort) {
         // Don't immediately push files back to stream, create sortable array first
-        files.push(file);
+        stream.files.push(file);
 
         return done();
       }
@@ -192,10 +195,37 @@ const task = (config, env = {}, watcher) => {
       return done(null, file);
     }, function flush(done) {
       // Sort array and push files back to stream
-      files.sort(config.plugins.sort).forEach(file => this.push(file));
+      stream.files.sort(config.plugins.sort).forEach(file => this.push(file));
 
       return done();
-    }))
+    }).on('error', err => config.logger.error(err, env.dev)))
+
+    // Wait for first file to successfully build
+    // Otherwise, following files will slow down the build
+    .pipe(through.obj((file, enc, done) => {
+      // Skip if we are not in watch mode or if there is no sorting going on
+      if (!(watcher && config.plugins.sort)) {
+        return done(null, file);
+      }
+
+      stream.index += 1;
+
+      // First file is passed through
+      if (stream.index === 0) {
+        return done(null, file);
+      }
+
+      // Following files have to wait
+      const interval = setInterval(() => {
+        if (stream.continue) {
+          done(null, file);
+
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return interval;
+    }).on('error', err => config.logger.error(err, env.dev)))
 
     // Find data and assign it to file object
     .pipe(through.obj((file, enc, done) => {
@@ -268,7 +298,7 @@ const task = (config, env = {}, watcher) => {
       config.logger.debug(`Renamed ${chalk.yellow(file.path)} to ${chalk.yellow(renamedPath)}`);
 
       done(null, file);
-    }))
+    }).on('error', err => config.logger.error(err, env.dev)))
 
     // Log
     .pipe(through.obj((file, enc, done) => {
@@ -278,7 +308,16 @@ const task = (config, env = {}, watcher) => {
     }))
 
     // Save
-    .pipe(gulp.dest(config.dest));
+    .pipe(gulp.dest(config.dest))
+
+    // Report that first file was successfully built
+    .pipe(through.obj((file, enc, done) => {
+      if (!stream.continue) {
+        stream.continue = true;
+      }
+      console.log(file.path);
+      return done(null, file);
+    }));
 };
 
 /**

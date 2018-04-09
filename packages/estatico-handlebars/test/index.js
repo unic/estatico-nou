@@ -24,7 +24,7 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
+  task(defaults)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
 });
 
 test.cb('unprettified', (t) => {
@@ -34,7 +34,7 @@ test.cb('unprettified', (t) => {
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/unprettified/*')));
+  task(options)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/unprettified/*')));
 });
 
 test.cb('customHelpers', (t) => {
@@ -49,7 +49,7 @@ test.cb('customHelpers', (t) => {
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
+  task(options)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
 });
 
 test.cb('customHelpersFactory', (t) => {
@@ -68,7 +68,7 @@ test.cb('customHelpersFactory', (t) => {
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
+  task(options)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
 });
 
 test.cb('error', (t) => {
@@ -80,7 +80,7 @@ test.cb('error', (t) => {
 
   task(options, {
     dev: true,
-  })().on('end', () => {
+  })().on('finish', () => {
     spy.restore();
 
     const log = utils.stripLogs(spy);
