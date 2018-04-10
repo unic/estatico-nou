@@ -55,13 +55,13 @@ gulp.task('html', () => {
             },
           },
           js: {
-            match: /require\('(.*?\.data\.js)'\)/g,
+            match: /(?:require\('(.*?\.data\.js)'\)|getFileContent\('(.*?)'\))/g,
             resolve: (match, filePath) => {
-              if (!match[1]) {
+              if (!(match[1] || match[2])) {
                 return null;
               }
 
-              return path.resolve(path.dirname(filePath), match[1]);
+              return path.resolve(path.dirname(filePath), match[1] || match[2]);
             },
           },
         },
