@@ -7,7 +7,7 @@ const schema = Joi.object().keys({
   plugins: {
     browsersync: Joi.object().keys({
       server: Joi.string().required(),
-      watch: Joi.string().allow(null),
+      watch: [Joi.string().allow(null), Joi.array().allow(null)],
       port: Joi.number().required(),
       middleware: Joi.func().allow(null),
     }),
@@ -64,7 +64,9 @@ const task = (config /* , env = {} */) => {
 
   const bs = browsersync.create();
 
-  return bs.init(config.plugins.browsersync);
+  bs.init(config.plugins.browsersync);
+
+  return bs;
 };
 
 /**
