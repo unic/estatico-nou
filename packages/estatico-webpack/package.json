@@ -20,7 +20,7 @@
     "chalk": "^2.3.0",
     "css-loader": "^0.28.9",
     "expose-loader": "^0.7.4",
-    "handlebars-loader": "github:unic/handlebars-loader",
+    "handlebars-loader": "^1.7.0",
     "lodash.merge": "^4.6.0",
     "lodash.once": "^4.1.1",
     "style-loader": "^0.20.1",
