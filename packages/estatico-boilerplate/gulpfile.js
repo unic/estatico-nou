@@ -816,7 +816,7 @@ gulp.task('build', (done) => {
     task = gulp.series(task, 'copy:ci');
   }
 
-  if (env.watch && (!env.noInteractive && !env.skipTests && !env.ci)) {
+  if (env.watch && (!env.skipBuild && !env.noInteractive && !env.skipTests && !env.ci)) {
     const inquirer = require('inquirer');
 
     readEnv = inquirer.prompt([{
