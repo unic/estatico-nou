@@ -643,29 +643,30 @@ gulp.task('scaffold', () => {
               ] : []);
             case 'Rename':
             case 'Remove':
-              return [
+              return [].concat(hasJs ? [
                 {
                   type: 'modify',
                   path: './src/assets/js/helpers/estaticoapp.js',
                   pattern: new RegExp(`(\\s+)?this.modules.${answers.moduleName} = ${answers.className};`, 'm'),
-                  template: isRemove ? '' : `$1this.modules.${answers.newModuleName} = ${answers.newClassName};`,
+                  template: isRemove ? '' : `$1this.modules.${moduleName} = ${className};`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
                   path: './src/assets/js/helpers/estaticoapp.js',
                   pattern: new RegExp(`(\\s+)?import ${answers.className} from '../../../modules/${answers.fileName}/${answers.fileName}';`, 'm'),
-                  template: isRemove ? '' : `$1import ${answers.newClassName} from '../../../modules/${answers.newFileName}/${answers.newFileName}';`,
+                  template: isRemove ? '' : `$1import ${className} from '../../../modules/${fileName}/${fileName}';`,
                   abortOnFail: true,
                 },
+              ] : []).concat(hasCss ? [
                 {
                   type: 'modify',
                   path: './src/assets/css/main.scss',
                   pattern: new RegExp(`(\\s+)?@import "../../modules/${answers.fileName}/${answers.fileName}";`, 'm'),
-                  template: isRemove ? '' : `$1@import "../../modules/${answers.newFileName}/${answers.newFileName}";`,
+                  template: isRemove ? '' : `$1@import "../../modules/${fileName}/${fileName}";`,
                   abortOnFail: true,
                 },
-              ];
+              ] : []);
             default:
               return [];
           }
@@ -675,11 +676,11 @@ gulp.task('scaffold', () => {
         name: 'Page',
         src: './src/pages/.scaffold/*',
         dest: './src/pages/',
-        transformName: (name) => {
+        transformName: (name, prefix) => {
           const changeCase = require('change-case');
 
           return {
-            fileName: changeCase.snake(path.basename(name)),
+            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
           };
         },
       },

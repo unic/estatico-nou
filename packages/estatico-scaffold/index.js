@@ -10,6 +10,7 @@ const schema = Joi.object().keys({
     dest: Joi.string().required(),
     transformName: Joi.func(),
     modifications: Joi.func(),
+    getNameChoices: Joi.object(),
   })),
   logger: Joi.object().keys({
     info: Joi.func(),
@@ -44,16 +45,21 @@ const task = (config, env = {}) => {
   const plop = nodePlop();
 
   function copy(scaffoldConfig) {
+    config.logger.debug('Sass copy/rename config:', JSON.stringify(scaffoldConfig, null, '\t'));
+
     return new Promise((resolve) => {
       gulp.src(`${scaffoldConfig.src}/*`, {
         base: scaffoldConfig.src,
       })
         .pipe(through.obj((file, enc, done) => {
-          file.path = file.path.replace(new RegExp(path.basename(scaffoldConfig.src), 'g'), scaffoldConfig.name); // eslint-disable-line no-param-reassign
+          const oldPath = path.join(path.basename(scaffoldConfig.src), '/', scaffoldConfig.name);
+          const newPath = path.join(path.basename(scaffoldConfig.src), '/', scaffoldConfig.newName);
+
+          file.path = file.path.replace(new RegExp(oldPath, 'g'), newPath); // eslint-disable-line no-param-reassign
 
           done(null, file);
         }))
-        .pipe(gulp.dest(`${scaffoldConfig.dest}/${scaffoldConfig.name}`))
+        .pipe(gulp.dest(scaffoldConfig.dest))
         .on('end', () => resolve());
     });
   }
@@ -84,7 +90,14 @@ const task = (config, env = {}) => {
       if (answers.action === 'Add') {
         return plop.inquirer.prompt([
           {
-            type: 'input',
+            type: scaffoldConfig.getNameChoices ? 'list' : 'input',
+            choices: scaffoldConfig.getNameChoices ? function() {
+              const done = this.async();
+
+              scaffoldConfig.getNameChoices.then((choices) => {
+                done(null, choices);
+              });
+            } : null,
             name: 'name',
             message: 'Set a name',
             validate: (input) => {
@@ -139,7 +152,14 @@ const task = (config, env = {}) => {
       // Prompt for new name in case of Copy/Rename
       return plop.inquirer.prompt([
         {
-          type: 'input',
+          type: scaffoldConfig.getNameChoices ? 'list' : 'input',
+          choices: scaffoldConfig.getNameChoices ? function() {
+            const done = this.async();
+
+            scaffoldConfig.getNameChoices.then((choices) => {
+              done(null, choices);
+            });
+          } : null,
           name: 'newName',
           message: 'Set a new name',
           validate: (input) => {
@@ -162,12 +182,17 @@ const task = (config, env = {}) => {
         scaffoldConfig.modifications(answers) :
         [];
 
+      config.logger.debug('Config:', JSON.stringify(answers, null, '\t'));
+      config.logger.debug('Modifications:', JSON.stringify(modifications, (key, value) => {
+        return (value instanceof RegExp) ? value.toString() : value;
+      }, '\t'));
+
       switch (answers.action) {
         case 'Add':
           return modifications.concat([
             {
               type: 'addMany',
-              destination: `${scaffoldConfig.dest}/${answers.fileName}`,
+              destination: `${scaffoldConfig.dest}/${answers.dirName || answers.fileName}`,
               base: path.dirname(scaffoldConfig.src),
               templateFiles: answers.files,
               abortOnFail: true,
@@ -181,16 +206,18 @@ const task = (config, env = {}) => {
           return modifications.concat([
             () => copy({
               src: answers.name,
-              dest: scaffoldConfig.dest,
-              name: answers.newFileName,
+              dest: `${scaffoldConfig.dest}/${answers.newDirName || answers.newFileName}`,
+              name: answers.fileName,
+              newName: answers.newFileName,
             }),
           ]);
         case 'Rename':
           return modifications.concat([
             () => rename({
               src: answers.name,
-              dest: scaffoldConfig.dest,
-              name: answers.newFileName,
+              dest: `${scaffoldConfig.dest}/${answers.newDirName || answers.newFileName}`,
+              name: answers.fileName,
+              newName: answers.newFileName,
             }),
           ]);
         default:
@@ -213,6 +240,8 @@ const task = (config, env = {}) => {
     }
 
     return results;
+  }).catch((err) => {
+    config.logger.error(err, env.dev);
   });
 };
 
