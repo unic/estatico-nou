@@ -14,6 +14,7 @@ const env = require('minimist')(process.argv.slice(2));
  */
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
+  const estaticoWatch = require('@unic/estatico-watch');
   const estaticoQunit = require('@unic/estatico-qunit');
   const { readFileSyncCached } = require('@unic/estatico-utils');
 
@@ -65,6 +66,7 @@ gulp.task('html', () => {
             },
           },
         },
+        watcher: estaticoWatch,
       },
     },
     plugins: {
@@ -158,6 +160,7 @@ gulp.task('html:validate', () => {
  */
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
+  const estaticoWatch = require('@unic/estatico-watch');
   const nodeSassJsonImporter = require('node-sass-json-importer');
   const autoprefixer = require('autoprefixer');
 
@@ -210,6 +213,7 @@ gulp.task('css', () => {
             },
           },
         },
+        watcher: estaticoWatch,
       },
     },
     plugins: {

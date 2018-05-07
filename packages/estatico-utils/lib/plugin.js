@@ -7,8 +7,8 @@ function plugin({
   env = {},
 }) {
   const merge = require('lodash.merge');
-  const watcher = require('@unic/estatico-watch');
   const Joi = require('joi');
+  const gulp = require('gulp');
 
   let config = {};
 
@@ -34,7 +34,18 @@ function plugin({
       task: task.bind(null, config, env),
     }, config.watch);
 
-    watcher(watchConfig)();
+    if (config.watch.dependencyGraph && config.watch.dependencyGraph.watcher) {
+      config.watch.dependencyGraph.watcher(watchConfig)();
+    } else {
+      // Create named callback function for gulp-cli to be able to log it
+      const cb = {
+        [config.watch.name]() {
+          return watchConfig.task();
+        },
+      };
+
+      gulp.watch(watchConfig.src, cb[config.watch.name]);
+    }
   }
 
   // Return configured task function

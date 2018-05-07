@@ -13,6 +13,11 @@ const schema = Joi.object().keys({
   watch: Joi.object().keys({
     src: [Joi.string().required(), Joi.array().required()],
     name: Joi.string().required(),
+    dependencyGraph: Joi.object().keys({
+      srcBase: Joi.string().required(),
+      resolver: Joi.object().required(),
+      watcher: Joi.func().required(),
+    }),
   }).allow(null),
   plugins: {
     handlebars: Joi.object().keys({
