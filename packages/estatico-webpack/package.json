@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "@babel/plugin-syntax-dynamic-import": "^7.0.0-beta.46",
     "@babel/polyfill": "^7.0.0-beta.46",
     "@babel/preset-env": "^7.0.0-beta.46",
-    "@unic/estatico-utils": "0.0.8",
+    "@unic/estatico-utils": "0.0.9",
     "babel-loader": "^8.0.0-beta.0",
     "chalk": "^2.4.1",
     "css-loader": "^0.28.11",
