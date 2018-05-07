@@ -13,13 +13,13 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
+  task(defaults)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
 });
 
 test.cb('unminified', (t) => {
   task(defaults, {
     dev: true,
-  })().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/unminified/*')));
+  })().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/unminified/*')));
 });
 
 test.cb('error', (t) => {
@@ -31,7 +31,7 @@ test.cb('error', (t) => {
 
   task(options, {
     dev: true,
-  })().on('end', () => {
+  })().on('finish', () => {
     spy.restore();
 
     const log = utils.stripLogs(spy);
@@ -53,7 +53,7 @@ test.cb('custom autoprefixer options', (t) => {
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/autoprefixer/*')));
+  task(options)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/autoprefixer/*')));
 });
 
 test.afterEach(() => del(path.join(__dirname, '/results')));
