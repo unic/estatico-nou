@@ -11,8 +11,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@unic/estatico-utils": "0.0.7",
-    "browser-sync": "^2.23.6",
-    "joi": "^13.1.2"
+    "browser-sync": "^2.24.4",
+    "joi": "^13.2.0"
   },
   "engines": {
     "node": ">=8"

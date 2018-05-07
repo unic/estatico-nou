@@ -52,19 +52,24 @@ async function compareImages(t, globPath) {
   for (const filePath of expected) {
     const resultedFilePath = filePath.replace(/expected\/(.*?)\//, 'results/');
 
-    const isEqual = await new Promise((resolve, reject) => { // eslint-disable-line no-await-in-loop
-      gm.compare(filePath, resultedFilePath, 0.01, (err, equal) => {
-        if (err) {
-          return reject(err);
-        }
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const isEqual = await new Promise((resolve, reject) => {
+        gm.compare(filePath, resultedFilePath, 0.1, (err, equal) => {
+          if (err) {
+            return reject(err);
+          }
 
-        return resolve(equal);
+          return resolve(equal);
+        });
       });
-    });
 
-    console.log(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
+      console.log(isEqual ? chalk.green('✓') : chalk.red('×'), `Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
 
-    t.is(isEqual, true);
+      t.is(isEqual, true);
+    } catch (err) {
+      t.fail(err);
+    }
   }
 
   t.end();

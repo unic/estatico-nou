@@ -1,18 +1,14 @@
 {
   "devDependencies": {
-    "lerna": "^2.7.1",
-    "eslint": "^4.11.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "ava": "^0.23.0",
-    "del": "^3.0.0",
-    "glob": "^7.1.2",
-    "sinon": "^4.1.2",
-    "strip-ansi": "^4.0.0"
+    "eslint-plugin-import": "^2.11.0",
+    "lerna": "^2.11.0",
+    "npm-check": "^5.7.0"
   },
   "scripts": {
     "lint": "eslint --fix \"{,**,**/**}*.js\"",
-    "update-dependencies": "npx npm-check-updates -u -a",
+    "update": "npm-check -u && lerna exec -- npm-check -u",
     "test": "lerna exec -- npm test",
     "netlify": "lerna bootstrap && lerna exec --scope @unic/estatico-boilerplate -- npm run netlify"
   }

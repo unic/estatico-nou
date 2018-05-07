@@ -91,7 +91,7 @@ const task = (config, env = {}) => {
         return plop.inquirer.prompt([
           {
             type: scaffoldConfig.getNameChoices ? 'list' : 'input',
-            choices: scaffoldConfig.getNameChoices ? function() {
+            choices: scaffoldConfig.getNameChoices ? function () {
               const done = this.async();
 
               scaffoldConfig.getNameChoices.then((choices) => {
@@ -153,7 +153,7 @@ const task = (config, env = {}) => {
       return plop.inquirer.prompt([
         {
           type: scaffoldConfig.getNameChoices ? 'list' : 'input',
-          choices: scaffoldConfig.getNameChoices ? function() {
+          choices: scaffoldConfig.getNameChoices ? function () {
             const done = this.async();
 
             scaffoldConfig.getNameChoices.then((choices) => {
@@ -183,9 +183,7 @@ const task = (config, env = {}) => {
         [];
 
       config.logger.debug('Config:', JSON.stringify(answers, null, '\t'));
-      config.logger.debug('Modifications:', JSON.stringify(modifications, (key, value) => {
-        return (value instanceof RegExp) ? value.toString() : value;
-      }, '\t'));
+      config.logger.debug('Modifications:', JSON.stringify(modifications, (key, value) => ((value instanceof RegExp) ? value.toString() : value), '\t'));
 
       switch (answers.action) {
         case 'Add':

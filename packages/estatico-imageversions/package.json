@@ -12,20 +12,25 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@unic/estatico-utils": "0.0.7",
-    "chalk": "^2.3.0",
+    "chalk": "^2.4.1",
     "gm": "^1.23.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-imagemin": "^4.1.0",
-    "gulp-plumber": "^1.1.0",
+    "gulp-plumber": "^1.2.0",
     "gulp-size": "^3.0.0",
+    "joi": "^13.2.0",
     "through2": "^2.0.3",
     "vinyl": "^2.1.0",
     "vinyl-buffer": "^1.0.1"
   },
   "engines": {
-    "node": ">=8 <9"
+    "node": ">=8"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "del": "^3.0.0"
   }
 }

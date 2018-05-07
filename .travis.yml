@@ -1,12 +1,12 @@
 language: node_js
 node_js:
-  - "8.9.4"
-  - "9"
+  - "8"
+  - "10"
 cache:
   directories:
     - node_modules
 script:
-  - lerna bootstrap
+  - lerna bootstrap --loglevel=verbose
   - npm test
 # https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
 sudo: required

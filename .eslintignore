@@ -1,4 +1,5 @@
 **/node_modules
 **/dist
 **/test/expected
+**/estatico-eslint/test/fixtures/main.js
 **/estatico-boilerplate/src
