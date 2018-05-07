@@ -3,12 +3,7 @@
     "lerna": "^2.7.1",
     "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "ava": "^0.23.0",
-    "del": "^3.0.0",
-    "glob": "^7.1.2",
-    "sinon": "^4.1.2",
-    "strip-ansi": "^4.0.0"
+    "eslint-plugin-import": "^2.8.0"
   },
   "scripts": {
     "lint": "eslint --fix \"{,**,**/**}*.js\"",

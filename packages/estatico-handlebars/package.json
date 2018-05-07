@@ -20,6 +20,7 @@
     "handlebars": "^4.0.11",
     "handlebars-layouts": "^3.1.4",
     "handlebars-wax": "^6.1.0",
+    "joi": "^13.2.0",
     "lodash.merge": "^4.6.0",
     "plugin-error": "^0.1.2",
     "through2": "^2.0.3"
@@ -29,5 +30,11 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "del": "^3.0.0",
+    "lodash.merge": "^4.6.1",
+    "sinon": "^5.0.6"
   }
 }

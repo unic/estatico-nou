@@ -15,7 +15,11 @@
     "decache": "^4.3.0",
     "glob": "^7.1.2",
     "graphlib": "^2.1.5",
+    "joi": "^13.2.0",
     "lodash.merge": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=8"
   },
   "publishConfig": {
     "access": "public"

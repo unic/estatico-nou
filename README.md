@@ -35,7 +35,9 @@ Refactored Estático with separate packages for every task. Mono-repo based on [
 - Install lerna globally: `npm i -g lerna`
 - Bootstrap (installing dependencies and linking them): `lerna bootstrap` 
 
-Every package in `packages/` can be developed separately. However, among other magic things, they can share common `devDependencies`. This allows us to specify test dependencies like `ava` only once in the root of the project and use it for every package.
+If bootstrapping fails, reducing the concurrency might help: `lerna bootstrap --concurrency=1`
+
+Every package in `packages/` can be developed separately.
 
 ### Manage npm dependencies
 
@@ -57,4 +59,4 @@ To run all tests in every package we can call `lerna exec -- npm test`. For a sp
 
 ### Release
 
-[`lerna publish`](https://github.com/lerna/lerna#publish) and lots of magic.
+[`lerna publish --exact`](https://github.com/lerna/lerna#publish) and lots of magic.

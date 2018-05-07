@@ -18,6 +18,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-size": "^3.0.0",
     "gulp-svgstore": "^6.1.1",
+    "joi": "^13.2.0",
     "lodash.merge": "^4.6.0",
     "merge-stream": "^1.0.1",
     "plugin-error": "^0.1.2",
@@ -28,5 +29,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "del": "^3.0.0",
+    "lodash.merge": "^4.6.1"
   }
 }

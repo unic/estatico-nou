@@ -19,6 +19,7 @@
     "gulp-changed-in-place": "^2.2.0",
     "gulp-eslint": "^4.0.2",
     "gulp-plumber": "^1.1.0",
+    "joi": "^13.2.0",
     "through2": "^2.0.3"
   },
   "engines": {
@@ -26,5 +27,11 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "del": "^3.0.0",
+    "lodash.merge": "^4.6.1",
+    "sinon": "^5.0.6"
   }
 }
