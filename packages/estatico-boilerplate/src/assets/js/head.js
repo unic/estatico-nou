@@ -10,4 +10,4 @@ window.estatico = {
   helpers: new Helper(),
 };
 
-document.addEventListener('DOMContentLoaded', loadSvgSprites());
+document.addEventListener('DOMContentLoaded', loadSvgSprites);
