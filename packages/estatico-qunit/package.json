@@ -10,7 +10,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-qunit",
   "license": "Apache-2.0",
   "dependencies": {
-    "chalk": "^2.3.0",
+    "chalk": "^2.4.1",
     "jquery": "^3.3.1",
     "qunitjs": "^2.4.1"
   },
