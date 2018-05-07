@@ -8,7 +8,7 @@
   "gitVersionPrefix": "v",
   "command": {
     "bootstrap": {
-      "hoist": true
+      "hoist": false
     }
   }
 }
