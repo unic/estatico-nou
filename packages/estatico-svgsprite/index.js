@@ -63,7 +63,7 @@ const defaults = (/* env */) => ({
  * Task function
  * @param {object} config - Complete task config
  * @param {object} env - Environment config, e.g. { dev: true }
- * @param {object} [watcher] - Watch file events
+ * @param {object} [watcher] - Watch file events (requires `@unic/estatico-watch`)
  * @return {object} gulp stream
  */
 const task = (config, env = {}) => {

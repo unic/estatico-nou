@@ -66,8 +66,8 @@ gulp.task('html', () => {
             },
           },
         },
-        watcher: estaticoWatch,
       },
+      watcher: estaticoWatch,
     },
     plugins: {
       handlebars: {
@@ -213,8 +213,8 @@ gulp.task('css', () => {
             },
           },
         },
-        watcher: estaticoWatch,
       },
+      watcher: estaticoWatch,
     },
     plugins: {
       sass: {

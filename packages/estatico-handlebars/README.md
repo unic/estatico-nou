@@ -78,8 +78,8 @@ gulp.task('html', () => {
             },
           },
         },
-        watcher: estaticoWatch,
       },
+      watcher: estaticoWatch,
     },
     plugins: {
       clone: null,

@@ -34,8 +34,9 @@ function plugin({
       task: task.bind(null, config, env),
     }, config.watch);
 
-    if (config.watch.dependencyGraph && config.watch.dependencyGraph.watcher) {
-      config.watch.dependencyGraph.watcher(watchConfig)();
+    if (config.watch.watcher) {
+      // Use custom watcher like `@unic/estatico-watch`
+      config.watch.watcher(watchConfig)();
     } else {
       // Create named callback function for gulp-cli to be able to log it
       const cb = {
@@ -44,6 +45,7 @@ function plugin({
         },
       };
 
+      // Use default gulp watch
       gulp.watch(watchConfig.src, cb[config.watch.name]);
     }
   }

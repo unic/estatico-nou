@@ -79,8 +79,8 @@ gulp.task('css', () => {
             },
           },
         },
-        watcher: estaticoWatch,
       },
+      watcher: estaticoWatch,
     },
     plugins: {
       sass: {
