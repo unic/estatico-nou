@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-copy",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-copy",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.7",
+    "@unic/estatico-utils": "0.0.8",
     "chalk": "^2.4.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-changed-in-place": "^2.3.0",
