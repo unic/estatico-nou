@@ -2,7 +2,7 @@
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	function webpackJsonpCallback(data) {
 /******/ 		var chunkIds = data[0];
-/******/ 		var moreModules = data[1]
+/******/ 		var moreModules = data[1];
 /******/
 /******/ 		// add "moreModules" to the modules object,
 /******/ 		// then flag all "chunkIds" as loaded and fire callback
@@ -31,11 +31,18 @@
 /******/ 	var installedModules = {};
 /******/
 /******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// Promise = chunk loading, 0 = chunk loaded
 /******/ 	var installedChunks = {
 /******/ 		"main": 0
 /******/ 	};
 /******/
 /******/
+/******/
+/******/ 	// script path function
+/******/ 	function jsonpScriptSrc(chunkId) {
+/******/ 		return __webpack_require__.p + "async/" + ({"hello-bar":"hello-bar"}[chunkId]||chunkId) + ".js"
+/******/ 	}
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -87,12 +94,12 @@
 /******/ 				var script = document.createElement('script');
 /******/
 /******/ 				script.charset = 'utf-8';
-/******/ 				script.timeout = 120000;
+/******/ 				script.timeout = 120;
 /******/
 /******/ 				if (__webpack_require__.nc) {
 /******/ 					script.setAttribute("nonce", __webpack_require__.nc);
 /******/ 				}
-/******/ 				script.src = __webpack_require__.p + "async/" + ({"hello-bar":"hello-bar"}[chunkId]||chunkId) + ".js";
+/******/ 				script.src = jsonpScriptSrc(chunkId);
 /******/ 				var timeout = setTimeout(function(){
 /******/ 					onScriptComplete({ type: 'timeout', target: script });
 /******/ 				}, 120000);
@@ -181,7 +188,8 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__.e(/*! import() | hello-bar */ \"hello-bar\").then(function() { var module = __webpack_require__(/*! ./bar */ \"./test/fixtures/bar.js\"); return typeof module === \"object\" && module && module.__esModule ? module : { /* fake namespace object */ \"default\": module }; }).then(function (module) {\n  return console.log(module.default);\n});\n\n//# sourceURL=webpack:///./test/fixtures/async.js?");
+"use strict";
+eval("\n\n__webpack_require__.e(/*! import() | hello-bar */ \"hello-bar\").then(function() { var module = __webpack_require__(/*! ./bar */ \"./test/fixtures/bar.js\"); return typeof module === \"object\" && module && module.__esModule ? module : Object.assign({/* fake namespace object */}, typeof module === \"object\" && module, { \"default\": module }); }).then(function (module) {\n  return console.log(module.default);\n});\n\n//# sourceURL=webpack:///./test/fixtures/async.js?");
 
 /***/ })
 
