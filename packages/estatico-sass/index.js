@@ -18,7 +18,12 @@ const schema = Joi.object().keys({
   watch: Joi.object().keys({
     src: [Joi.string().required(), Joi.array().required()],
     name: Joi.string().required(),
-  }).allow(null),
+    dependencyGraph: Joi.object().keys({
+      srcBase: Joi.string().required(),
+      resolver: Joi.object().required(),
+    }),
+    watcher: Joi.func(),
+  }).with('dependencyGraph', 'watcher').allow(null),
   logger: Joi.object().keys({
     info: Joi.func(),
     error: Joi.func(),
@@ -61,7 +66,7 @@ const defaults = (env = {}) => {
  * Task function
  * @param {object} config - Complete task config
  * @param {object} env - Optional environment config, e.g. { dev: true }
- * @param {object} [watcher] - Watch file events
+ * @param {object} [watcher] - Watch file events (requires `@unic/estatico-watch`)
  * @return {object} gulp stream
  */
 const task = (config, env = {}, watcher) => {

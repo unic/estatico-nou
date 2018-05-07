@@ -22,7 +22,7 @@
     "expose-loader": "^0.7.5",
     "handlebars-loader": "^1.7.0",
     "joi": "^13.2.0",
-    "lodash.merge": "^4.6.0",
+    "lodash.merge": "^4.6.1",
     "lodash.once": "^4.1.1",
     "style-loader": "^0.21.0",
     "uglifyjs-webpack-plugin": "^1.2.5",
@@ -39,7 +39,6 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "del": "^3.0.0",
-    "lodash.merge": "^4.6.1"
+    "del": "^3.0.0"
   }
 }

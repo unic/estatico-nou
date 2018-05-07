@@ -13,7 +13,7 @@
   "dependencies": {
     "@unic/estatico-utils": "0.0.8",
     "chalk": "^2.4.1",
-    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp": "^4.0.0",
     "gulp-changed-in-place": "^2.3.0",
     "gulp-plumber": "^1.2.0",
     "joi": "^13.2.0",
