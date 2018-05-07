@@ -7,7 +7,10 @@ const { handlebars } = require('@unic/estatico-handlebars');
 const defaultData = require('../../../data/default.data.js');
 
 const template = dataHelper.getFileContent('svgsprite.hbs');
-const sprites = _.mapValues({}, (globs) => {
+const sprites = _.mapValues({
+  base: ['./src/assets/media/svg/**/*.svg'],
+  demo: ['./src/demo/modules/svgsprite/svg/*.svg'],
+}, (globs) => {
   let files = [];
 
   globs.forEach((item) => {
