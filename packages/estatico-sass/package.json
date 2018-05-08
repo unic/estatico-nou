@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-sass",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,8 +11,8 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-sass",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.9",
-    "@unic/estatico-watch": "0.0.9",
+    "@unic/estatico-utils": "0.0.10",
+    "@unic/estatico-watch": "0.0.10",
     "autoprefixer": "^8.4.1",
     "chalk": "^2.4.1",
     "gulp-ignore": "^2.0.2",

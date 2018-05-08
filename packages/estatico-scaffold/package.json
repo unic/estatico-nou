@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-scaffold",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-scaffold",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "0.0.9",
+    "@unic/estatico-utils": "0.0.10",
     "del": "^3.0.0",
     "glob": "^7.1.2",
     "joi": "^13.2.0",
