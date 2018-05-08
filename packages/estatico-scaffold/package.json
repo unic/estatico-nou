@@ -14,7 +14,6 @@
     "@unic/estatico-utils": "0.0.9",
     "del": "^3.0.0",
     "glob": "^7.1.2",
-    "gulp": "^4.0.0",
     "joi": "^13.2.0",
     "node-plop": "^0.13.0",
     "through2": "^2.0.3"
@@ -28,5 +27,8 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "del": "^3.0.0"
+  },
+  "peerDependencies": {
+    "gulp": ">=3.9.0"
   }
 }

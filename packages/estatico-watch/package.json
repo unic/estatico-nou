@@ -23,5 +23,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "gulp": ">=3.9.0"
   }
 }
