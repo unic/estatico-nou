@@ -13,7 +13,6 @@
   "dependencies": {
     "@unic/estatico-utils": "0.0.9",
     "chalk": "^2.4.1",
-    "gulp": "^4.0.0",
     "gulp-changed-in-place": "^2.3.0",
     "gulp-plumber": "^1.2.0",
     "joi": "^13.2.0",
@@ -29,5 +28,8 @@
     "ava": "^0.25.0",
     "del": "^3.0.0",
     "lodash.merge": "^4.6.1"
+  },
+  "peerDependencies": {
+    "gulp": ">=3.9.0"
   }
 }

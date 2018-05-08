@@ -15,7 +15,6 @@
     "chalk": "^2.4.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
-    "gulp": "^4.0.0",
     "gulp-changed-in-place": "^2.3.0",
     "gulp-eslint": "^4.0.2",
     "gulp-plumber": "^1.2.0",
@@ -33,5 +32,8 @@
     "del": "^3.0.0",
     "lodash.merge": "^4.6.1",
     "sinon": "^5.0.7"
+  },
+  "peerDependencies": {
+    "gulp": ">=3.9.0"
   }
 }
