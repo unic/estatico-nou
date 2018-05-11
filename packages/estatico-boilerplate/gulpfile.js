@@ -318,67 +318,10 @@ gulp.task('css:fonts', () => {
  */
 gulp.task('js', (cb) => {
   const task = require('@unic/estatico-webpack');
-  const merge = require('lodash.merge');
-  const glob = require('glob');
+  const webpackConfig = require('./webpack.config.js');
 
   const instance = task(defaults => ({
-    webpack: [
-      merge({}, defaults.webpack, {
-        entry: Object.assign({
-          head: './src/assets/js/head.js',
-          main: './src/assets/js/main.js',
-        }, (env.dev || env.ci) ? {
-          dev: './src/assets/js/dev.js',
-        } : {}),
-        output: {
-          path: path.resolve('./dist/assets/js'),
-          publicPath: '/assets/js/',
-        },
-      }),
-      {
-        entry: {
-          test: './src/preview/assets/js/test.js',
-        },
-        module: {
-          rules: defaults.webpack.module.rules.concat([
-            {
-              test: /qunit\.js$/,
-              loader: 'expose-loader?QUnit',
-            },
-            {
-              test: /\.css$/,
-              loader: 'style-loader!css-loader',
-            },
-          ]),
-        },
-        externals: {
-          jquery: 'jQuery',
-        },
-        output: {
-          path: path.resolve('./dist/preview/assets/js'),
-        },
-        mode: 'development',
-      },
-      {
-        // Create object of fileName:filePath pairs
-        entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
-          const key = path.basename(item, path.extname(item));
-
-          obj[key] = item; // eslint-disable-line no-param-reassign
-
-          return obj;
-        }, {}),
-        module: defaults.webpack.module,
-        externals: {
-          jquery: 'jQuery',
-          qunit: 'QUnit',
-        },
-        output: {
-          path: path.resolve('./dist/preview/assets/js/test'),
-        },
-        mode: 'development',
-      },
-    ],
+    webpack: webpackConfig,
     logger: defaults.logger,
   }), env);
 

@@ -20,92 +20,11 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (env) => {
-  const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
-  const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-  const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const defaults = () => {
+  const webpackConfig = require('./webpack.config.js');
 
   return {
-    webpack: {
-      mode: env.dev ? 'development' : 'production',
-      entry: null,
-      resolve: {
-        alias: {
-          handlebars: 'handlebars/runtime.js',
-        },
-      },
-      module: {
-        rules: [
-          {
-            test: /jquery\.js$/,
-            loader: 'expose-loader?$!expose-loader?jQuery',
-          },
-          {
-            test: /modernizrrc\.js$/,
-            loader: 'expose-loader?Modernizr!webpack-modernizr-loader',
-          },
-          {
-            test: /\.hbs$/,
-            loader: 'handlebars-loader',
-          },
-          {
-            test: /(\.js|\.jsx)$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                ['@babel/preset-env', {
-                  useBuiltIns: 'usage',
-                  targets: {
-                    browsers: ['last 2 versions'],
-                  },
-                  // Disabled due to https://gist.github.com/jasonphillips/57c1f8f9dbcd8b489dafcafde4fcdba6
-                  // loose: true,
-                }],
-              ],
-              plugins: [
-                '@babel/plugin-syntax-dynamic-import',
-              ],
-            },
-          },
-        ],
-      },
-
-      // Custom UglifyJS options
-      optimization: {
-        minimizer: [
-          new UglifyJSPlugin({
-            uglifyOptions: {
-              mangle: {
-                keep_fnames: true,
-              },
-            },
-          }),
-        ],
-      },
-      plugins: [
-        new BundleAnalyzerPlugin({
-          analyzerMode: 'static',
-          // Path to bundle report file that will be generated in `static` mode.
-          // Relative to bundles output directory.
-          reportFilename: 'report.html',
-          openAnalyzer: false,
-          logLevel: 'warn',
-        }),
-      ].concat(env.ci ? [
-        new UnminifiedWebpackPlugin(),
-      ] : []),
-      output: {
-        path: null,
-        filename: `[name]${env.dev ? '' : '.min'}.js`,
-
-        // Save async imports to special directory inside `output.path`
-        chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
-
-        // Tell webpack about asset path in the browser
-        publicPath: null,
-      },
-    },
+    webpack: webpackConfig,
     logger: new Logger('estatico-webpack'),
   };
 };
@@ -114,12 +33,15 @@ const defaults = (env) => {
  * Task function
  * @param {object} config - Complete task config
  * @param {object} env - Environment config, e.g. { dev: true }
- * @param {object} [watcher] - Watch file events (requires `@unic/estatico-watch`) (requires `@unic/estatico-watch`)
+ * @param {object} [watcher] - Watch file events (requires `@unic/estatico-watch`)
  * @return {object} gulp stream
  */
 const task = (config, env = {}, cb) => {
   const once = require('lodash.once');
+  const chalk = require('chalk');
   const { format } = require('./lib/stats');
+
+  config.logger.debug('Webpack config', chalk.gray(JSON.stringify(config.webpack, null, '\t')));
 
   try {
     const compiler = webpack(config.webpack);
