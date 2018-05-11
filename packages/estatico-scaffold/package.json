@@ -25,8 +25,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
-    "del": "^3.0.0"
+    "ava": "^0.25.0"
   },
   "peerDependencies": {
     "gulp": ">=3.9.0"

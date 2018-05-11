@@ -29,7 +29,8 @@
     "unminified-webpack-plugin": "github:unic/unminified-webpack-plugin#18bfc8dfafeeb9f025d0a394819ae7c556e2a734",
     "webpack": "^4.8.0",
     "webpack-bundle-analyzer": "^2.11.1",
-    "webpack-modernizr-loader": "^4.0.1"
+    "webpack-modernizr-loader": "^4.0.1",
+    "yargs": "^11.0.0"
   },
   "engines": {
     "node": ">=8"

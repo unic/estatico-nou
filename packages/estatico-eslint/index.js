@@ -72,7 +72,7 @@ const task = (config, env = {}) => {
     // Do not pass unchanged files
     .pipe(config.plugins.changed ? changed(config.plugins.changed) : through.obj())
 
-    // Stylelint verification
+    // Lint and log formatted results, optionally auto-fix files
     .pipe(eslint(config.plugins.eslint).on('error', err => config.logger.error(err, env.dev)))
     .pipe(eslint.formatEach())
     .pipe(through.obj((file, enc, done) => {

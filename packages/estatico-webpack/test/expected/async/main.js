@@ -34,14 +34,14 @@
 /******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 	// Promise = chunk loading, 0 = chunk loaded
 /******/ 	var installedChunks = {
-/******/ 		"main": 0
+/******/ 		1: 0
 /******/ 	};
 /******/
 /******/
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "async/" + ({"hello-bar":"hello-bar"}[chunkId]||chunkId) + ".js"
+/******/ 		return __webpack_require__.p + "async/" + ({"0":"hello-bar"}[chunkId]||chunkId) + ".min.js"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -176,21 +176,19 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./test/fixtures/async.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ "./test/fixtures/async.js":
-/*!********************************!*\
-  !*** ./test/fixtures/async.js ***!
-  \********************************/
-/*! no static exports found */
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\n__webpack_require__.e(/*! import() | hello-bar */ \"hello-bar\").then(function() { var module = __webpack_require__(/*! ./bar */ \"./test/fixtures/bar.js\"); return typeof module === \"object\" && module && module.__esModule ? module : Object.assign({/* fake namespace object */}, typeof module === \"object\" && module, { \"default\": module }); }).then(function (module) {\n  return console.log(module.default);\n});\n\n//# sourceURL=webpack:///./test/fixtures/async.js?");
+
+
+__webpack_require__.e(/* import() | hello-bar */ 0).then(function() { var module = __webpack_require__(1); return typeof module === "object" && module && module.__esModule ? module : Object.assign({/* fake namespace object */}, typeof module === "object" && module, { "default": module }); }).then(function (module) {
+  return console.log(module.default);
+});
 
 /***/ })
-
-/******/ });
+/******/ ]);

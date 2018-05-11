@@ -14,6 +14,8 @@ const defaults = {
     },
     output: {
       path: path.resolve('./test/results'),
+      filename: '[name].min.js',
+      chunkFilename: 'async/[name].min.js',
       publicPath: '/',
     },
   },
@@ -24,21 +26,23 @@ test.cb('default', (t) => {
 });
 
 test.cb('dev', (t) => {
-  task(defaults, {
-    dev: true,
-  })(() => {
+  const options = merge({}, defaults, {
+    webpack: {
+      output: {
+        filename: '[name].js',
+        chunkFilename: 'async/[name].js',
+      },
+      mode: 'development',
+    },
+  });
+
+  task(options)(() => {
     const hasMinifiedFile = fs.existsSync('./expected/dev/main.min.js');
 
     t.is(hasMinifiedFile, false);
 
     utils.compareFiles(t, path.join(__dirname, 'expected/dev/*'));
   });
-});
-
-test.cb('ci', (t) => {
-  task(defaults, {
-    ci: true,
-  })(() => utils.compareFiles(t, path.join(__dirname, 'expected/ci/*')));
 });
 
 test.cb('async', (t) => {

@@ -10,9 +10,12 @@ $ npm install --save-dev @unic/estatico-webpack
 
 ## Usage
 
+It is recommended to use the tools' default config files. Specifically, creating a `webpack.config.js`, `.babelrc.js` and `.browserslistrc`, possibly extending the default ones. This will make the configs more portable and make them usable outside of this task.
+
+The webpack config needs to be passed to the task, babel and browserslist are picked up automagically if present. (This would allow you to skip the default config files and just pass your webpack config to the task directly, if you prefer this approach.)
+
 ```js
 const gulp = require('gulp');
-const env = require('minimist')(process.argv.slice(2));
 
 /**
  * JavaScript bundling task
@@ -22,72 +25,54 @@ const env = require('minimist')(process.argv.slice(2));
  */
 gulp.task('js', (cb) => {
   const task = require('@unic/estatico-webpack');
-  const merge = require('lodash.merge');
-  const glob = require('glob');
+  const webpackConfig = require('./webpack.config.js');
 
   const instance = task(defaults => ({
-    webpack: [
-      merge({}, defaults.webpack, {
-        entry: Object.assign({
-          head: './src/assets/js/head.js',
-          main: './src/assets/js/main.js',
-        }, env.dev ? {
-          dev: './src/assets/js/dev.js',
-        } : {}),
-        output: {
-          path: path.resolve('./dist/assets/js'),
-          publicPath: '/assets/js/',
-        },
-      }),
-      {
-        entry: {
-          test: './src/preview/assets/js/test.js',
-        },
-        module: {
-          rules: defaults.webpack.module.rules.concat([
-            {
-              test: /qunit\.js$/,
-              loader: 'expose-loader?QUnit',
-            },
-            {
-              test: /\.css$/,
-              loader: 'style-loader!css-loader',
-            },
-          ]),
-        },
-        externals: {
-          jquery: 'jQuery',
-        },
-        output: {
-          path: path.resolve('./dist/preview/assets/js'),
-        },
-        mode: 'development',
-      },
-      {
-        // Create object of fileName:filePath pairs
-        entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
-          const key = path.basename(item, path.extname(item));
-
-          obj[key] = item; // eslint-disable-line no-param-reassign
-
-          return obj;
-        }, {}),
-        module: defaults.webpack.module,
-        externals: {
-          jquery: 'jQuery',
-          qunit: 'QUnit',
-        },
-        output: {
-          path: path.resolve('./dist/preview/assets/js/test'),
-        },
-        mode: 'development',
-      },
-    ],
+    webpack: webpackConfig,
     logger: defaults.logger,
   }), env);
 
   return instance(cb);
 });
+```
+
+`webpack.config.js` extending the default one:
+
+```js
+const defaults = require('@unic/estatico-webpack/webpack.config.js');
+const env = require('minimist')(process.argv.slice(2));
+const merge = require('lodash.merge');
+const path = require('path');
+
+module.exports = merge({}, defaults, {
+  entry: Object.assign({
+    head: './src/assets/js/head.js',
+    main: './src/assets/js/main.js',
+  }, (env.dev || env.ci) ? {
+    dev: './src/assets/js/dev.js',
+  } : {}),
+  output: {
+    path: path.resolve('./dist/assets/js'),
+    filename: `[name]${env.dev ? '' : '.min'}.js`,
+    chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
+    publicPath: '/assets/js/',
+  },
+  mode: env.dev ? 'development' : 'production',
+});
+```
+
+`.babelrc.js` extending the default one:
+
+```js
+module.exports = {
+  extends: '@unic/estatico-webpack/.babelrc.js',
+};
+```
+
+`.browserslistrc`:
+
+```js
+> 1%
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
@@ -107,8 +92,6 @@ Type: `Object`<br>
 Default:
 ```js
 {
-  mode: env.dev ? 'development' : 'production',
-  entry: null,
   resolve: {
     alias: {
       handlebars: 'handlebars/runtime.js',
@@ -133,23 +116,24 @@ Default:
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
-          presets: [
-            ['@babel/preset-env', {
-              useBuiltIns: 'usage',
-              targets: {
-                browsers: ['last 2 versions'],
-              },
-              // Disabled due to https://gist.github.com/jasonphillips/57c1f8f9dbcd8b489dafcafde4fcdba6
-              // loose: true,
-            }],
-          ],
-          plugins: [],
+          // See .babelrc.js
         },
       },
     ],
   },
 
-  // Minifiy in prod mode
+  // Custom UglifyJS options
+  optimization: {
+    minimizer: [
+      new UglifyJSPlugin({
+        uglifyOptions: {
+          mangle: {
+            keep_fnames: true,
+          },
+        },
+      }),
+    ],
+  },
   plugins: [
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
@@ -157,21 +141,10 @@ Default:
       // Relative to bundles output directory.
       reportFilename: 'report.html',
       openAnalyzer: false,
+      logLevel: 'warn',
     }),
-  ].concat(env.ci ? [
-     // Keep unminified file when in CI mode. This allows us to create both minified and unminified versions in one single go.
-     new UnminifiedWebpackPlugin(),
-  ] : []),
-  output: {
-    path: null,
-    filename: `[name]${env.dev ? '' : '.min'}.js`,
-
-    // Save async imports to special directory inside `output.path`
-    chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
-
-    // Tell webpack about asset path in the browser
-    publicPath: null,
-  },
+    new UnminifiedWebpackPlugin(),
+  ],
 }
 ```
 
