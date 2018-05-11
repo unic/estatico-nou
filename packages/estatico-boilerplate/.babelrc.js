@@ -1,3 +1,3 @@
-const defaults = require('@unic/estatico-webpack/.babelrc.js');
-
-module.exports = defaults;
+module.exports = {
+  extends: '@unic/estatico-webpack/.babelrc.js',
+};

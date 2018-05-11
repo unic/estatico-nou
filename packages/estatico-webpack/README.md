@@ -10,7 +10,9 @@ $ npm install --save-dev @unic/estatico-webpack
 
 ## Usage
 
-It is recommended to use the tools' default config files. Specifically, creating a `webpack.config.js`, `.babelrc.js` and `.browserslistrc`, possibly extending the default ones. The webpack config needs to be passed to the task, babel and browserslist are picked up automagically.
+It is recommended to use the tools' default config files. Specifically, creating a `webpack.config.js`, `.babelrc.js` and `.browserslistrc`, possibly extending the default ones. This will make the configs more portable and make them usable outside of this task.
+
+The webpack config needs to be passed to the task, babel and browserslist are picked up automagically if present. (This would allow you to skip the default config files and just pass your webpack config to the task directly, if you prefer this approach.)
 
 ```js
 const gulp = require('gulp');
@@ -57,23 +59,20 @@ module.exports = merge({}, defaults, {
   },
   mode: env.dev ? 'development' : 'production',
 });
-
 ```
 
 `.babelrc.js` extending the default one:
 
 ```js
-const defaults = require('@unic/estatico-webpack/.babelrc.js');
-
-module.exports = defaults;
-
+module.exports = {
+  extends: '@unic/estatico-webpack/.babelrc.js',
+};
 ```
 
 `.browserslistrc`:
 
 ```js
 > 1%
-
 ```
 
 Run task (assuming the project's `package.json` specifies `"scripts": { "gulp": "gulp" }`):
