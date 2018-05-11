@@ -1,15 +1,17 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["hello-bar"],{
-
-/***/ "./test/fixtures/bar.js":
-/*!******************************!*\
-  !*** ./test/fixtures/bar.js ***!
-  \******************************/
-/*! no static exports found */
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[0],[
+/* 0 */,
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = void 0;\nvar _default = 'hello';\nexports.default = _default;\n\n//# sourceURL=webpack:///./test/fixtures/bar.js?");
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = 'hello';
+exports.default = _default;
 
 /***/ })
-
-}]);
+]]);

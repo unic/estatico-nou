@@ -39,9 +39,12 @@ const defaults = () => {
 const task = (config, env = {}, cb) => {
   const once = require('lodash.once');
   const chalk = require('chalk');
+  const util = require('util');
   const { format } = require('./lib/stats');
 
-  config.logger.debug('Webpack config', chalk.gray(JSON.stringify(config.webpack, null, '\t')));
+  config.logger.debug('Webpack config', chalk.gray(util.inspect(config.webpack, {
+    depth: 3,
+  })));
 
   try {
     const compiler = webpack(config.webpack);
