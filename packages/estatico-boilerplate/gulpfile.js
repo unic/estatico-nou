@@ -543,14 +543,15 @@ gulp.task('scaffold', () => {
         name: 'Module',
         src: './src/modules/.scaffold/*',
         dest: './src/modules/',
-        transformName: (name, prefix) => {
-          const changeCase = require('change-case');
+        transformInput : (answers) => {
+          const changeCase = require('change-case'),
+            name = answers.newName || answers.name;
 
-          return {
-            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
-            [prefix ? 'newClassName' : 'className']: changeCase.pascal(path.basename(name)),
-            [prefix ? 'newModuleName' : 'moduleName']: changeCase.camel(path.basename(name)),
-          };
+          return Object.assign({}, answers, {
+            [answers.newName ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
+            [answers.newName ? 'newClassName' : 'className']: changeCase.pascal(path.basename(name)),
+            [answers.newName ? 'newModuleName' : 'moduleName']: changeCase.camel(path.basename(name)),
+          });
         },
         modifications: (answers) => {
           const moduleName = answers.newModuleName || answers.moduleName;
@@ -623,12 +624,13 @@ gulp.task('scaffold', () => {
         name: 'Page',
         src: './src/pages/.scaffold/*',
         dest: './src/pages/',
-        transformName: (name, prefix) => {
-          const changeCase = require('change-case');
+        transformInput: (answers) => {
+          const changeCase = require('change-case'),
+            name = answers.newName || answers.name;
 
-          return {
-            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
-          };
+          return Object.assign({}, answers, {
+            [answers.newName ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
+          });
         },
       },
     ],

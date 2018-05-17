@@ -8,9 +8,9 @@ const schema = Joi.object().keys({
     name: Joi.string().required(),
     src: Joi.string().required(),
     dest: Joi.string().required(),
-    transformName: Joi.func(),
+    transformInput: Joi.func(),
     modifications: Joi.func(),
-    getNameChoices: Joi.object(),
+    getNameChoices: Joi.func(),
   })),
   logger: Joi.object().keys({
     info: Joi.func(),
@@ -68,6 +68,18 @@ const task = (config, env = {}) => {
     return copy(scaffoldConfig).then(() => del(scaffoldConfig.src));
   }
 
+  function transformAnswers(answer, answers, scaffoldConfig) {
+    const transformed = Object.assign(
+      {}, answers, answer,
+    );
+
+    if (scaffoldConfig.transformInput) {
+      return scaffoldConfig.transformInput(transformed);
+    }
+
+    return transformed;
+  }
+
   const generator = plop.setGenerator('default', {
     prompts: () => plop.inquirer.prompt([
       {
@@ -94,7 +106,7 @@ const task = (config, env = {}) => {
             choices: scaffoldConfig.getNameChoices ? function () {
               const done = this.async();
 
-              scaffoldConfig.getNameChoices.then((choices) => {
+              scaffoldConfig.getNameChoices().then((choices) => {
                 done(null, choices);
               });
             } : null,
@@ -119,11 +131,7 @@ const task = (config, env = {}) => {
               checked: true,
             })),
           },
-        ]).then(answer => Object.assign(
-          {}, answers, answer,
-          // Add name variants like ClassName (PascalCase), fileName (cameCase) etc.
-          scaffoldConfig.transformName ? scaffoldConfig.transformName(answer.name) : null,
-        ));
+        ]).then(answer => transformAnswers(answer, answers, scaffoldConfig));
       }
 
       // Show list of available items to Copy/Rename/Remove
@@ -137,11 +145,7 @@ const task = (config, env = {}) => {
             value: filePath,
           })),
         },
-      ]).then(answer => Object.assign(
-        {}, answers, answer,
-        // Add name variants like ClassName (PascalCase), fileName (cameCase) etc.
-        scaffoldConfig.transformName ? scaffoldConfig.transformName(answer.name) : null,
-      ));
+      ]).then(answer => transformAnswers(answer, answers, scaffoldConfig));
     }).then((answers) => {
       if (answers.action === 'Add' || answers.action === 'Remove') {
         return answers;
@@ -156,7 +160,7 @@ const task = (config, env = {}) => {
           choices: scaffoldConfig.getNameChoices ? function () {
             const done = this.async();
 
-            scaffoldConfig.getNameChoices.then((choices) => {
+            scaffoldConfig.getNameChoices().then((choices) => {
               done(null, choices);
             });
           } : null,
@@ -170,11 +174,7 @@ const task = (config, env = {}) => {
             return true;
           },
         },
-      ]).then(answer => Object.assign(
-        {}, answers, answer,
-        // Add name variants like ClassName (PascalCase), fileName (cameCase) etc.
-        scaffoldConfig.transformName ? scaffoldConfig.transformName(answer.newName, true) : null,
-      ));
+      ]).then(answer => transformAnswers(answer, answers, scaffoldConfig));
     }),
     actions: (answers) => {
       const scaffoldConfig = config.types.find(type => type.name === answers.type);
