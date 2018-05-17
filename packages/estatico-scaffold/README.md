@@ -33,14 +33,15 @@ gulp.task('scaffold', () => {
         name: 'Module',
         src: './src/modules/.scaffold/*',
         dest: './src/modules/',
-        transformName: (name, prefix) => {
-          const changeCase = require('change-case');
+        transformInput : (answers) => {
+          const changeCase = require('change-case'),
+            name = answers.newName || answers.name;
 
-          return {
-            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
-            [prefix ? 'newClassName' : 'className']: changeCase.pascal(path.basename(name)),
-            [prefix ? 'newModuleName' : 'moduleName']: changeCase.camel(path.basename(name)),
-          };
+          return Object.assign({}, answers, {
+            [answers.newName ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
+            [answers.newName ? 'newClassName' : 'className']: changeCase.pascal(path.basename(name)),
+            [answers.newName ? 'newModuleName' : 'moduleName']: changeCase.camel(path.basename(name)),
+          });
         },
         modifications: (answers) => {
           const moduleName = answers.newModuleName || answers.moduleName;
@@ -113,12 +114,13 @@ gulp.task('scaffold', () => {
         name: 'Page',
         src: './src/pages/.scaffold/*',
         dest: './src/pages/',
-        transformName: (name, prefix) => {
-          const changeCase = require('change-case');
+        transformInput: (answers) => {
+          const changeCase = require('change-case'),
+            name = answers.newName || answers.name;
 
-          return {
-            [prefix ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
-          };
+          return Object.assign({}, answers, {
+            [answers.newName ? 'newFileName' : 'fileName']: changeCase.snake(path.basename(name)),
+          });
         },
       },
     ],
@@ -165,12 +167,12 @@ Default: `null`
 
 Directory where the files will be scaffolded.
 
-##### type.transformName(name)
+##### type.transformInput(answers)
 
 Type: `Function`<br>
 Default: `null`
 
-Name variants to be added to answers. See example above.
+Add name variants, e.g. See example above.
 
 ##### type.modifications(answers)
 
@@ -179,12 +181,12 @@ Default: `null`
 
 Array of [`modify` actions](https://plopjs.com/documentation/#modify). Used to register/unregister JS and CSS files, e.g.
 
-##### type.getNameChoices
+##### type.getNameChoices()
 
-Type: `Promise`<br>
+Type: `Function`<br>
 Default: `null`
 
-Promise resolving to array of allowed names.
+Returning promise resolving to array of allowed names.
 
 #### logger
 
