@@ -1,0 +1,33 @@
+{
+  "name": "@unic/estatico-visual-regressions",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-visual-regressions -- npm test"
+  },
+  "author": "Unic AG",
+  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-visual-regressions",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "joi": "^13.2.0",
+    "lodash.merge": "^4.6.1",
+    "mkdirp": "^0.5.1",
+    "pixelmatch": "^4.0.2",
+    "pngjs": "^3.3.3"
+  },
+  "devDependencies": {
+    "@unic/estatico-puppeteer": "0.0.10",
+    "@unic/estatico-utils": "0.0.10",
+    "ava": "^0.25.0",
+    "del": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
