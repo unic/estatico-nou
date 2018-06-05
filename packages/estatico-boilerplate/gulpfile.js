@@ -399,13 +399,13 @@ gulp.task('js:test', () => {
       },
     },
     plugins: {
-      interact: async (page, logger) => {
+      interact: async (page, config) => {
         // Run tests
         const results = await estaticoQunit.puppeteer.run(page);
 
         // Report results
         if (results) {
-          estaticoQunit.puppeteer.log(results, logger);
+          estaticoQunit.puppeteer.log(results, config.logger);
         }
       },
     },

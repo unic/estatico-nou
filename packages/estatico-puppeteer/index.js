@@ -114,10 +114,10 @@ const task = (config, env = {}) => {
               config.logger.info(`Testing viewport ${chalk.yellow(viewport)}`);
 
               await page.setViewport(config.viewports[viewport]);
-              await config.plugins.interact(page, config.logger);
+              await config.plugins.interact(page, config, env);
             }
           } else {
-            await config.plugins.interact(page, config.logger);
+            await config.plugins.interact(page, config, env);
           }
         } catch (err) {
           error = err;

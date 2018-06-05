@@ -15,13 +15,13 @@ Add the following config to the `estatico-puppeteer`'s options:
 {
   plugins: {
     interact: {
-      interact: async (page) => {
+      interact: async (page, config) => {
         // Run tests
         const results = await require('@unic/estatico-qunit').puppeteer.run(page);
 
         // Report results
         if (results) {
-          require('@unic/estatico-qunit').puppeteer.log(results);
+          require('@unic/estatico-qunit').puppeteer.log(results, config.logger);
         }
       },
     },
