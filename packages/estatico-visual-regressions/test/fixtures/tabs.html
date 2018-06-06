@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        input {
+            border: 0;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+        }
+
+        .tabs {
+            border-top: 1px solid;
+            margin-top: 1rem;
+            padding-top: 1rem;
+        }
+
+        .demo {
+            display: none;
+        }
+        #variant1:checked ~ #demo1,
+        #variant2:checked ~ #demo2 {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <input type="radio" name="variants" id="variant1" checked>
+    <input type="radio" name="variants" id="variant2">
+
+    <div class="demo" id="demo1">
+        hello
+    </div>
+
+    <div class="demo" id="demo2">
+        hello world hello hello
+    </div>
+
+    <div class="tabs">
+        <label for="variant1">Variant 1</label>
+        <label for="variant2">Variant 2</label>
+    </div>
+</body>
+</html>

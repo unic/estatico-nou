@@ -3,39 +3,53 @@ const del = require('del');
 const merge = require('lodash.merge');
 const utils = require('@unic/estatico-utils').test;
 const task = require('@unic/estatico-puppeteer');
+const puppeteer = require('puppeteer');
 const path = require('path');
 
 const visualRegressions = require('../index.js');
 
 const defaults = {
-  src: [
-    './test/fixtures/index.html',
-  ],
+  dest: './test/results/screenshots',
+  destDiff: './test/results/diff',
+  srcReferences: './test/fixtures/references',
+};
+
+const getConfig = options => ({
+  src: ['./test/fixtures/index.html'],
   srcBase: './fixtures',
   plugins: {
     interact: async (page, taskConfig) => {
       // Run tests
-      const results = await visualRegressions(page, {
-        dest: './test/results/screenshots',
-        destDiff: './test/results/diff',
-        srcReferences: './test/fixtures/references',
+      const results = await visualRegressions(page, merge({
         viewports: taskConfig.viewports,
-      });
+      }, defaults, options));
 
       // Report results
       visualRegressions.log(results, console);
     },
   },
-};
+});
 
 test.cb('default', (t) => {
-  task(defaults)().then(() => {
+  const config = getConfig();
+
+  task(config)().then(() => {
     utils.compareImages(t, path.join(__dirname, 'expected/default/**/*'));
   });
 });
 
+test.cb('diff', (t) => {
+  const config = merge({}, getConfig(), {
+    src: ['./test/fixtures/diff.html'],
+  });
+
+  task(config)().then(() => {
+    utils.compareImages(t, path.join(__dirname, 'expected/diff/**/*'));
+  });
+});
+
 test.cb('viewports', (t) => {
-  const options = merge({}, defaults, {
+  const config = merge({}, getConfig(), {
     viewports: {
       mobile: {
         width: 400,
@@ -49,35 +63,61 @@ test.cb('viewports', (t) => {
     },
   });
 
-  task(options)().then(() => {
+  task(config)().then(() => {
     utils.compareImages(t, path.join(__dirname, 'expected/viewports/**/*'));
   });
 });
 
 test.cb('targets', (t) => {
-  const options = merge({}, defaults, {
-    plugins: {
-      interact: async (page, taskConfig) => {
-        const results = await visualRegressions(page, {
-          dest: './test/results/screenshots',
-          destDiff: './test/results/diff',
-          srcReferences: './test/fixtures/references',
-          viewports: taskConfig.viewports,
-          getTargets: async (pageInstance) => {
-            const targets = await pageInstance.$$('.demo');
+  const config = getConfig({
+    getTargets: async (pageInstance) => {
+      const targets = await pageInstance.$$('.demo');
 
-            return targets;
-          },
-        });
-
-        visualRegressions.log(results, console);
-      },
+      return targets;
     },
   });
 
-  task(options)().then(() => {
+  task(config)().then(() => {
     utils.compareImages(t, path.join(__dirname, 'expected/targets/**/*'));
   });
+});
+
+test.cb('tabs', (t) => {
+  const config = merge({}, getConfig({
+    getTargets: async (pageInstance) => {
+      const targets = await pageInstance.$$('.demo');
+
+      return targets.map(async (target) => {
+        await pageInstance.evaluate((element) => {
+          element.style.display = 'block'; // eslint-disable-line no-param-reassign
+        }, target);
+
+        return target;
+      });
+    },
+  }), {
+    src: ['./test/fixtures/tabs.html'],
+  });
+
+  task(config)().then(() => {
+    utils.compareImages(t, path.join(__dirname, 'expected/tabs/**/*'));
+  });
+});
+
+test.cb('puppeteer', (t) => {
+  puppeteer.launch().then(async (browser) => {
+    const page = await browser.newPage();
+
+    await page.goto(`file://${path.resolve('./test/fixtures/index.html')}`);
+
+    const results = await visualRegressions(page, defaults);
+
+    console.log(results);
+
+    await browser.close();
+  }).then(() => {
+    utils.compareImages(t, path.join(__dirname, 'expected/puppeteer/**/*'));
+  }).catch(console.log);
 });
 
 test.afterEach(() => del(path.join(__dirname, '/results')));

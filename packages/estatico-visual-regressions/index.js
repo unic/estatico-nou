@@ -19,32 +19,23 @@ const schema = Joi.object().keys({
 
 module.exports = async (page, options) => {
   const config = merge({}, {
+    // See README for details
     dest: './screenshots/results',
     destDiff: './screenshots/diff',
     srcReferences: './screenshots/references',
-    // Take screenshot of whole page by default
     getTargets: pageInstance => [pageInstance],
-    // Generate screenshot name
     getFileName: (url, viewport, targetIndex) => {
       let fileName = path.basename(url, path.extname(url));
 
-      // Append viewport name
       fileName = `${fileName}-${viewport}`;
-
-      // Optionally append target index (in case of multiple targets per page)
-      // eslint-disable-next-line no-restricted-globals
       fileName = `${fileName}${!isNaN(parseFloat(targetIndex)) ? `-${targetIndex}` : ''}`;
 
       return fileName;
     },
-    // Optional object of viewportName:{width:Number,height:Number} pairs
-    // Used for screenshot naming if present
     viewports: null,
-    // Options passed to pixelmatch, see https://github.com/mapbox/pixelmatch
     pixelmatch: {
       threshold: 0.5,
     },
-    // Threshold to treat differences as errors
     maxDiffPixels: 50,
   }, options);
 
@@ -88,9 +79,12 @@ module.exports = async (page, options) => {
     const diffPath = `${config.destDiff}/${fileName}.png`;
 
     try {
+      // eslint-disable-next-line no-await-in-loop
+      const targetElement = Promise.resolve(target) === target ? await target : target;
+// console.log(await targetElement.boxModel())
       // Create screenshot
       // eslint-disable-next-line no-await-in-loop
-      const screenshot = await target.screenshot({
+      const screenshot = await targetElement.screenshot({
         path: filePath,
       });
 
