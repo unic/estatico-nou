@@ -1,6 +1,6 @@
 # @unic/estatico-visual-regressions
 
-Helper for visual regression tests with [estatico-puppeteer](../estatico-puppeteer). Uses [pixelmatch](https://github.com/mapbox/pixelmatch).
+Helper for visual regression tests with [Puppeteer](https://github.com/GoogleChrome/puppeteer). Uses [pixelmatch](https://github.com/mapbox/pixelmatch).
 
 ## Installation
 
