@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.16",
+  "version": "0.0.17-alpha.1",
   "description": "",
   "main": "index.js",
   "scripts": {
