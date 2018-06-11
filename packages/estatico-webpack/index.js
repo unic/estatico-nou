@@ -65,6 +65,17 @@ const task = (config, env = {}, cb) => {
       done();
     };
 
+    // Start webpack-serve to enable hot module replacement
+    if (env.hmr) {
+      const serve = require('webpack-serve');
+
+      return serve(config.webpack).then((server) => {
+        server.on('listening', ({ options }) => {
+          config.logger.info(`Since --hmr was used, webpack-serve was started on port ${options.port}. It will hot-replace JavaScript where possible.`);
+        });
+      });
+    }
+
     if (env.watch) {
       compiler.watch({}, callback);
     } else {

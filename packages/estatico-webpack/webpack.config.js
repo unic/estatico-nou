@@ -56,4 +56,15 @@ module.exports = {
     }),
     new UnminifiedWebpackPlugin(),
   ],
+  serve: {
+    hot: {
+      // Let's check back after https://github.com/webpack-contrib/webpack-serve/pull/171 whether this is still needed
+      hmr: true,
+    },
+    add: (app, middleware) => {
+      // Prevent static files from being served over dynamic ones
+      middleware.webpack();
+      middleware.content();
+    },
+  },
 };
