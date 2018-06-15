@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-boilerplate",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "@unic/estatico-handlebars": "0.0.10",
     "@unic/estatico-imageversions": "0.0.12",
     "@unic/estatico-json-mocks": "0.0.10",
-    "@unic/estatico-puppeteer": "0.0.10",
+    "@unic/estatico-puppeteer": "0.0.11",
     "@unic/estatico-qunit": "0.0.7",
     "@unic/estatico-sass": "0.0.11",
     "@unic/estatico-scaffold": "0.0.14",
