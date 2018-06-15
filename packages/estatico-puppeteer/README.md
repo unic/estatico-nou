@@ -53,6 +53,10 @@ gulp.task('js:test', () => {
       },
     },
     plugins: {
+      pool: {
+        // How many pages to open in parallel
+        max: 10,
+      },
       interact: async (page) => {
         // Run tests
         const results = await estaticoQunit.puppeteer.run(page);
@@ -123,6 +127,13 @@ Type: `Object`<br>
 Default: `null`
 
 Passed to [Puppeteer](https://github.com/GoogleChrome/puppeteer).
+
+##### plugins.pool
+
+Type: `Object`<br>
+Default: `{ max: 10 }`
+
+Passed to [generic-pool](https://www.npmjs.com/package/generic-pool). This allows you to open multiple pages in parallel, speeding up whatever task you are running.
 
 ##### plugins.interact
 

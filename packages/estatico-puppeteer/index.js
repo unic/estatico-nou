@@ -13,6 +13,7 @@ const schema = Joi.object().keys({
   viewports: Joi.object().allow(null),
   plugins: {
     puppeteer: Joi.object().allow(null),
+    pool: Joi.object().allow(null),
     interact: Joi.func().allow(null),
   },
   logger: Joi.object().keys({
@@ -34,6 +35,9 @@ const defaults = (/* env */) => ({
   plugins: {
     puppeteer: {
     },
+    pool: {
+      max: 10,
+    },
     // interact: async (page, logger) => {
     // },
   },
@@ -52,6 +56,7 @@ const task = (config, env = {}) => {
   const glob = require('glob');
   const path = require('path');
   const chalk = require('chalk');
+  const genericPool = require('generic-pool');
 
   // Create array of file paths from array of globs
   const files = config.src.map(fileGlob => glob.sync(fileGlob))
@@ -59,30 +64,45 @@ const task = (config, env = {}) => {
     .map(filePath => path.resolve(filePath));
 
   return puppeteer.launch(config.plugins.puppeteer).then(async (browser) => {
-    const page = await browser.newPage();
     let error;
 
-    // TODO: Find a way to throw in here
-    page.on('pageerror', (err) => {
-      error = err;
-    });
+    const pageFactory = {
+      create: async () => {
+        const page = await browser.newPage();
 
-    // page.on('error', console.log);
+        // TODO: Find a way to throw in here
+        page.on('pageerror', (err) => {
+          error = err;
+        });
 
-    // page.on('console', (msg) => {
-    //   console.log(msg.text());
-    // });
+        // page.on('error', console.log);
 
-    // page.on('request', function(req) {
-    //  if (!req.url.match(/data\:/)) {
-    //    console.log(req.url);
-    //  }
-    // });
+        // page.on('console', (msg) => {
+        //   console.log(msg.text());
+        // });
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const file of files) {
+        // page.on('request', function(req) {
+        //  if (!req.url.match(/data\:/)) {
+        //    console.log(req.url);
+        //  }
+        // });
+
+        return page;
+      },
+      destroy: page => page.close(),
+    };
+
+    // Create pool of pages
+    const pagePool = genericPool.createPool(pageFactory, config.plugins.pool);
+
+    // Create array of test promises
+    const tests = files.map(async (file) => {
+      // Get available page
+      const page = await pagePool.acquire();
+
       config.logger.info(`Testing ${chalk.yellow(path.relative(config.srcBase, file))}`);
 
+      // Open file
       await page.goto(`file://${file}`);
 
       // Interact with page (evaluating code, taking screenshots etc.)
@@ -108,19 +128,28 @@ const task = (config, env = {}) => {
       if (error) {
         error.fileName = path.relative(config.srcBase, file);
 
+        if (!env.dev) {
+          throw error;
+        }
+
         config.logger.error(error, env.dev);
 
         error = null;
-
-        if (!env.dev) {
-          await browser.close();
-
-          break;
-        }
       }
-    }
 
-    await browser.close();
+      // Release page to next test
+      pagePool.release(page);
+    });
+
+    // Wait for all tests to finish
+    return Promise.all(tests).catch(async (err) => {
+      // Error logger exits in non-dev mode, close browser before
+      if (!env.dev) {
+        await browser.close();
+      }
+
+      config.logger.error(err, env.dev);
+    }).then(() => browser.close());
   });
 };
 
