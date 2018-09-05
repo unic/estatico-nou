@@ -24,7 +24,7 @@
     "@unic/estatico-json-mocks": "0.0.10",
     "@unic/estatico-puppeteer": "0.0.11",
     "@unic/estatico-qunit": "0.0.7",
-    "@unic/estatico-sass": "0.0.11",
+    "@unic/estatico-sass": "0.0.12",
     "@unic/estatico-scaffold": "0.0.14",
     "@unic/estatico-stylelint": "0.0.10",
     "@unic/estatico-svgsprite": "0.0.10",

@@ -228,10 +228,7 @@ gulp.task('css', () => {
         ],
       },
       postcss: [
-        autoprefixer({
-          // Custom autoprefixer config
-          browsers: ['last 10 versions'],
-        }),
+        autoprefixer(),
       ],
     },
   }, env);
