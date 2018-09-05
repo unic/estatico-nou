@@ -94,10 +94,9 @@ gulp.task('css', () => {
         ],
       },
       postcss: [
-        autoprefixer({
-          // Custom autoprefixer config
-          browsers: ['last 2 versions'],
-        }),
+        autoprefixer(
+          // Either add .browserslistrc to project or specify config in here
+        ),
       ],
     },
   }, env);

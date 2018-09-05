@@ -13,11 +13,11 @@
   "dependencies": {
     "@unic/estatico-utils": "0.0.10",
     "@unic/estatico-watch": "0.0.10",
-    "autoprefixer": "^8.4.1",
+    "autoprefixer": "^9.1.5",
     "chalk": "^2.4.1",
     "gulp-ignore": "^2.0.2",
     "gulp-plumber": "^1.2.0",
-    "gulp-postcss": "^7.0.1",
+    "gulp-postcss": "^8.0.0",
     "gulp-sass": "^4.0.1",
     "gulp-size": "^3.0.0",
     "gulp-sourcemaps": "^2.6.4",

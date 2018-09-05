@@ -53,9 +53,7 @@ const defaults = (env = {}) => {
       },
       clone: env.ci,
       postcss: [
-        autoprefixer({
-          browsers: ['last 1 version'],
-        }),
+        autoprefixer(),
       ].concat(env.dev ? [] : filterStream(['**/*', '!**/*.min*'], clean())),
     },
     logger: new Logger('estatico-sass'),
