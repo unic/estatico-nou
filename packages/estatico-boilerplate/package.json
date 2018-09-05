@@ -32,7 +32,6 @@
     "@unic/estatico-w3c-validator": "0.0.10",
     "@unic/estatico-watch": "0.0.10",
     "@unic/estatico-webpack": "0.0.16",
-    "autoprefixer": "^8.4.1",
     "change-case": "^3.0.2",
     "del": "^3.0.0",
     "glob": "^7.1.2",

@@ -162,7 +162,6 @@ gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
   const estaticoWatch = require('@unic/estatico-watch');
   const nodeSassJsonImporter = require('node-sass-json-importer');
-  const autoprefixer = require('autoprefixer');
 
   const instance = task({
     src: [
@@ -227,9 +226,8 @@ gulp.task('css', () => {
           nodeSassJsonImporter,
         ],
       },
-      postcss: [
-        autoprefixer(),
-      ],
+      // Use task default (autoprefixer with .browserslistrc config)
+      // postcss: [],
     },
   }, env);
 
