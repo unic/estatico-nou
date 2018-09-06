@@ -1,6 +1,6 @@
 # Estático Nou
 
-Refactored Estático with separate packages for every task. Mono-repo based on [Lerna](https://github.com/lerna/lerna).
+Refactored https://github.com/unic/estatico with separate packages for every task. Mono-repo based on [Lerna](https://github.com/lerna/lerna).
 
 ## What is this?
 
