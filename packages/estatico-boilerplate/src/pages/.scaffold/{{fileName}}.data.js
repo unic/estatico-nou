@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const defaultData = require('../../../data/default.data.js');
+const defaultData = require('../../data/default.data.js');
 
 const data = _.merge({}, defaultData, {
   meta: {

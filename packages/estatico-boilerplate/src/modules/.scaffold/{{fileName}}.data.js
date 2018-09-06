@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const dataHelper = require('@unic/estatico-data');
 const { handlebars } = require('@unic/estatico-handlebars');
-const defaultData = require('../../../data/default.data.js');
+const defaultData = require('../../data/default.data.js');
 
 const template = dataHelper.getFileContent('{{fileName}}.hbs');
 const data = _.merge({}, defaultData, {
