@@ -6,22 +6,25 @@
 import $ from 'jquery';
 
 /** Demo modules * */
-import SkipLinks from '../../../demo/modules/skiplinks/skiplinks';
+import SkipLinks from '../../../demo/modules/skiplinks/skiplinks.js';
 import SlideShow from '../../../demo/modules/slideshow/slideshow';
+import MainNavigation from '../../../modules/main-navigation/main-navigation';
 /* autoinsertmodulereference */ // eslint-disable-line
 
 class EstaticoApp {
   constructor() {
-    // Module instances
+    // Module instances`
     window.estatico.modules = {};
 
     this.initEvents = [];
 
+    SkipLinks.init();
+
     // Module registry - mapping module name (used in data-init) to module Class
     this.modules = {};
     this.modules.slideshow = SlideShow;
-    this.modules.skiplinks = SkipLinks;
-		/* autoinsertmodule */ // eslint-disable-line
+    this.modules.mainNavigation = MainNavigation;
+    /* autoinsertmodule */ // eslint-disable-line
 
     // expose initModule function
     estatico.helpers.initModule = this.initModule;
@@ -90,8 +93,8 @@ class EstaticoApp {
 
       modules.forEach((moduleName) => {
         if (this.isRegistered(moduleName)
-            && !this.isInitialised($element, moduleName)
-            && this.isInitEvent(event.type, moduleName)) {
+          && !this.isInitialised($element, moduleName)
+          && this.isInitEvent(event.type, moduleName)) {
           this.initModule(moduleName, $element);
         }
       });
