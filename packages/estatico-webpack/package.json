@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.16",
+  "version": "0.0.17-alpha.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,7 @@
     "webpack": "^4.8.0",
     "webpack-bundle-analyzer": "^2.11.1",
     "webpack-modernizr-loader": "^4.0.1",
+    "webpack-serve": "^1.0.4",
     "yargs": "^11.0.0"
   },
   "engines": {
