@@ -1,6 +1,6 @@
 const $ = require('jquery');
 const QUnit = require('qunit');
-const namespace = require('../../../assets/js/helpers/namespace');
+const namespace = require('../../../assets/js/helpers/namespace').default;
 
 const moduleName = 'slideshow';
 const $node = $(`.mod_${moduleName}`).eq(0);
