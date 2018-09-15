@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import debounce from 'lodash/debounce';
 import throttle from 'raf-throttle';
+import namespace from './namespace';
 
 /**
  * Adds debounced and throttled global resize and scroll events and generates public methods
@@ -44,7 +45,7 @@ class WindowEventListener {
    * @private
    */
   registerDebouncedEvent(eventName, config) {
-    const debouncedEventName = `debounced${eventName}.estatico`;
+    const debouncedEventName = `debounced${eventName}.${namespace}`;
     const methodName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
 
     this.$window.on(eventName, debounce((event) => {
@@ -56,8 +57,8 @@ class WindowEventListener {
     this[`removeDebounced${methodName}Listener`] = this.removeEventListener.bind(this, debouncedEventName);
 
     // Save to global namespace
-    $.extend(true, estatico, { events: {} });
-    estatico.events[debouncedEventName.split('.')[0]] = debouncedEventName;
+    $.extend(true, window[namespace], { events: {} });
+    window[namespace].events[debouncedEventName.split('.')[0]] = debouncedEventName;
   }
 
   /**
@@ -67,7 +68,7 @@ class WindowEventListener {
    * @private
    */
   registerThrottledEvent(eventName) {
-    const throttledEventName = `throttled${eventName}.estatico`;
+    const throttledEventName = `throttled${eventName}.${namespace}`;
     const methodName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
 
     this.$window.on(eventName, throttle((event) => {
@@ -79,8 +80,8 @@ class WindowEventListener {
     this[`removeThrottled${methodName}Listener`] = this.removeEventListener.bind(this, throttledEventName);
 
     // Save to global namespace
-    $.extend(true, estatico, { events: {} });
-    estatico.events[throttledEventName.split('.')[0]] = throttledEventName;
+    $.extend(true, window[namespace], { events: {} });
+    window[namespace].events[throttledEventName.split('.')[0]] = throttledEventName;
   }
 
   /**

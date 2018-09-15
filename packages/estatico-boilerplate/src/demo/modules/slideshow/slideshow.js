@@ -2,6 +2,7 @@ import $ from 'jquery';
 import EstaticoModule from '../../../assets/js/helpers/module';
 import MediaQuery from '../../../assets/js/helpers/mediaqueries';
 import WindowEventListener from '../../../assets/js/helpers/events';
+import namespace from '../../../assets/js/helpers/namespace';
 
 const templates = {
   nav: require('./_slideshow_nav.js.hbs'), // eslint-disable-line global-require
@@ -46,7 +47,7 @@ class SlideShow extends EstaticoModule {
 
   static get events() {
     return {
-      slide: `slide.estatico.${SlideShow.name}`,
+      slide: `slide.${SlideShow.name}.${namespace}`,
     };
   }
 

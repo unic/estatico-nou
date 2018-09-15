@@ -1,6 +1,7 @@
 import bows from 'bows';
 import A11y from './helpers/a11y';
 import Inspector from './helpers/inspector';
+import namespace from './helpers/namespace';
 
 // Enable by default
 // Remove these lines and run "localStorage.removeItem('debug');" to disable
@@ -8,7 +9,7 @@ if (window.localStorage && !localStorage.debug) {
   localStorage.debug = true;
 }
 
-window.estatico.helpers.log = bows;
+window[namespace].helpers.log = bows;
 
 const inspector = new Inspector();
 const a11y = new A11y();
