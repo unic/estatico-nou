@@ -1,8 +1,9 @@
 import $ from 'jquery';
 import extend from 'lodash/extend';
 import uniqueId from 'lodash/uniqueId';
+import namespace from './namespace';
 
-class EstaticoModule {
+class Module {
   /**
    * Helper Class
    * @param  {jQuery DOM} $element - jQuery DOM element where to initialise the module
@@ -18,8 +19,8 @@ class EstaticoModule {
       $element,
     };
 
-    const globalData = window.estatico.data[this.name];
-    const globalOptions = window.estatico.options[this.name];
+    const globalData = window[namespace].data[this.name];
+    const globalOptions = window[namespace].options[this.name];
 
     this.data = extend({}, _defaultData, globalData, data);
     this.options = extend({}, _defaultOptions, globalOptions, options);
@@ -27,10 +28,10 @@ class EstaticoModule {
     // Identify instance by UUID
     this.uuid = uniqueId(this.name);
 
-    this.log = window.estatico.helpers.log(this.name);
+    this.log = window[namespace].helpers.log(this.name);
 
     // Expose original log helper
-    this._log = window.estatico.helpers.log; // eslint-disable-line no-underscore-dangle
+    this._log = window[namespace].helpers.log; // eslint-disable-line no-underscore-dangle
   }
 
   static get initEvents() {
@@ -56,8 +57,8 @@ class EstaticoModule {
     // Delete references to instance
     this.ui.$element.removeData(`${this.name}Instance`);
 
-    delete estatico.modules[this.name].instances[this.uuid];
+    delete window[namespace].modules[this.name].instances[this.uuid];
   }
 }
 
-export default EstaticoModule;
+export default Module;
