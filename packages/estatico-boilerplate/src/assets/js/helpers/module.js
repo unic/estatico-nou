@@ -30,6 +30,9 @@ class Module {
 
     this.log = window[namespace].helpers.log(this.name);
 
+    // Expose original log helper
+    this._log = window.estatico.helpers.log; // eslint-disable-line no-underscore-dangle
+
     this.eventDelegate = new EventDelegate(element);
   }
 
