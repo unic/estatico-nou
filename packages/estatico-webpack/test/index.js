@@ -22,7 +22,12 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  task(defaults)(() => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
+  task(defaults)(() => {
+    t.is(fs.existsSync(path.join(__dirname, './results/main.js')), true);
+    t.is(fs.existsSync(path.join(__dirname, './results/main.min.js')), true);
+
+    t.end();
+  });
 });
 
 test.cb('dev', (t) => {
@@ -37,11 +42,10 @@ test.cb('dev', (t) => {
   });
 
   task(options)(() => {
-    const hasMinifiedFile = fs.existsSync('./expected/dev/main.min.js');
+    t.is(fs.existsSync(path.join(__dirname, './results/main.js')), true);
+    t.is(fs.existsSync(path.join(__dirname, './results/main.min.js')), false);
 
-    t.is(hasMinifiedFile, false);
-
-    utils.compareFiles(t, path.join(__dirname, 'expected/dev/*'));
+    t.end();
   });
 });
 
@@ -59,7 +63,11 @@ test.cb('async', (t) => {
 
   task(options, {
     dev: true,
-  })(() => utils.compareFiles(t, path.join(__dirname, 'expected/async/*')));
+  })(() => {
+    t.is(fs.existsSync(path.join(__dirname, './results/async/hello-bar.js')), true);
+
+    t.end();
+  });
 });
 
 test.afterEach(() => del(path.join(__dirname, '/results')));
