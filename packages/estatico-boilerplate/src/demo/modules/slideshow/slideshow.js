@@ -1,7 +1,6 @@
 import EstaticoModule from '../../../assets/js/helpers/module';
 import MediaQuery from '../../../assets/js/helpers/mediaqueries';
 import WindowEventListener from '../../../assets/js/helpers/events';
-import namespace from '../../../assets/js/helpers/namespace';
 
 const templates = {
   nav: require('./_slideshow_nav.js.hbs'), // eslint-disable-line global-require
@@ -47,7 +46,7 @@ class SlideShow extends EstaticoModule {
 
   static get events() {
     return {
-      slide: `slide`,
+      slide: 'slide',
     };
   }
 
@@ -79,8 +78,8 @@ class SlideShow extends EstaticoModule {
 
     this.ui.element.dispatchEvent(new CustomEvent(SlideShow.events.slide, {
       detail: {
-        target
-      }
+        target,
+      },
     }));
   }
 
@@ -108,8 +107,8 @@ class SlideShow extends EstaticoModule {
    * @public
    */
   add(data) {
-    const slideTemplate = templates.slide(data),
-      slide = document.createRange().createContextualFragment(slideTemplate);
+    const slideTemplate = templates.slide(data);
+    const slide = document.createRange().createContextualFragment(slideTemplate);
 
     this.ui.wrapper.appendChild(slide);
 
@@ -130,8 +129,8 @@ class SlideShow extends EstaticoModule {
   }
 
   initUi() {
-    const navTemplate = templates.nav(this.data),
-      nav = document.createRange().createContextualFragment(navTemplate);
+    const navTemplate = templates.nav(this.data);
+    const nav = document.createRange().createContextualFragment(navTemplate);
 
     this.ui.element.appendChild(nav);
 
@@ -158,24 +157,21 @@ class SlideShow extends EstaticoModule {
       this.log('Touch support detected');
     }
 
-    this.windowEvents = {
-      debouncedResize: (event) => {
-        this.log(event, event.detail.originalEvent);
-      },
-      throttledScroll: (event) => {
-        this.log(event, event.detail.originalEvent);
-      },
-      mq: this.resize.bind(this)
-    };
-
     // Exemplary debounced resize listener
-    WindowEventListener.on('debouncedResize', this.windowEvents.debouncedResize);
+    // (uuid used to make sure it can be unbound per plugin instance)
+    WindowEventListener.addDebouncedResizeListener((event) => {
+      this.log(event);
+    }, this.uuid);
 
-    // Exemplary throttled scroll listener
-    WindowEventListener.on('throttledScroll', this.windowEvents.throttledScroll);
+    // Exemplary debounced scroll listener
+    // (uuid used to make sure it can be unbound per plugin instance)
+    WindowEventListener.addThrottledScrollListener((event) => {
+      this.log(event);
+    }, this.uuid);
 
     // Exemplary media query listener
-    MediaQuery.on(this.windowEvents.mq);
+    // (uuid used to make sure it can be unbound per plugin instance)
+    MediaQuery.addMQChangeListener(this.resize.bind(this), this.uuid);
   }
 
   fetchSlides() {
@@ -211,9 +207,9 @@ class SlideShow extends EstaticoModule {
     this.ui.element.classList.remove(this.options.stateClasses.isActivated);
 
     // Remove custom events listeners
-    WindowEventListener.off('debouncedResize', this.windowEvents.debouncedResize);
-    WindowEventListener.off('throttledScroll', this.windowEvents.throttledScroll);
-    MediaQuery.off(this.windowEvents.mq);
+    WindowEventListener.removeDebouncedResizeListener(this.uuid);
+    WindowEventListener.removeThrottledScrollListener(this.uuid);
+    MediaQuery.removeMQChangeListener(this.uuid);
   }
 }
 

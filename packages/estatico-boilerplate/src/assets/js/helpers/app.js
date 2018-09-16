@@ -40,12 +40,12 @@ class App {
     const moduleInstance = new Module(element, metaData, metaOptions);
 
     window[namespace].modules[moduleName].instances[moduleInstance.uuid] = moduleInstance;
-    element.dataset[`${moduleName}Instance`] = moduleInstance;
+    element.dataset[`${moduleName}Instance`] = moduleInstance; // eslint-disable-line no-param-reassign
   }
 
   registerModules() {
     [].slice.call(document.querySelectorAll('[data-init]')).forEach((element) => {
-      const modules = element.dataset['init'].split(' ');
+      const modules = element.dataset.init.split(' ');
 
       modules.forEach((moduleName) => {
         this.registerModule(moduleName);
@@ -86,7 +86,7 @@ class App {
 
   initModules(event) {
     [].slice.call(document.querySelectorAll('[data-init]')).forEach((element) => {
-       const modules = element.dataset['init'].split(' ');
+      const modules = element.dataset.init.split(' ');
 
       modules.forEach((moduleName) => {
         if (this.isRegistered(moduleName)
@@ -106,7 +106,7 @@ class App {
     const eventDelegate = new EventDelegate(document);
 
     this.initEvents.forEach((event) => {
-      eventDelegate.on(event, this.initModules.bind(this))
+      eventDelegate.on(event, this.initModules.bind(this));
     });
   }
 }

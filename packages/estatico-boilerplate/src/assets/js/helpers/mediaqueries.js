@@ -7,7 +7,7 @@
  * import MediaQuery from '../../../assets/js/modules/mediaqueries';
  *
  * // Listen to custom (debounced) event to react to viewport changes:
- * MediaQuery.on(function(event) {
+ * MediaQuery.addMQChangeListener((event) => {
  *   console.log(event.detail.prevBreakpoint); // { name: "small", value: "768px" }
  *   console.log(parseInt(event.detail.prevBreakpoint.value)); // "768"
  * });
@@ -24,16 +24,18 @@
  * }
  */
 
-import namespace from './namespace';
+import EventDelegate from 'dom-delegate';
 import WindowEventListener from './events';
 
 class MediaQuery {
   constructor() {
+    this.eventDelegate = new EventDelegate(document);
+    this.eventHandlers = {};
     this.customEventName = 'mq';
 
     this.ui = {
       all: document.head,
-      current: document.querySelector('title')
+      current: document.querySelector('title'),
     };
 
     const breakpointsString = window.getComputedStyle(this.ui.all).getPropertyValue('font-family');
@@ -42,7 +44,7 @@ class MediaQuery {
     this.breakpoints = this.parseCssProperty(breakpointsString);
     this.currentBreakpoint = this.parseCssProperty(currentBreakpointString);
 
-    WindowEventListener.on('debouncedResize', () => {
+    WindowEventListener.addDebouncedResizeListener(() => {
       const breakpoint = this.parseCssProperty(this.getCurrentBreakpointString());
       const prevBreakpoint = this.currentBreakpoint;
 
@@ -50,19 +52,21 @@ class MediaQuery {
         this.currentBreakpoint = breakpoint;
 
         WindowEventListener.dispatch(this.customEventName, {
-          prevBreakpoint, 
-          breakpoint
+          prevBreakpoint,
+          breakpoint,
         });
       }
-    });
+    }, this.customEventName);
   }
 
-  on(fn) {
-    WindowEventListener.on(this.customEventName, fn);
+  addMQChangeListener(callback, uuid) {
+    this.eventHandlers[uuid] = callback;
+
+    this.eventDelegate.on(this.customEventName, callback);
   }
 
-  off(fn) {
-    WindowEventListener.off(this.customEventName, fn);
+  removeMQChangeListener(uuid) {
+    this.eventDelegate.off(this.customEventName, this.eventHandlers[uuid]);
   }
 
   parseCssProperty(str) {
