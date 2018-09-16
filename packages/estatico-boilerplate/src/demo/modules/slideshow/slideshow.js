@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import EstaticoModule from '../../../assets/js/helpers/module';
 import MediaQuery from '../../../assets/js/helpers/mediaqueries';
 import WindowEventListener from '../../../assets/js/helpers/events';
@@ -10,7 +9,7 @@ const templates = {
 };
 
 class SlideShow extends EstaticoModule {
-  constructor($element, data, options) {
+  constructor(element, data, options) {
     const defaultData = {
       i18n: {
         prev: 'Previous Slide',
@@ -22,7 +21,8 @@ class SlideShow extends EstaticoModule {
       animationDuration: 300,
       url: '/mocks/demo/modules/slideshow/slideshow.json?delay=5000',
       stateClasses: {
-        activated: 'is_activated',
+        isActivated: 'is_activated',
+        isCurrent: 'is_current',
       },
       domSelectors: {
         slides: `[data-${SlideShow.name}="slides"]`,
@@ -33,7 +33,7 @@ class SlideShow extends EstaticoModule {
       },
     };
 
-    super($element, defaultData, defaultOptions, data, options);
+    super(element, defaultData, defaultOptions, data, options);
 
     this.currentItem = -1;
 
@@ -47,7 +47,7 @@ class SlideShow extends EstaticoModule {
 
   static get events() {
     return {
-      slide: `slide.${SlideShow.name}.${namespace}`,
+      slide: `slide`,
     };
   }
 
@@ -64,18 +64,24 @@ class SlideShow extends EstaticoModule {
       return;
     }
 
-    if (target >= this.ui.$slides.length) {
+    if (target >= this.ui.slides.length) {
       target = 0;
     } else if (target < 0) {
-      target = this.ui.$slides.length - 1;
+      target = this.ui.slides.length - 1;
     }
 
-    this.ui.$slides.eq(this.currentItem).stop(true, true).slideUp(this.options.animationDuration);
-    this.ui.$slides.eq(target).stop(true, true).slideDown(this.options.animationDuration);
+    if (this.currentItem > -1) {
+      this.ui.slides[this.currentItem].classList.remove(this.options.stateClasses.isCurrent);
+    }
+    this.ui.slides[target].classList.add(this.options.stateClasses.isCurrent);
 
     this.currentItem = target;
 
-    this.ui.$element.trigger(SlideShow.events.slide, target);
+    this.ui.element.dispatchEvent(new CustomEvent(SlideShow.events.slide, {
+      detail: {
+        target
+      }
+    }));
   }
 
   /**
@@ -102,12 +108,12 @@ class SlideShow extends EstaticoModule {
    * @public
    */
   add(data) {
-    const slide = templates.slide(data);
-    const $slide = $(slide);
+    const slideTemplate = templates.slide(data),
+      slide = document.createRange().createContextualFragment(slideTemplate);
 
-    $slide.appendTo(this.ui.$wrapper);
+    this.ui.wrapper.appendChild(slide);
 
-    this.ui.$slides = this.ui.$slides.add($slide);
+    this.ui.slides = this.ui.element.querySelectorAll(this.options.domSelectors.slide);
   }
 
   /**
@@ -124,59 +130,70 @@ class SlideShow extends EstaticoModule {
   }
 
   initUi() {
-    this.ui.$wrapper = this.ui.$element.find(this.options.domSelectors.slides);
-    this.ui.$slides = this.ui.$element.find(this.options.domSelectors.slide);
-    this.ui.$nav = $(templates.nav(this.data));
-    this.ui.$element.append(this.ui.$nav);
+    const navTemplate = templates.nav(this.data),
+      nav = document.createRange().createContextualFragment(navTemplate);
+
+    this.ui.element.appendChild(nav);
+
+    this.ui.wrapper = this.ui.element.querySelector(this.options.domSelectors.slides);
+    this.ui.slides = this.ui.element.querySelectorAll(this.options.domSelectors.slide);
+    this.ui.nav = this.ui.element.querySelector(this.options.domSelectors.nav);
   }
 
   initEventListeners() {
-    this.ui.$element
-      .on(`click.${SlideShow.name}.${this.uuid}`, this.options.domSelectors.prev, (event) => {
+    this.eventDelegate
+      .on('click', this.options.domSelectors.prev, (event) => {
         event.preventDefault();
         this.prev();
       })
-      .on(`click.${SlideShow.name}.${this.uuid}`, this.options.domSelectors.next, (event) => {
+      .on('click', this.options.domSelectors.next, (event) => {
         event.preventDefault();
         this.next();
-      })
-      .addClass(this.options.stateClasses.activated);
+      });
+
+    this.ui.element.classList.add(this.options.stateClasses.isActivated);
 
     // Exemplary touch detection
     if (Modernizr.touchevents) {
       this.log('Touch support detected');
     }
 
-    // Exemplary debounced resize listener
-    // (uuid used to make sure it can be unbound per plugin instance)
-    WindowEventListener.addDebouncedResizeListener((originalEvent, event) => {
-      this.log(event, originalEvent);
-    }, this.uuid);
+    this.windowEvents = {
+      debouncedResize: (event) => {
+        this.log(event, event.detail.originalEvent);
+      },
+      throttledScroll: (event) => {
+        this.log(event, event.detail.originalEvent);
+      },
+      mq: this.resize.bind(this)
+    };
 
-    // Exemplary debounced scroll listener
-    // (uuid used to make sure it can be unbound per plugin instance)
-    WindowEventListener.addThrottledScrollListener((originalEvent, event) => {
-      this.log(event, originalEvent);
-    }, this.uuid);
+    // Exemplary debounced resize listener
+    WindowEventListener.on('debouncedResize', this.windowEvents.debouncedResize);
+
+    // Exemplary throttled scroll listener
+    WindowEventListener.on('throttledScroll', this.windowEvents.throttledScroll);
 
     // Exemplary media query listener
-    // (uuid used to make sure it can be unbound per plugin instance)
-    MediaQuery.addMQChangeListener(this.resize.bind(this), this.uuid);
+    MediaQuery.on(this.windowEvents.mq);
   }
 
   fetchSlides() {
     // Exemplary AJAX request to mocked data with optional delay parameter
     // (works with local preview server only)
-    $.ajax(this.options.url).done((response) => {
-      // Loop through slides and add them
-      if (response.slides) {
-        response.slides.forEach((slide) => {
-          this.add(slide);
-        });
-      }
-    }).fail((jqXHR) => {
-      this.log('NOO!', jqXHR.status, jqXHR.statusText);
-    });
+    fetch(this.options.url)
+      .then(response => response.json())
+      .then((response) => {
+        // Loop through slides and add them
+        if (response.slides) {
+          response.slides.forEach((slide) => {
+            this.add(slide);
+          });
+        }
+      })
+      .catch((err) => {
+        this.log('NOO!', err);
+      });
   }
 
   /**
@@ -188,10 +205,15 @@ class SlideShow extends EstaticoModule {
     super.destroy();
 
     // Remove custom DOM elements
-    this.ui.$nav.remove();
+    this.ui.nav.remove();
 
-    // Remove style definitions applied by $.slideUp / $.slideDown
-    this.ui.$slides.removeAttr('style');
+    // Remove classes
+    this.ui.element.classList.remove(this.options.stateClasses.isActivated);
+
+    // Remove custom events listeners
+    WindowEventListener.off('debouncedResize', this.windowEvents.debouncedResize);
+    WindowEventListener.off('throttledScroll', this.windowEvents.throttledScroll);
+    MediaQuery.off(this.windowEvents.mq);
   }
 }
 

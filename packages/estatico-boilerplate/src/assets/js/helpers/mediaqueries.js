@@ -7,9 +7,9 @@
  * import MediaQuery from '../../../assets/js/modules/mediaqueries';
  *
  * // Listen to custom (debounced) event to react to viewport changes:
- * MediaQuery.addMQChangeListener(function(event, prevBreakpoint, currentBreakpoint) {
- *   console.log(prevBreakpoint); // { name: "small", value: "768px" }
- *   console.log(parseInt(prevBreakpoint.value)); // "768"
+ * MediaQuery.on(function(event) {
+ *   console.log(event.detail.prevBreakpoint); // { name: "small", value: "768px" }
+ *   console.log(parseInt(event.detail.prevBreakpoint.value)); // "768"
  * });
  *
  * // Check the current viewport against a specific breakpoint:
@@ -24,45 +24,53 @@
  * }
  */
 
-import $ from 'jquery';
 import namespace from './namespace';
+import WindowEventListener from './events';
 
 class MediaQuery {
   constructor() {
-    this.$document = $(document);
+    this.customEventName = 'mq';
 
-    this.$head = this.$document.find('head');
-    this.$title = this.$head.find('title');
+    this.ui = {
+      all: document.head,
+      current: document.querySelector('title')
+    };
 
-    this.breakpointsString = this.$head.css('font-family');
-    this.currentBreakpointString = this.$title.css('font-family');
+    const breakpointsString = window.getComputedStyle(this.ui.all).getPropertyValue('font-family');
+    const currentBreakpointString = this.getCurrentBreakpointString();
 
-    this.breakpoints = this.parseCssProperty(this.breakpointsString);
-    this.currentBreakpoint = this.parseCssProperty(this.currentBreakpointString);
+    this.breakpoints = this.parseCssProperty(breakpointsString);
+    this.currentBreakpoint = this.parseCssProperty(currentBreakpointString);
 
-    // Save to global namespace
-    $.extend(true, window[namespace], { events: {} });
-    window[namespace].events.mq = `mq.${namespace}`;
-
-    this.$document.on('debouncedresize.window[namespace].mq', () => {
-      const breakpoint = this.parseCssProperty(this.$title.css('font-family'));
+    WindowEventListener.on('debouncedResize', () => {
+      const breakpoint = this.parseCssProperty(this.getCurrentBreakpointString());
       const prevBreakpoint = this.currentBreakpoint;
 
       if (breakpoint && breakpoint.name !== this.currentBreakpoint.name) {
         this.currentBreakpoint = breakpoint;
-        this.$document.triggerHandler(window[namespace].events.mq, [prevBreakpoint, breakpoint]);
+
+        WindowEventListener.dispatch(this.customEventName, {
+          prevBreakpoint, 
+          breakpoint
+        });
       }
     });
   }
 
-  addMQChangeListener(callback, uuid) {
-    this.$document.on(`${window[namespace].events.mq}.${uuid}`, (prevBreakpoint, breakpoint) => {
-      callback(prevBreakpoint, breakpoint);
-    });
+  on(fn) {
+    WindowEventListener.on(this.customEventName, fn);
+  }
+
+  off(fn) {
+    WindowEventListener.off(this.customEventName, fn);
   }
 
   parseCssProperty(str) {
-    return $.parseJSON($.trim(str.replace(/^('|")|(\\)|('|")$/g, '')));
+    return JSON.parse(str.replace(/^('|")|(\\)|('|")$/g, '').trim());
+  }
+
+  getCurrentBreakpointString() {
+    return window.getComputedStyle(this.ui.current).getPropertyValue('font-family');
   }
 
   getBreakpointValue(breakpoint) {

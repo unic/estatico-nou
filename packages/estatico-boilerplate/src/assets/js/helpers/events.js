@@ -1,27 +1,23 @@
-import $ from 'jquery';
+import EventDelegate from 'dom-delegate';
 import debounce from 'lodash/debounce';
 import throttle from 'raf-throttle';
 import namespace from './namespace';
 
 /**
- * Adds debounced and throttled global resize and scroll events and generates public methods
- * for adding handlers
- * e.g. for resize: addDebouncedResizeListener, for scroll: addDebouncedScrollListener
+ * Adds debounced and throttled global resize and scroll events
  *
  * @license APLv2
  *
  * @example
  * // Listen to debounced scroll event:
  * import WindowEventListener from './events';
- * WindowEventListener.addDebouncedScrollListener((originalEvent, event) => {
+ * WindowEventListener.on('debouncedScroll', (originalEvent, event) => {
  *   this.log(event, originalEvent);
  * });
  */
 
 class WindowEventListener {
   constructor() {
-    this.$window = $(window);
-
     const events = {
       resize: {
         interval: 50,
@@ -31,10 +27,41 @@ class WindowEventListener {
       },
     };
 
+    this.eventDelegate = new EventDelegate(document);
+
     for (const eventName of Object.keys(events)) { // eslint-disable-line no-restricted-syntax
       this.registerDebouncedEvent(eventName, events[eventName]);
       this.registerThrottledEvent(eventName, events[eventName]);
     }
+  }
+
+  /**
+   * Add debounced/throttled listener, i.e. WindowEventListener.on('debouncedScroll', fn)
+   * @param {String} eventName
+   * @param {Function} fn
+   */
+  on(eventName, fn) {
+    return this.eventDelegate.on(eventName, fn);
+  }
+
+  /**
+   * Remove debounced/throttled listener, i.e. WindowEventListener.off('debouncedScroll', fn)
+   * @param {String} eventName
+   * @param {Function} fn
+   */
+  off(eventName, fn) {
+    return this.eventDelegate.off(eventName, fn);
+  }
+
+  /**
+   * Dispatch custom event on document
+   * @param {String} eventName
+   * @param {Object} data
+   */
+  dispatch(eventName, data) {
+    this.eventDelegate.rootElement.dispatchEvent(new CustomEvent(eventName, {
+      detail: data,
+    }));
   }
 
   /**
@@ -45,20 +72,13 @@ class WindowEventListener {
    * @private
    */
   registerDebouncedEvent(eventName, config) {
-    const debouncedEventName = `debounced${eventName}.${namespace}`;
-    const methodName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
+    const debouncedEventName = `debounced${eventName.charAt(0).toUpperCase() + eventName.slice(1)}`;
 
-    this.$window.on(eventName, debounce((event) => {
-      $(document).triggerHandler(debouncedEventName, event);
-    }, config.interval));
-
-    // adds a public shorthand method, e.g. addResizeListener to the WindowEventListener class
-    this[`addDebounced${methodName}Listener`] = this.addEventListener.bind(this, debouncedEventName);
-    this[`removeDebounced${methodName}Listener`] = this.removeEventListener.bind(this, debouncedEventName);
-
-    // Save to global namespace
-    $.extend(true, window[namespace], { events: {} });
-    window[namespace].events[debouncedEventName.split('.')[0]] = debouncedEventName;
+    window.addEventListener(eventName, debounce((event) => {
+      this.dispatch(debouncedEventName, {
+        originalEvent: event
+      });
+    }, config.interval), false);
   }
 
   /**
@@ -67,50 +87,16 @@ class WindowEventListener {
    * @param {String} eventName
    * @private
    */
-  registerThrottledEvent(eventName) {
-    const throttledEventName = `throttled${eventName}.${namespace}`;
-    const methodName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
+  registerThrottledEvent(eventName, config) {
+    const throttledEventName = `throttled${eventName.charAt(0).toUpperCase() + eventName.slice(1)}`;
 
-    this.$window.on(eventName, throttle((event) => {
-      $(document).triggerHandler(throttledEventName, event);
+    window.addEventListener(eventName, throttle((event) => {
+      this.dispatch(throttledEventName, {
+        originalEvent: event
+      });
     }));
-
-    // adds a public shorthand method, e.g. addResizeListener to the WindowEventListener class
-    this[`addThrottled${methodName}Listener`] = this.addEventListener.bind(this, throttledEventName);
-    this[`removeThrottled${methodName}Listener`] = this.removeEventListener.bind(this, throttledEventName);
-
-    // Save to global namespace
-    $.extend(true, window[namespace], { events: {} });
-    window[namespace].events[throttledEventName.split('.')[0]] = throttledEventName;
-  }
-
-  /**
-   * Adds callback as an event listener to the fake event.
-   * Uses unique ID if provided (might be handy to remove instance-specific handlers).
-   * @param {String} eventName
-   * @param {Function} callback
-   * @param {String} uuid - optional
-   * @private
-   */
-  addEventListener(eventName, callback, uuid) {
-    const name = uuid ? `${eventName}.${uuid}` : eventName;
-
-    $(document).on(name, callback);
-  }
-
-  /**
-   * Remove a callback from a fake event
-   * Uses unique ID if provided (might be handy to remove instance-specific handlers).
-   * @param {String} eventName
-   * @param {String} uuid - optional
-   * @private
-   */
-  removeEventListener(eventName, uuid) {
-    const name = uuid ? `${eventName}.${uuid}` : eventName;
-
-    $(document).off(name);
   }
 }
 
-// Exports an INSTANCE
+// Export default instance
 export default new WindowEventListener();

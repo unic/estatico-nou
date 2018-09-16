@@ -1,5 +1,4 @@
 .mod_slideshow {
-
 	.slide {
 		height: 0;
 		overflow: hidden;
@@ -36,14 +35,22 @@
 			background-color: $colorGraspingGrass;
 		}
 	}
+	
 	.next {
 		float: right;
 	}
 
 	.js & {
+		&:not(.is_activated) {
+			.slide + .slide {
+				display: none;
+			}
+		}
 
-		.slide + .slide {
-			display: none;
+		&.is_activated {
+			.slide:not(.is_current) {
+				display: none;
+			}
 		}
 	}
 }
