@@ -3,7 +3,7 @@ import extend from 'lodash/extend';
 import uniqueId from 'lodash/uniqueId';
 import namespace from './namespace';
 
-class EstaticoModule {
+class Module {
   /**
    * Helper Class
    * @param  {jQuery DOM} $element - jQuery DOM element where to initialise the module
@@ -61,4 +61,4 @@ class EstaticoModule {
   }
 }
 
-export default EstaticoModule;
+export default Module;
