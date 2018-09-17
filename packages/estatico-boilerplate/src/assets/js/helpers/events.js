@@ -1,4 +1,4 @@
-import EventDelegate from 'dom-delegate';
+import { Delegate } from 'dom-delegate';
 import debounce from 'lodash/debounce';
 import throttle from 'raf-throttle';
 
@@ -28,7 +28,7 @@ class WindowEventListener {
       },
     };
 
-    this.eventDelegate = new EventDelegate(document);
+    this.eventDelegate = new Delegate(document);
     this.eventHandlers = {};
 
     for (const eventName of Object.keys(events)) { // eslint-disable-line no-restricted-syntax

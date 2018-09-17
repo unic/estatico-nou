@@ -24,12 +24,12 @@
  * }
  */
 
-import EventDelegate from 'dom-delegate';
+import { Delegate } from 'dom-delegate';
 import WindowEventListener from './events';
 
 class MediaQuery {
   constructor() {
-    this.eventDelegate = new EventDelegate(document);
+    this.eventDelegate = new Delegate(document);
     this.eventHandlers = {};
     this.customEventName = 'mq';
 

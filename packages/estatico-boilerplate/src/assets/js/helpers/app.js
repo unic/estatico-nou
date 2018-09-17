@@ -3,7 +3,6 @@
  *
  * @license APLv2
  */
-import EventDelegate from 'dom-delegate';
 import namespace from './namespace';
 
 /** Demo modules * */
@@ -102,10 +101,8 @@ class App {
       return;
     }
 
-    const eventDelegate = new EventDelegate(document);
-
     this.initEvents.forEach((event) => {
-      eventDelegate.on(event, this.initModules.bind(this));
+      document.addEventListener(event, this.initModules.bind(this), false);
     });
   }
 }
