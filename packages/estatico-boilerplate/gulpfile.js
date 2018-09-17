@@ -357,61 +357,35 @@ gulp.task('js:lint', () => {
 
 /**
  * JavaScript testing task
- * Uses Puppeteer to check for JS errors and run tests
+ * Uses Jest with Puppeteer to check for JS errors and run tests
+ * Expects an npm script called "jest" which is running jest
  *
- * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
- * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * An alternative would be to use jest.runCLI instead. However, this currently fails
+ * due to the teardown script terminating the process in order to close the static webserver.
+ *
+ * While writing tests, it is recommended to just run `npm run jest`
  */
 gulp.task('js:test', () => {
-  const task = require('@unic/estatico-puppeteer');
-  const estaticoQunit = require('@unic/estatico-qunit');
+  const { spawn } = require('child_process');
+  let failed = false;
 
-  const instance = task({
-    src: [
-      './dist/{pages,modules,demo}/**/*.html',
-    ],
-    srcBase: './dist',
-    watch: {
-      src: [
-        './src/**/*.test.js',
-      ],
-      name: 'js:test',
-    },
-    viewports: {
-      mobile: {
-        width: 400,
-        height: 1000,
-        isMobile: true,
-      },
-      // tablet: {
-      //   width: 700,
-      //   height: 1000,
-      //   isMobile: true,
-      // },
-      desktop: {
-        width: 1400,
-        height: 1000,
-      },
-    },
-    plugins: {
-      interact: async (page, logger) => {
-        // Run tests
-        const results = await estaticoQunit.puppeteer.run(page);
+  const tests = spawn('npm', ['run', 'jest'], {
+    stdio: ['inherit', 'inherit', 'pipe'],
+  });
 
-        // Report results
-        if (results) {
-          estaticoQunit.puppeteer.log(results, logger);
-        }
-      },
-    },
-  }, env);
+  tests.stderr.on('data', (data) => {
+    failed = true;
 
-  // Don't immediately run task when skipping build
-  if (env.watch && env.skipTests) {
-    return instance;
-  }
+    process.stderr.write(data);
+  });
 
-  return instance();
+  tests.on('close', () => {
+    if (failed && !env.dev) {
+      process.exit(1);
+    }
+  });
+
+  return tests;
 });
 
 /**
@@ -770,6 +744,10 @@ gulp.task('build', (done) => {
       message: 'Do you want to skip tests and linting?',
       default: false,
     }]).then((answers) => {
+      if (!answers.skipTests) {
+        task = gulp.series(task, 'test');
+      }
+
       // Persist answer to env
       env.skipTests = answers.skipTests;
 

@@ -114,13 +114,6 @@
 		<script src="/assets/js/main{{#unless env.dev}}.min{{/unless}}.js"></script>
 
 		{{#block "scripts"}}
-			{{#if meta.testScripts}}
-				<section class="sg_inner_wrapper">
-					<h2 class="sg_h2">QUnit tests</h2>
-
-					{{> "preview/partials/test"}}
-				</section>
-			{{/if}}
 		{{/block}}
 	</div>
 </body>

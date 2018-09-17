@@ -36,55 +36,7 @@ module.exports = [
     },
     output: {
       path: path.resolve('./dist/preview/assets/js'),
-      filename: `[name]${env.dev ? '' : '.min'}.js`
-    },
-    mode: 'development',
-  },
-  {
-    entry: {
-      test: './src/preview/assets/js/test.js',
-    },
-    module: {
-      rules: defaults.module.rules.concat([
-        {
-          test: /jquery\.js$/,
-          loader: 'expose-loader?$!expose-loader?jQuery',
-        },
-        {
-          test: /qunit\.js$/,
-          loader: 'expose-loader?QUnit',
-        },
-        {
-          test: /\.css$/,
-          loader: 'style-loader!css-loader',
-        },
-      ]),
-    },
-    output: {
-      path: path.resolve('./dist/preview/assets/js'),
       filename: `[name]${env.dev ? '' : '.min'}.js`,
-      chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
-    },
-    mode: 'development',
-  },
-  {
-    // Create object of fileName:filePath pairs
-    entry: glob.sync('./src/**/*.test.js').reduce((obj, item) => {
-      const key = path.basename(item, path.extname(item));
-
-      obj[key] = item; // eslint-disable-line no-param-reassign
-
-      return obj;
-    }, {}),
-    module: defaults.module,
-    externals: {
-      jquery: 'jQuery',
-      qunit: 'QUnit',
-    },
-    output: {
-      path: path.resolve('./dist/preview/assets/js/test'),
-      filename: `[name]${env.dev ? '' : '.min'}.js`,
-      chunkFilename: `async/[name]${env.dev ? '' : '.min'}.js`,
     },
     mode: 'development',
   },

@@ -7,9 +7,6 @@ const slideshowData = require('../../modules/slideshow/slideshow.data.js');
 const data = _.merge({}, defaultData, {
   meta: {
     title: 'Demo: 05 Unit test on page',
-    testScripts: [
-      dataHelper.getTestScriptPath('../../modules/slideshow/slideshow.test.js'),
-    ],
   },
   props: {
     title: 'Unit test',
