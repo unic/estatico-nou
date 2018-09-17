@@ -363,7 +363,7 @@ gulp.task('js:lint', () => {
  * An alternative would be to use jest.runCLI instead. However, this currently fails
  * due to the teardown script terminating the process in order to close the static webserver.
  *
- * While writing tests, it is recommended to just run `npm run jest`
+ * Instead of running this task it is possible to just execute `npm run jest`
  */
 gulp.task('js:test', () => {
   const { spawn } = require('child_process');

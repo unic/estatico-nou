@@ -10,37 +10,75 @@ $ npm install --save-dev jest @unic/estatico-jest
 
 ## Usage
 
-Recommendation: Add `jest` as npm script:
-```json
-"scripts": {
-    "jest": "jest"
-}
-```
+1. Create `jest.config.js`:
+  ```js
+  const path = require('path');
 
-Create `jest.config.js`:
-```js
-const path = require('path');
+  const dir = path.dirname(require.resolve('@unic/estatico-jest'));
 
-const dir = path.dirname(require.resolve('@unic/estatico-jest'));
+  module.exports = {
+    globalSetup: path.join(dir, './setup.js'),
+    globalTeardown: path.join(dir, './teardown.js'),
+    testEnvironment: path.join(dir, './environment.js'),
+    testRegex: 'src/.*\\.test\\.js$',
+    // This seems to be the only way for now to pass options to setup.js
+    // https://github.com/facebook/jest/issues/5957#issuecomment-422027349
+    projects: [{
+      // We temporarily run a static webserver where Puppeteer can access our HTML
+      puppeteerServer: {
+        port: 3000,
+        dir: './dist',
+      },
+    }],
+  };
+  ```
 
-module.exports = {
-  globalSetup: path.join(dir, './setup.js'),
-  globalTeardown: path.join(dir, './teardown.js'),
-  testEnvironment: path.join(dir, './environment.js'),
-  testRegex: 'src/.*\\.test\\.js$',
-  // This seems to be the only way for now to pass options to setup.js
-  // https://github.com/facebook/jest/issues/5957#issuecomment-422027349
-  projects: [{
-    // We temporarily run a static webserver where Puppeteer can access our HTML
-    puppeteerServer: {
-      port: 3000,
-      dir: './dist',
-    },
-  }],
-};
-```
+2. Recommendation: Add `jest` as npm script:
+  ```json
+  "scripts": {
+      "jest": "jest"
+  }
+  ```
 
-Add test files to repository (their file name needs to match the `testRegex` above).
+3. Optional: Set up Gulp task:
+  ```js
+  /**
+   * JavaScript testing task
+   * Uses Jest with Puppeteer to check for JS errors and run tests
+   * Expects an npm script called "jest" which is running jest
+   *
+   * An alternative would be to use jest.runCLI instead. However, this currently fails
+   * due to the teardown script terminating the process in order to close the static webserver.
+   *
+   * Instead of running this task it is possible to just execute `npm run jest`
+   */
+  gulp.task('js:test', () => {
+    const { spawn } = require('child_process');
+    let failed = false;
+
+    const tests = spawn('npm', ['run', 'jest'], {
+      stdio: ['inherit', 'inherit', 'pipe'],
+    });
+
+    tests.stderr.on('data', (data) => {
+      if (`${data}`.match(/Test Suites: (.*?) failed/m)) {
+        failed = true;
+      }
+
+      process.stderr.write(data);
+    });
+
+    tests.on('close', () => {
+      if (failed && !env.dev) {
+        process.exit(1);
+      }
+    });
+
+    return tests;
+  });
+  ```
+
+4. Add test files to repository (their file name needs to match the `testRegex` above).
 
 ### Example test
 
