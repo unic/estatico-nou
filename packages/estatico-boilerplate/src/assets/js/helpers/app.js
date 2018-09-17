@@ -40,7 +40,7 @@ class App {
     const moduleInstance = new Module(element, metaData, metaOptions);
 
     window[namespace].modules[moduleName].instances[moduleInstance.uuid] = moduleInstance;
-    element.dataset[`${moduleName}Instance`] = moduleInstance; // eslint-disable-line no-param-reassign
+    element.dataset[`${moduleName}Instance`] = moduleInstance.uuid; // eslint-disable-line no-param-reassign
   }
 
   registerModules() {
