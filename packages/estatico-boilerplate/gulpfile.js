@@ -374,7 +374,9 @@ gulp.task('js:test', () => {
   });
 
   tests.stderr.on('data', (data) => {
-    failed = true;
+    if (`${data}`.match(/Test Suites: (.*?) failed/m)) {
+      failed = true;
+    }
 
     process.stderr.write(data);
   });
