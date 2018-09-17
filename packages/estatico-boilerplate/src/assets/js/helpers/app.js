@@ -76,7 +76,6 @@ class App {
   }
 
   isInitialised(element, moduleName) {
-    // jQuery 3 does not allow kebab-case in data() when retrieving whole data object https://jquery.com/upgrade-guide/3.0/#breaking-change-data-names-containing-dashes
     return element.dataset[`${moduleName}Instance`];
   }
 
