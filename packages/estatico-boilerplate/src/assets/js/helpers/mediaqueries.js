@@ -25,6 +25,7 @@
  */
 
 import $ from 'jquery';
+import namespace from './namespace';
 
 class MediaQuery {
   constructor() {
@@ -40,22 +41,22 @@ class MediaQuery {
     this.currentBreakpoint = this.parseCssProperty(this.currentBreakpointString);
 
     // Save to global namespace
-    $.extend(true, estatico, { events: {} });
-    estatico.events.mq = 'mq.estatico';
+    $.extend(true, window[namespace], { events: {} });
+    window[namespace].events.mq = `mq.${namespace}`;
 
-    this.$document.on('debouncedresize.estatico.mq', () => {
+    this.$document.on('debouncedresize.window[namespace].mq', () => {
       const breakpoint = this.parseCssProperty(this.$title.css('font-family'));
       const prevBreakpoint = this.currentBreakpoint;
 
       if (breakpoint && breakpoint.name !== this.currentBreakpoint.name) {
         this.currentBreakpoint = breakpoint;
-        this.$document.triggerHandler(estatico.events.mq, [prevBreakpoint, breakpoint]);
+        this.$document.triggerHandler(window[namespace].events.mq, [prevBreakpoint, breakpoint]);
       }
     });
   }
 
   addMQChangeListener(callback, uuid) {
-    this.$document.on(`${estatico.events.mq}.${uuid}`, (prevBreakpoint, breakpoint) => {
+    this.$document.on(`${window[namespace].events.mq}.${uuid}`, (prevBreakpoint, breakpoint) => {
       callback(prevBreakpoint, breakpoint);
     });
   }

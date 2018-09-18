@@ -1,5 +1,6 @@
 const $ = require('jquery');
 const QUnit = require('qunit');
+const namespace = require('../../../assets/js/helpers/namespace').default;
 
 const moduleName = 'slideshow';
 const $node = $(`.mod_${moduleName}`).eq(0);
@@ -13,7 +14,7 @@ QUnit.module('slideshow', {
 
   afterEach() {
     instance.destroy();
-    estatico.helpers.initModule(moduleName, $node);
+    window[namespace].helpers.initModule(moduleName, $node);
   },
 });
 
@@ -31,11 +32,11 @@ QUnit.test('Test correct plugin init', (assert) => {
   const clickEvents = $.grep(events.click || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
   const docEvents = $._data(document, 'events'); // eslint-disable-line no-underscore-dangle
-  const resizeEvent = $.grep(docEvents[estatico.events.debouncedresize.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  const resizeEvent = $.grep(docEvents[window[namespace].events.debouncedresize.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
-  const scrollEvent = $.grep(docEvents[estatico.events.throttledscroll.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  const scrollEvent = $.grep(docEvents[window[namespace].events.throttledscroll.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
-  const mqEvent = $.grep(docEvents[estatico.events.mq.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  const mqEvent = $.grep(docEvents[window[namespace].events.mq.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
   assert.equal($buttons.length, 2, 'Two buttons found');
 
@@ -59,11 +60,11 @@ QUnit.test('Test correct plugin destroy', (assert) => {
   const clickEvents = $.grep(events.click || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
   const docEvents = $._data(document, 'events'); // eslint-disable-line no-underscore-dangle
-  const resizeEvent = $.grep(docEvents[estatico.events.debouncedresize.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  const resizeEvent = $.grep(docEvents[window[namespace].events.debouncedresize.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
-  const scrollEvent = $.grep(docEvents[estatico.events.throttledscroll.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  const scrollEvent = $.grep(docEvents[window[namespace].events.throttledscroll.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
-  const mqEvent = $.grep(docEvents[estatico.events.mq.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  const mqEvent = $.grep(docEvents[window[namespace].events.mq.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
 
   assert.equal($buttons.length, 0, 'No more button found');
 
