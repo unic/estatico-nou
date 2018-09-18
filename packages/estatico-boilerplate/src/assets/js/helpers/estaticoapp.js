@@ -8,7 +8,6 @@ import $ from 'jquery';
 /** Demo modules * */
 import SkipLinks from '../../../demo/modules/skiplinks/skiplinks.js';
 import SlideShow from '../../../demo/modules/slideshow/slideshow';
-import MainNavigation from '../../../modules/main-navigation/main-navigation';
 /* autoinsertmodulereference */ // eslint-disable-line
 
 class EstaticoApp {
