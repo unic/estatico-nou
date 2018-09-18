@@ -12,7 +12,7 @@ import SlideShow from '../../../demo/modules/slideshow/slideshow';
 
 class EstaticoApp {
   constructor() {
-    // Module instances`
+    // Module instances
     window.estatico.modules = {};
 
     this.initEvents = [];
