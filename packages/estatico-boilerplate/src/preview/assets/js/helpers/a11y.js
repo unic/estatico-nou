@@ -4,7 +4,7 @@
  * Start the debugging with ctrl+a (same to switch to next mode)
  */
 
-import Helper from './helper';
+import Helper from '../../../../assets/js/helpers/helper';
 
 class A11y extends Helper {
   constructor() {

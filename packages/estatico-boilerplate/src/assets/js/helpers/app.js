@@ -18,11 +18,12 @@ class App {
 
     this.initEvents = [];
 
+    SkipLinks.init();
+
     // Module registry - mapping module name (used in data-init) to module Class
     this.modules = {};
     this.modules.slideshow = SlideShow;
-    this.modules.skiplinks = SkipLinks;
-		/* autoinsertmodule */ // eslint-disable-line
+    /* autoinsertmodule */ // eslint-disable-line
 
     // expose initModule function
     window[namespace].helpers.initModule = this.initModule;
@@ -91,8 +92,8 @@ class App {
 
       modules.forEach((moduleName) => {
         if (this.isRegistered(moduleName)
-            && !this.isInitialised($element, moduleName)
-            && this.isInitEvent(event.type, moduleName)) {
+          && !this.isInitialised($element, moduleName)
+          && this.isInitEvent(event.type, moduleName)) {
           this.initModule(moduleName, $element);
         }
       });

@@ -1,3 +1,3 @@
 import SkipLinkFocus from 'skip-link-focus';
 
-SkipLinkFocus.init();
+export default SkipLinkFocus;

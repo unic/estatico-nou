@@ -6,12 +6,10 @@ const path = require('path');
 
 module.exports = [
   merge({}, defaults, {
-    entry: Object.assign({
+    entry: {
       head: './src/assets/js/head.js',
       main: './src/assets/js/main.js',
-    }, (env.dev || env.ci) ? {
-      dev: './src/assets/js/dev.js',
-    } : {}),
+    },
     output: {
       path: path.resolve('./dist/assets/js'),
       filename: `[name]${env.dev ? '' : '.min'}.js`,
@@ -20,6 +18,28 @@ module.exports = [
     },
     mode: env.dev ? 'development' : 'production',
   }),
+  {
+    entry: {
+      dev: './src/preview/assets/js/dev.js',
+    },
+    module: {
+      rules: [
+        {
+          test: /(\.js|\.jsx)$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: {
+            // See .babelrc.js
+          },
+        },
+      ],
+    },
+    output: {
+      path: path.resolve('./dist/preview/assets/js'),
+      filename: `[name]${env.dev ? '' : '.min'}.js`
+    },
+    mode: 'development',
+  },
   {
     entry: {
       test: './src/preview/assets/js/test.js',
