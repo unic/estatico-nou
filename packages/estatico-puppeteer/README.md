@@ -23,7 +23,6 @@ const env = require('minimist')(process.argv.slice(2));
  */
 gulp.task('js:test', () => {
   const task = require('@unic/estatico-puppeteer');
-  const estaticoQunit = require('@unic/estatico-qunit');
 
   const instance = task({
     src: [
@@ -58,13 +57,7 @@ gulp.task('js:test', () => {
         max: 10,
       },
       interact: async (page) => {
-        // Run tests
-        const results = await estaticoQunit.puppeteer.run(page);
-
-        // Report results
-        if (results) {
-          estaticoQunit.puppeteer.log(results);
-        }
+        // Run some tests and log results (or throw an error)
       },
     },
   }, env);

@@ -27,7 +27,6 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
   const estaticoWatch = require('@unic/estatico-watch');
-  const estaticoQunit = require('@unic/estatico-qunit');
   const { readFileSyncCached } = require('@unic/estatico-utils');
 
   const instance = task({
@@ -86,13 +85,7 @@ gulp.task('html', () => {
       handlebars: {
         partials: [
           './src/**/*.hbs',
-          './node_modules/estatico-qunit/**/*.hbs',
         ],
-        helpers: {
-          register: (handlebars) => {
-            handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
-          },
-        },
       },
       // Wrap with module layout
       transformBefore: (file) => {
