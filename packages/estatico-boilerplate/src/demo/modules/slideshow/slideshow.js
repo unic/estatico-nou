@@ -174,10 +174,13 @@ class SlideShow extends EstaticoModule {
     MediaQuery.addMQChangeListener(this.resize.bind(this), this.uuid);
   }
 
-  fetchSlides() {
+  async fetchSlides() {
+    if (!window.fetch) {
+      await import('whatwg-fetch');
+    }
     // Exemplary AJAX request to mocked data with optional delay parameter
     // (works with local preview server only)
-    fetch(this.options.url)
+    return fetch(this.options.url)
       .then(response => response.json())
       .then((response) => {
         // Loop through slides and add them
