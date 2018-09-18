@@ -3,7 +3,7 @@
  *
  * Start inspection with ctrl+m (same to switch off module inspection)
  */
-import Helper from './helper';
+import Helper from '../../../../assets/js/helpers/helper';
 
 class Inspector extends Helper {
   constructor() {
