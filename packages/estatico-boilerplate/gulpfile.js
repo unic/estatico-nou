@@ -746,10 +746,6 @@ gulp.task('build', (done) => {
       message: 'Do you want to skip tests and linting?',
       default: false,
     }]).then((answers) => {
-      if (!answers.skipTests) {
-        task = gulp.series(task, 'test');
-      }
-
       // Persist answer to env
       env.skipTests = answers.skipTests;
 
@@ -757,7 +753,13 @@ gulp.task('build', (done) => {
     });
   }
 
-  readEnv.then(() => task(done));
+  readEnv.then(() => {
+    if (!env.skipTests) {
+      task = gulp.series(task, 'test');
+    }
+
+    task(done);
+  });
 });
 
 /**
