@@ -5,7 +5,7 @@
 				// See assets/js/helpers/namespace
 				const namespace = 'estatico';
 
-				// Global content data, will be extended by data-slideshow-data
+				// Global content data (extended by data-slideshow-data if present)
 				window[namespace].helpers.extend(window[namespace].data, {
 					slideshow: {
 						i18n: {
@@ -15,10 +15,9 @@
 					}
 				});
 
-				// Global configuration data, will be extended by data-slideshow-options
+				// Global configuration data (extended by data-slideshow-options if present)
 				window[namespace].helpers.extend(window[namespace].options, {
 					slideshow: {
-						animationDuration: 200,
 						url: '/mocks/demo/modules/slideshow/slideshow.json?delay=500'
 					}
 				});

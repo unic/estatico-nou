@@ -17,8 +17,6 @@ class SlideShow extends EstaticoModule {
     };
     const defaultOptions = {
       initialItem: 0,
-      animationDuration: 300,
-      url: '/mocks/demo/modules/slideshow/slideshow.json?delay=5000',
       stateClasses: {
         isActivated: 'is-activated',
         isCurrent: 'is-current',
@@ -38,7 +36,10 @@ class SlideShow extends EstaticoModule {
 
     this.initUi();
     this.initEventListeners();
-    this.fetchSlides();
+
+    if (this.options.url) {
+      this.fetchSlides();
+    }
 
     this.resize();
     this.show(this.options.initialItem);

@@ -1,4 +1,4 @@
-<div class="m-slideshow" data-init="slideshow" data-slideshow-data='{"i18n":{"prev":"Previous Bill","next":"Next Bill"}}' data-slideshow-options='{"animationDuration":100}'>
+<div class="m-slideshow" data-init="slideshow"{{#if data}} data-slideshow-data='{{data}}'{{/if}}{{#if options}} data-slideshow-options='{{options}}'{{/if}}>
 	<div class="m-slideshow__slides" data-slideshow="slides">
 		{{#each slides}}
 			{{> "demo/modules/slideshow/_slideshow_slide.js" this}}
