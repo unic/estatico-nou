@@ -5,6 +5,7 @@
  * @copyright
  */
 import EstaticoModule from '../../assets/js/helpers/module';
+import namespace from '../../assets/js/helpers/namespace';
 
 class {{className}} extends EstaticoModule {
   constructor($element, data, options) {
@@ -27,7 +28,7 @@ class {{className}} extends EstaticoModule {
 
   static get events() {
     return {
-      // eventname: 'eventname.estatico.' + {{className}}
+      // eventname: `eventname.${ {{className}}.name }.${ {{namespace}} }`
     };
   }
 
