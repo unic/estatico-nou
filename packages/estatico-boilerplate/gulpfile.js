@@ -363,7 +363,8 @@ gulp.task('js:test', (done) => {
   let failed = false;
 
   const tests = spawn('npm', ['run', 'jest'], {
-    // stdio: ['inherit', 'inherit', 'pipe'],
+    // Add proper output coloring unless in CI env (where this would have weird side-effects)
+    stdio: env.ci ? 'pipe' : ['inherit', 'inherit', 'pipe'],
   });
 
   tests.stderr.on('data', (data) => {
@@ -375,8 +376,6 @@ gulp.task('js:test', (done) => {
   });
 
   tests.on('close', () => {
-    console.log('done', failed);
-
     if (failed && !env.dev) {
       process.exit(1);
     }
