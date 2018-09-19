@@ -1,28 +1,28 @@
 .mod_svgsprite {
-	padding: 0 50px;
+  padding: 0 50px;
 
-	.list {
-		@include resetList;
-	}
+  .list {
+    @include resetList;
+  }
 
-	.item {
-		@include clearfix;
-	}
+  .item {
+    @include clearfix;
+  }
 
-	.icon {
-		width: 32px;
-		height: 32px;
-		padding: 0;
-		opacity: 0;
-		fill: $colorClearChill;
-		transition: fill 1s ease;
+  .icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    opacity: 0;
+    fill: $colorClearChill;
+    transition: fill 1s ease;
 
-		&:hover {
-			fill: $colorLambentLagoon;
-		}
+    &:hover {
+      fill: $colorLambentLagoon;
+    }
 
-		.svgSpritesLoaded & {
-			opacity: 1;
-		}
-	}
+    .svgSpritesLoaded & {
+      opacity: 1;
+    }
+  }
 }

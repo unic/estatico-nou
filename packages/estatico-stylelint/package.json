@@ -18,7 +18,9 @@
     "gulp-stylelint": "^7.0.0",
     "joi": "^13.2.0",
     "lodash.merge": "^4.6.1",
-    "stylelint": "^9.2.0"
+    "stylelint": "^9.2.0",
+    "stylelint-order": "^1.0.0",
+    "stylelint-scss": "^3.3.0"
   },
   "engines": {
     "node": ">=8"

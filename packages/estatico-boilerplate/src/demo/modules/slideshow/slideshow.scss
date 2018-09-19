@@ -1,49 +1,50 @@
 .mod_slideshow {
 
-	.slide {
-		height: 0;
-		overflow: hidden;
-		padding-bottom: 33.3333333%;
-		position: relative;
+  .slide {
+    height: 0;
+    overflow: hidden;
+    padding-bottom: 33.3333333%;
+    position: relative;
 
-		img {
-			display: block;
-			height: auto;
-			left: 0;
-			position: absolute;
-			top: 0;
-			width: 100%;
-		}
-	}
+    img {
+      display: block;
+      height: auto;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+  }
 
-	.nav {
-		@include clearfix;
-		margin-top: 1em;
-	}
+  .nav {
+    @include clearfix;
 
-	.prev,
-	.next {
-		background-color: $colorSoulSide; // for anything smaller than a tablet
-		border: none;
-		float: left;
+    margin-top: 1em;
+  }
 
-		@include mq($from: small, $to: medium) { // for tablets
-			background-color: $colorBondiBlue;
-			color: $colorAlpineAlabaster;
-		}
+  .prev,
+  .next {
+    background-color: $colorSoulSide; // for anything smaller than a tablet
+    border: 0;
+    float: left;
 
-		@include mq($from: medium) { // for anything bigger than a tablet
-			background-color: $colorGraspingGrass;
-		}
-	}
-	.next {
-		float: right;
-	}
+    @include mq($from: small, $to: medium) { // for tablets
+      background-color: $colorBondiBlue;
+      color: $colorAlpineAlabaster;
+    }
+    @include mq($from: medium) { // for anything bigger than a tablet
+      background-color: $colorGraspingGrass;
+    }
+  }
 
-	.js & {
+  .next {
+    float: right;
+  }
 
-		.slide + .slide {
-			display: none;
-		}
-	}
+  .js & {
+
+    .slide + .slide {
+      display: none;
+    }
+  }
 }

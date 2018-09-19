@@ -26,14 +26,14 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (/* env */) => ({
+const defaults = env => ({
   src: null,
   srcBase: null,
   dest: null,
   watch: null,
   plugins: {
     stylelint: {
-      failAfterError: true,
+      failAfterError: !env.dev,
       reporters: [
         {
           formatter: 'string',
@@ -71,9 +71,10 @@ const task = (config, env = {}) => {
     }))
 
     // Stylelint verification
-    .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, env.dev)));
+    .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, env.dev)))
 
-  // TODO: Optionally write back to disc
+    // Write back to disc to allow for autofixing
+    .pipe(gulp.dest(config.srcBase));
 };
 
 /**

@@ -30,6 +30,11 @@ gulp.task('css:lint', () => {
     ],
     srcBase: './src/',
     dest: './dist',
+    plugins: {
+      stylelint: {
+        // fix: true,
+      },
+    },
     watch: {
       src: [
         './src/**/*.scss',

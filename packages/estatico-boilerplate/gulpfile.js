@@ -252,15 +252,22 @@ gulp.task('css:lint', () => {
   const instance = task({
     src: [
       './src/**/*.scss',
+      '!./src/assets/css/templates/*.scss',
     ],
     srcBase: './src/',
     dest: './dist',
-    // watch: {
-    //   src: [
-    //     './src/**/*.scss',
-    //   ],
-    //   name: 'css:lint',
-    // },
+    plugins: {
+      stylelint: {
+        // fix: true,
+      },
+    },
+    watch: {
+      src: [
+        './src/**/*.scss',
+        '!./src/assets/css/templates/*.scss',
+      ],
+      name: 'css:lint',
+    },
   }, env);
 
   // Don't immediately run task when skipping build
@@ -727,7 +734,7 @@ gulp.task('clean', () => {
 /**
  * Test & lint / validate
  */
-gulp.task('lint', gulp.parallel(/* 'css:lint', */ 'js:lint'));
+gulp.task('lint', gulp.parallel('css:lint', 'js:lint'));
 gulp.task('test', gulp.parallel('html:validate', 'js:test'));
 
 /**
@@ -777,7 +784,13 @@ gulp.task('build', (done) => {
     });
   }
 
-  readEnv.then(() => task(done));
+  readEnv.then(() => {
+    if (!env.skipTests) {
+      task = gulp.series(task, gulp.parallel('lint', 'test'));
+    }
+
+    task(done);
+  });
 });
 
 /**
