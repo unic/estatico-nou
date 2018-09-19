@@ -1,10 +1,10 @@
 {{#each preview}}
-	<div class="mod-svgsprite">
-		<h3 class="mod-svgsprite__title">Sprite Name: {{@key}}</h3>
-		<ul class="mod-svgsprite__list">
+	<div class="m-svgsprite">
+		<h3 class="m-svgsprite__title">Sprite Name: {{@key}}</h3>
+		<ul class="m-svgsprite__list">
 			{{#each this}}
-			<li class="mod-svgsprite__item">
-				<svg class="mod-svgsprite__icon mod-svgsprite__icon--{{this}}" focusable="false">
+			<li class="m-svgsprite__item">
+				<svg class="m-svgsprite__icon m-svgsprite__icon--{{this}}" focusable="false">
 					<use xlink:href="#{{this}}" />
 				</svg>
 				<span>

@@ -1,16 +1,16 @@
-.mod-svgsprite {
+.m-svgsprite {
   padding: 0 50px;
 }
 
-.mod-svgsprite__list {
+.m-svgsprite__list {
   @include resetList;
 }
 
-.mod-svgsprite__item {
+.m-svgsprite__item {
   @include clearfix;
 }
 
-.mod-svgsprite__icon {
+.m-svgsprite__icon {
   width: 32px;
   height: 32px;
   padding: 0;

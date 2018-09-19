@@ -3,7 +3,7 @@ const QUnit = require('qunit');
 const namespace = require('../../../assets/js/helpers/namespace').default;
 
 const moduleName = 'slideshow';
-const $node = $(`.mod-${moduleName}`).eq(0);
+const $node = $(`.m-${moduleName}`).eq(0);
 let instance;
 
 // Setup QUnit module

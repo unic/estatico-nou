@@ -1,4 +1,4 @@
-.mod-media__iconfont {
+.m-media__iconfont {
   @include icon("twitter");
 
   &:before {
@@ -12,7 +12,7 @@
   }
 }
 
-.mod-media__dataurl {
+.m-media__dataurl {
   @include iconDataurl("twitter");
 
   &:hover,
@@ -27,7 +27,7 @@
   }
 }
 
-.mod-media__pngsprite {
+.m-media__pngsprite {
   @include pngsprite("twitter");
 
   &:hover,

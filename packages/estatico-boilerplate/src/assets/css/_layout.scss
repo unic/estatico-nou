@@ -14,12 +14,12 @@ nav {
   }
 }
 
-.layout_wrapper {
+.l-wrapper {
   margin: 0 auto;
   width: pxToEm($sizeWidthContent);
 }
 
-.layout_columns {
+.l-columns {
   display: flex;
 
   .no-flexbox.no-flexboxlegacy.no-flexboxtweener & {
@@ -27,7 +27,7 @@ nav {
   }
 }
 
-.layout_main {
+.l-main {
   width: 75%;
 
   .no-flexbox.no-flexboxlegacy.no-flexboxtweener & {
@@ -35,7 +35,7 @@ nav {
   }
 }
 
-.layout_sidebar {
+.l-sidebar {
   flex: 1;
 
   .no-flexbox.no-flexboxlegacy.no-flexboxtweener & {

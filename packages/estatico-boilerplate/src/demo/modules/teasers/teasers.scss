@@ -1,4 +1,4 @@
-.mod-teasers {
+.m-teasers {
   display: flex;
 
   // stylelint-disable-next-line max-nesting-depth
@@ -6,7 +6,7 @@
     @include clearfix;
 
     // stylelint-disable-next-line plugin/selector-bem-pattern,max-nesting-depth
-    .mod-teaser {
+    .m-teaser {
       float: left;
       width: 25%;
     }

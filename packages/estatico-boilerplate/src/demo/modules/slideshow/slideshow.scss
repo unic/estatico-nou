@@ -1,7 +1,7 @@
-.mod-slideshow {
+.m-slideshow {
 }
 
-.mod-slideshow__slide {
+.m-slideshow__slide {
   height: 0;
   overflow: hidden;
   padding-bottom: 33.3333333%;
@@ -13,7 +13,7 @@
   }
 }
 
-.mod-slideshow__slide-img {
+.m-slideshow__slide-img {
   display: block;
   height: auto;
   left: 0;
@@ -22,14 +22,14 @@
   width: 100%;
 }
 
-.mod-slideshow__nav {
+.m-slideshow__nav {
   @include clearfix;
 
   margin-top: 1em;
 }
 
-.mod-slideshow__nav-prev,
-.mod-slideshow__nav-next {
+.m-slideshow__nav-prev,
+.m-slideshow__nav-next {
   background-color: $colorSoulSide; // for anything smaller than a tablet
   border: 0;
   float: left;
@@ -43,6 +43,6 @@
   }
 }
 
-.mod-slideshow__nav-next {
+.m-slideshow__nav-next {
   float: right;
 }

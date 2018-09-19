@@ -30,7 +30,7 @@ module.exports = {
     // BEM
     'plugin/selector-bem-pattern': {
       componentSelectors: {
-        initial: '^\\.mod-{componentName}(?:__[a-z-]+)?(?:--[a-z-]+)?$',
+        initial: '^\\.m-{componentName}(?:__[a-z-]+)?(?:--[a-z-]+)?$',
       },
       implicitComponents: '**/modules/**/*.scss'
     },

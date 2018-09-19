@@ -46,8 +46,8 @@ class Inspector extends Helper {
       const variations = [];
 
       node.classList.forEach((className) => {
-        if (className.substring(0, 4) === 'mod-') {
-          module = className.substring(4).replace(/_/g, ' ');
+        if (className.substring(0, 2) === 'm-') {
+          module = className.substring(2).replace(/_/g, ' ');
         }
 
         if (className.match(/(.*?)--/)) {
