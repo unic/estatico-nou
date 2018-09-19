@@ -6,22 +6,24 @@
  */
 
 @include mq($from: 0px) {
-	title {
-		font-family: mqGetBreakpointJSON("tiny", "0px");
-	}
+
+  title {
+    font-family: mqGetBreakpointJSON("tiny", "0px");
+  }
 }
 
 @each $name in map-keys($mqBreakpoints) {
-	$value: map-get($mqBreakpoints, $name);
+  $value: map-get($mqBreakpoints, $name);
 
-	@include mq($from: $name) {
-		title {
-			font-family: mqGetBreakpointJSON($name, $value);
-		}
-	}
+  @include mq($from: $name) {
+
+    title {
+      font-family: mqGetBreakpointJSON($name, $value);
+    }
+  }
 }
 
 head {
-	font-family: mqGetBreakpointsJSON($mqBreakpoints);
-	display: none;
+  font-family: mqGetBreakpointsJSON($mqBreakpoints);
+  display: none;
 }

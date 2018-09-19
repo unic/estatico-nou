@@ -1,7 +1,6 @@
 import { Delegate } from 'dom-delegate';
 import debounce from 'lodash/debounce';
 import throttle from 'raf-throttle';
-import namespace from './namespace';
 
 /**
  * Adds debounced and throttled global resize and scroll events and generates public methods

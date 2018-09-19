@@ -18,7 +18,7 @@ test.cb('default', (t) => {
 
   task(defaults, {
     dev: true,
-  })().on('end', () => {
+  })().on('finish', () => {
     spy.restore();
 
     const log = utils.stripLogs(spy);

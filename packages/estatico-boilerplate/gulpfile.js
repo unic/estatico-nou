@@ -234,10 +234,11 @@ gulp.task('css', () => {
 
 /**
  * CSS linting task
- * Uses Stylelint to lint (and possibly autofix files in the future)
+ * Uses Stylelint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * Adding `--fix` will auto-fix issues and save the files back to the file system
  */
 gulp.task('css:lint', () => {
   const task = require('@unic/estatico-stylelint');
@@ -245,15 +246,22 @@ gulp.task('css:lint', () => {
   const instance = task({
     src: [
       './src/**/*.scss',
+      '!./src/assets/css/templates/*.scss',
     ],
     srcBase: './src/',
     dest: './dist',
-    // watch: {
-    //   src: [
-    //     './src/**/*.scss',
-    //   ],
-    //   name: 'css:lint',
-    // },
+    plugins: {
+      stylelint: {
+        fix: env.fix,
+      },
+    },
+    watch: {
+      src: [
+        './src/**/*.scss',
+        '!./src/assets/css/templates/*.scss',
+      ],
+      name: 'css:lint',
+    },
   }, env);
 
   // Don't immediately run task when skipping build
@@ -318,10 +326,11 @@ gulp.task('js', (cb) => {
 
 /**
  * JavaScript linting task
- * Uses ESLint to lint and autofix files
+ * Uses ESLint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * Adding `--fix` will auto-fix issues and save the files back to the file system
  */
 gulp.task('js:lint', () => {
   const task = require('@unic/estatico-eslint');
@@ -697,7 +706,7 @@ gulp.task('clean', () => {
 /**
  * Test & lint / validate
  */
-gulp.task('lint', gulp.parallel(/* 'css:lint', */ 'js:lint'));
+gulp.task('lint', gulp.parallel('css:lint', 'js:lint'));
 gulp.task('test', gulp.parallel('html:validate', 'js:test'));
 
 /**
@@ -749,7 +758,7 @@ gulp.task('build', (done) => {
 
   readEnv.then(() => {
     if (!env.skipTests) {
-      task = gulp.series(task, 'test');
+      task = gulp.series(task, gulp.parallel('lint', 'test'));
     }
 
     task(done);

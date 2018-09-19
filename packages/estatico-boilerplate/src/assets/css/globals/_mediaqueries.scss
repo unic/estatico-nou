@@ -16,9 +16,9 @@ $mqResponsive: true;
  * stakeholders, designers, developers, and testers.
  */
 $mqBreakpoints: (
-	small: $sizeBreakpointSmall,
-	medium: $sizeBreakpointMedium,
-	large: $sizeBreakpointLarge
+  small: $sizeBreakpointSmall,
+  medium: $sizeBreakpointMedium,
+  large: $sizeBreakpointLarge
 );
 
 /**
@@ -37,11 +37,11 @@ $mqShowBreakpoints: (small, medium, large);
 
 
 @function mqGetBreakpointWidth($name) {
-	@if(map-has-key($mqBreakpoints, $name)) {
-		@return map-get($mqBreakpoints, $name);
-	} @else {
-		@warn "Breakpoint #{$name} does not exist";
-	}
+  @if(map-has-key($mqBreakpoints, $name)) {
+    @return map-get($mqBreakpoints, $name);
+  } @else {
+    @warn "Breakpoint #{$name} does not exist";
+  }
 }
 
 /**
@@ -67,59 +67,58 @@ $mqShowBreakpoints: (small, medium, large);
  */
 
 @mixin mq($from: false, $to: false, $and: false, $height: false, $media: all) {
+  
+  // Initialize variables
+  $minSize: 0;
+  $maxSize: 0;
+  $mediaQuery: "";
+  $axis: if($height, "height", "width");
+  // From: this breakpoint (inclusive)
+  @if $from {
+    @if type-of($from) == number {
+      $minSize: pxToEm($from, 16);
+    } @else { 
+      $minSize: pxToEm(mqGetBreakpointWidth($from), 16);
+    }
+  }
 
-	// Initialize variables
-	$minSize: 0;
-	$maxSize: 0;
-	$mediaQuery: '';
-	$axis: if($height, 'height', 'width');
+  // To: that breakpoint (exclusive)
+  @if $to {
+    @if type-of($to) == number {
+      $maxSize: pxToEm($to, 16) - .01em;
+    } @else {
+      $maxSize: pxToEm(mqGetBreakpointWidth($to), 16) - .01em;
+    }
+  }
 
-	// From: this breakpoint (inclusive)
-	@if $from {
-		@if type-of($from) == number {
-			$minSize: pxToEm($from, 16);
-		} @else {
-			$minSize: pxToEm(mqGetBreakpointWidth($from), 16);
-		}
-	}
+  // Responsive support is disabled, rasterize the output outside @media blocks
+  // The browser will rely on the cascade itself.
+  @if ($mqResponsive == false) {
+    $staticBreakpointWidth: mqGetBreakpointWidth($mqStaticBreakpoint);
 
-	// To: that breakpoint (exclusive)
-	@if $to {
-		@if type-of($to) == number {
-			$maxSize: pxToEm($to, 16) - .01em;
-		} @else {
-			$maxSize: pxToEm(mqGetBreakpointWidth($to), 16) - .01em;
-		}
-	}
+    @if type-of($staticBreakpointWidth) == number {
+      $targetWidth: pxToEm($staticBreakpointWidth, 16);
+      // Output only rules that start at or span our target width
+      @if ($and == false and ($minSize <= $targetWidth) and (($to == false) or ($maxSize >= $targetWidth))) {
+        @content;
+      }
+    } @else {
+      // Throw a warning if $mqStaticBreakpoint is not in the $mqBreakpoints list
+      @warn "No static styles will be output: #{$staticBreakpointWidth}";
+    }
+  }
+  // Responsive support is enabled, output rules inside @media queries
+  @else {
+    @if $minSize != 0 { $mediaQuery: "#{$mediaQuery} and (min-#{$axis}: #{$minSize})"; }
+    @if $maxSize != 0 { $mediaQuery: "#{$mediaQuery} and (max-#{$axis}: #{$maxSize})"; }
+    @if $and { $mediaQuery: "#{$mediaQuery} and #{$and}"; }
 
-	// Responsive support is disabled, rasterize the output outside @media blocks
-	// The browser will rely on the cascade itself.
-	@if ($mqResponsive == false) {
-		$staticBreakpointWidth: mqGetBreakpointWidth($mqStaticBreakpoint);
-		@if type-of($staticBreakpointWidth) == number {
-			$targetWidth: pxToEm($staticBreakpointWidth, 16);
-			// Output only rules that start at or span our target width
-			@if ($and == false and ($minSize <= $targetWidth) and (($to == false) or ($maxSize >= $targetWidth))) {
-				@content;
-			}
-		} @else {
-			// Throw a warning if $mqStaticBreakpoint is not in the $mqBreakpoints list
-			@warn "No static styles will be output: #{$staticBreakpointWidth}";
-		}
-	}
+    $mediaQuery: unquote(#{$mediaQuery});
 
-		// Responsive support is enabled, output rules inside @media queries
-	@else {
-		@if $minSize != 0 { $mediaQuery: '#{$mediaQuery} and (min-#{$axis}: #{$minSize})'; }
-		@if $maxSize != 0 { $mediaQuery: '#{$mediaQuery} and (max-#{$axis}: #{$maxSize})'; }
-		@if $and { $mediaQuery: '#{$mediaQuery} and #{$and}'; }
-
-		$mediaQuery: unquote(#{$mediaQuery});
-
-		@media #{$media + $mediaQuery} {
-			@content;
-		}
-	}
+    @media #{$media + $mediaQuery} {
+      @content;
+    }
+  }
 }
 
 /**
@@ -127,29 +126,30 @@ $mqShowBreakpoints: (small, medium, large);
  * Usage: $mqBreakpoints: mqAddBreakpoint(tvscreen, 1920px);
  */
 @function mqAddBreakpoint($name, $breakpoint) {
-	$newBreakpoint: ($name: $breakpoint);
-	@return map-merge($mqBreakpoints, $newBreakpoint);
+  $newBreakpoint: ($name: $breakpoint);
+
+  @return map-merge($mqBreakpoints, $newBreakpoint);
 }
 
 /**
  * Create JSON string of map of breakpoints
  */
 @function mqGetBreakpointsJSON($breakpoints: $mqBreakpoints) {
-	$JSON: '{';
+  $json: "{";
 
-	@each $name in map-keys($breakpoints) {
-		$value: map-get($breakpoints, $name);
+  @each $name in map-keys($breakpoints) {
+    $value: map-get($breakpoints, $name);
 
-		$JSON: $JSON + '"#{$name}":"#{$value}",';
-	}
+    $json: $json + '"#{$name}":"#{$value}",';
+  }
 
-	// Remove last ","
-	$JSON: str-slice($JSON, 1, str-length($JSON) - 1);
+  // Remove last ","
+  $json: str-slice($json, 1, str-length($json) - 1);
 
-	// Close JSON string
-	$JSON: $JSON + '}';
+  // Close JSON string
+  $json: $json + "}";
 
-	@return $JSON;
+  @return $json;
 }
 
 
@@ -157,5 +157,5 @@ $mqShowBreakpoints: (small, medium, large);
  * Create JSON string of single breakpoint
  */
 @function mqGetBreakpointJSON($name, $value) {
-	@return "{\"name\":\"#{$name}\",\"value\":\"#{$value}\"}";
+  @return "{\"name\":\"#{$name}\",\"value\":\"#{$value}\"}";
 }
