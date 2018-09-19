@@ -16,7 +16,7 @@ const env = require('minimist')(process.argv.slice(2));
 
 /**
  * JavaScript linting task
- * Uses ESLint to lint and autofix files
+ * Uses ESLint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes

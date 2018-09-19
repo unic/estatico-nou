@@ -241,7 +241,7 @@ gulp.task('css', () => {
 
 /**
  * CSS linting task
- * Uses Stylelint to lint (and possibly autofix files in the future)
+ * Uses Stylelint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
@@ -333,7 +333,7 @@ gulp.task('js', (cb) => {
 
 /**
  * JavaScript linting task
- * Uses ESLint to lint and autofix files
+ * Uses ESLint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes

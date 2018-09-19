@@ -1,6 +1,6 @@
 # @unic/estatico-stylelint
 
-Uses Stylelint to lint (and possibly autofix files in the future)
+Uses Stylelint to lint (and optionally auto-fix files)
 
 ## Installation
 
@@ -16,7 +16,7 @@ const env = require('minimist')(process.argv.slice(2));
 
 /**
  * CSS linting task
- * Uses Stylelint to lint (and possibly autofix files in the future)
+ * Uses Stylelint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes

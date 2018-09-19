@@ -75,7 +75,7 @@ const task = (config, env = {}) => {
     // Stylelint verification
     .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, env.dev)))
 
-    // Write back to disc to allow for autofixing
+    // Write back to disc to allow for auto-fixing
     .pipe(config.plugins.stylelint.fix ? gulp.dest(config.srcBase) : through.obj());
 };
 
