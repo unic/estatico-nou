@@ -118,7 +118,7 @@ class App {
 
     try {
       return JSON.parse(data);
-    } catch(err) {
+    } catch (err) {
       console.log(`Failed when parsing "${data}"`, element, err);
 
       return null;
