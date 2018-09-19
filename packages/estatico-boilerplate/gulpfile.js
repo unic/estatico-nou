@@ -368,7 +368,7 @@ gulp.task('js:lint', () => {
  *
  * Instead of running this task it is possible to just execute `npm run jest`
  */
-gulp.task('js:test', (done) => {
+gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
   // Skip task when skipping tests
   if (env.skipTests) {
     return done();
@@ -397,8 +397,6 @@ gulp.task('js:test', (done) => {
 
     done();
   });
-
-  return tests;
 });
 
 /**
