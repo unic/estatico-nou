@@ -1,12 +1,14 @@
-.mod_teasers {
-	display: flex;
+.m-teasers {
+  display: flex;
 
-	.no-flexbox.no-flexboxlegacy.no-flexboxtweener & {
-		@include clearfix;
+  // stylelint-disable-next-line max-nesting-depth
+  .no-flexbox.no-flexboxlegacy.no-flexboxtweener & {
+    @include clearfix;
 
-		.mod_teaser {
-			float: left;
-			width: 25%;
-		}
-	}
+    // stylelint-disable-next-line plugin/selector-bem-pattern,max-nesting-depth
+    .m-teaser {
+      float: left;
+      width: 25%;
+    }
+  }
 }

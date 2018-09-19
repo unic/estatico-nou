@@ -1,16 +1,12 @@
 module.exports = {
-  extends: 'airbnb-base',
-  rules: {
-    'import/no-extraneous-dependencies': 'off',
-    'import/no-unresolved': 'off',
-    'class-methods-use-this': 'off'
-  },
+  extends: require.resolve('@unic/estatico-eslint/.eslintrc.js'),
+  plugins: [
+    'jest',
+  ],
   env: {
-    node: true,
-    browser: true,
+    'jest/globals': true,
   },
   globals: {
-    estatico: true,
     Modernizr: true,
   },
 };

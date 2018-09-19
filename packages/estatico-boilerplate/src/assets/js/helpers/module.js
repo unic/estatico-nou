@@ -1,25 +1,26 @@
-import $ from 'jquery';
+import { Delegate } from 'dom-delegate';
 import extend from 'lodash/extend';
 import uniqueId from 'lodash/uniqueId';
+import namespace from './namespace';
 
-class EstaticoModule {
+class Module {
   /**
    * Helper Class
-   * @param  {jQuery DOM} $element - jQuery DOM element where to initialise the module
+   * @param  {DOMNode} element - DOM element where to initialise the module
    * @param  {object} _defaultData - The default data object
    * @param  {object} _defaultOptions - The default options object
    * @param  {object} data - The data passed for this Module
    * @param  {object} options - The options passed as data attribute in the Module
    */
-  constructor($element, _defaultData, _defaultOptions, data, options) {
+  constructor(element, _defaultData, _defaultOptions, data, options) {
     this.name = this.constructor.name.toLowerCase();
 
     this.ui = {
-      $element,
+      element,
     };
 
-    const globalData = window.estatico.data[this.name];
-    const globalOptions = window.estatico.options[this.name];
+    const globalData = window[namespace].data[this.name];
+    const globalOptions = window[namespace].options[this.name];
 
     this.data = extend({}, _defaultData, globalData, data);
     this.options = extend({}, _defaultOptions, globalOptions, options);
@@ -27,14 +28,16 @@ class EstaticoModule {
     // Identify instance by UUID
     this.uuid = uniqueId(this.name);
 
-    this.log = window.estatico.helpers.log(this.name);
+    this.log = window[namespace].helpers.log(this.name);
 
     // Expose original log helper
-    this._log = window.estatico.helpers.log; // eslint-disable-line no-underscore-dangle
+    this._log = window[namespace].helpers.log; // eslint-disable-line no-underscore-dangle
+
+    this.eventDelegate = new Delegate(element);
   }
 
   static get initEvents() {
-    return ['ready', 'ajax_loaded'];
+    return ['DOMContentLoaded', 'ajaxLoaded'];
   }
 
   /**
@@ -50,14 +53,13 @@ class EstaticoModule {
    */
   destroy() {
     // Remove event listeners connected to this instance
-    this.ui.$element.off(`.${this.uuid}`);
-    $(document).off(`.${this.uuid}`);
+    this.eventDelegate.off();
 
     // Delete references to instance
-    this.ui.$element.removeData(`${this.name}Instance`);
+    delete this.ui.element.dataset[`${this.name}Instance`];
 
-    delete estatico.modules[this.name].instances[this.uuid];
+    delete window[namespace].modules[this.name].instances[this.uuid];
   }
 }
 
-export default EstaticoModule;
+export default Module;

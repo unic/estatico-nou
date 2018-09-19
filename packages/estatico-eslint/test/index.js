@@ -14,11 +14,12 @@ const defaults = {
   dest: './test/results/',
 };
 
-test.cb('default', (t) => {
+test.cb('with --fix', (t) => {
   const spy = sinon.spy(console, 'log');
 
   task(defaults, {
     dev: true,
+    fix: true,
   })().on('end', () => {
     spy.restore();
 
@@ -33,13 +34,10 @@ test.cb('default', (t) => {
   });
 });
 
-test.cb('no fix', (t) => {
+test.cb('without --fix', (t) => {
   const options = merge({}, defaults, {
     plugins: {
       changed: null,
-      eslint: {
-        fix: false,
-      },
     },
   });
 
@@ -53,7 +51,7 @@ test.cb('no fix', (t) => {
     const log = utils.stripLogs(spy);
 
     t.regex(log, /'hello' is never reassigned. Use 'const' instead/);
-    t.regex(log, /estatico-eslint Linting error in file main\.js \(details above\)/);
+    t.regex(log, /estatico-eslint main\.js Linting error \(details above\)/);
 
     t.end();
   });

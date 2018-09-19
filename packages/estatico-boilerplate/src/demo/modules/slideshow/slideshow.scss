@@ -1,49 +1,63 @@
-.mod_slideshow {
+.m-slideshow {
 
-	.slide {
-		height: 0;
-		overflow: hidden;
-		padding-bottom: 33.3333333%;
-		position: relative;
+  // stylelint-disable-next-line plugin/selector-bem-pattern
+  .js & {
+    
+    // stylelint-disable-next-line max-nesting-depth
+    &:not(.is-activated) {
+      // stylelint-disable-next-line max-nesting-depth,plugin/selector-bem-pattern
+      .m-slideshow__slide:not(:first-child) {
+        display: none;
+      }
+    }
 
-		img {
-			display: block;
-			height: auto;
-			left: 0;
-			position: absolute;
-			top: 0;
-			width: 100%;
-		}
-	}
+    // stylelint-disable-next-line max-nesting-depth
+    &.is-activated {
+      // stylelint-disable-next-line max-nesting-depth,plugin/selector-bem-pattern
+      .m-slideshow__slide:not(.is-current) {
+        display: none;
+      }
+    }
+  }
+}
 
-	.nav {
-		@include clearfix;
-		margin-top: 1em;
-	}
+.m-slideshow__slide {
+  height: 0;
+  overflow: hidden;
+  padding-bottom: 33.3333333%;
+  position: relative;
+}
 
-	.prev,
-	.next {
-		background-color: $colorSoulSide; // for anything smaller than a tablet
-		border: none;
-		float: left;
+.m-slideshow__slide-img {
+  display: block;
+  height: auto;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
 
-		@include mq($from: small, $to: medium) { // for tablets
-			background-color: $colorBondiBlue;
-			color: $colorAlpineAlabaster;
-		}
+.m-slideshow__nav {
+  @include clearfix;
 
-		@include mq($from: medium) { // for anything bigger than a tablet
-			background-color: $colorGraspingGrass;
-		}
-	}
-	.next {
-		float: right;
-	}
+  margin-top: 1em;
+}
 
-	.js & {
+.m-slideshow__nav-prev,
+.m-slideshow__nav-next {
+  background-color: $colorSoulSide; // for anything smaller than a tablet
+  border: 0;
+  float: left;
 
-		.slide + .slide {
-			display: none;
-		}
-	}
+  @include mq($from: small, $to: medium) { // for tablets
+    background-color: $colorBondiBlue;
+    color: $colorAlpineAlabaster;
+  }
+  @include mq($from: medium) { // for anything bigger than a tablet
+    background-color: $colorGraspingGrass;
+  }
+}
+
+.m-slideshow__nav-next {
+  float: right;
 }

@@ -4,7 +4,7 @@
  * Start the debugging with ctrl+a (same to switch to next mode)
  */
 
-import Helper from './helper';
+import Helper from '../../../../assets/js/helpers/helper';
 
 class A11y extends Helper {
   constructor() {
@@ -13,7 +13,7 @@ class A11y extends Helper {
 
     this.mode = null;
     this.dataAttribute = 'estaticoDev';
-    this.className = 'estatico_dev_overlay';
+    this.className = 'estatico-dev-overlay';
     this.activeElInterval = null;
     this.currentActiveEl = null;
 

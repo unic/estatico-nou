@@ -1,7 +1,5 @@
-import './helpers/module';
+import App from './helpers/app';
 
-import EstaticoApp from './helpers/estaticoapp';
-
-const app = new EstaticoApp();
+const app = new App();
 
 app.start();

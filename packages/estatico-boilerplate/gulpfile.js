@@ -15,7 +15,6 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
   const estaticoWatch = require('@unic/estatico-watch');
-  const estaticoQunit = require('@unic/estatico-qunit');
   const { readFileSyncCached } = require('@unic/estatico-utils');
 
   const instance = task({
@@ -73,13 +72,7 @@ gulp.task('html', () => {
       handlebars: {
         partials: [
           './src/**/*.hbs',
-          './node_modules/estatico-qunit/**/*.hbs',
         ],
-        helpers: {
-          register: (handlebars) => {
-            handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
-          },
-        },
       },
       // Wrap with module layout
       transformBefore: (file) => {
@@ -241,10 +234,11 @@ gulp.task('css', () => {
 
 /**
  * CSS linting task
- * Uses Stylelint to lint (and possibly autofix files in the future)
+ * Uses Stylelint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * Adding `--fix` will auto-fix issues and save the files back to the file system
  */
 gulp.task('css:lint', () => {
   const task = require('@unic/estatico-stylelint');
@@ -252,15 +246,23 @@ gulp.task('css:lint', () => {
   const instance = task({
     src: [
       './src/**/*.scss',
+      '!./src/assets/css/templates/*.scss',
+      '!./src/preview/assets/css/main.scss',
     ],
     srcBase: './src/',
     dest: './dist',
-    // watch: {
-    //   src: [
-    //     './src/**/*.scss',
-    //   ],
-    //   name: 'css:lint',
-    // },
+    plugins: {
+      stylelint: {
+        fix: env.fix,
+      },
+    },
+    watch: {
+      src: [
+        './src/**/*.scss',
+        '!./src/assets/css/templates/*.scss',
+      ],
+      name: 'css:lint',
+    },
   }, env);
 
   // Don't immediately run task when skipping build
@@ -325,10 +327,11 @@ gulp.task('js', (cb) => {
 
 /**
  * JavaScript linting task
- * Uses ESLint to lint and autofix files
+ * Uses ESLint to lint (and optionally auto-fix files)
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * Adding `--fix` will auto-fix issues and save the files back to the file system
  */
 gulp.task('js:lint', () => {
   const task = require('@unic/estatico-eslint');
@@ -357,61 +360,43 @@ gulp.task('js:lint', () => {
 
 /**
  * JavaScript testing task
- * Uses Puppeteer to check for JS errors and run tests
+ * Uses Jest with Puppeteer to check for JS errors and run tests
+ * Expects an npm script called "jest" which is running jest
  *
- * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
- * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * An alternative would be to use jest.runCLI instead. However, this currently fails
+ * due to the teardown script terminating the process in order to close the static webserver.
+ *
+ * Instead of running this task it is possible to just execute `npm run jest`
  */
-gulp.task('js:test', () => {
-  const task = require('@unic/estatico-puppeteer');
-  const estaticoQunit = require('@unic/estatico-qunit');
-
-  const instance = task({
-    src: [
-      './dist/{pages,modules,demo}/**/*.html',
-    ],
-    srcBase: './dist',
-    watch: {
-      src: [
-        './src/**/*.test.js',
-      ],
-      name: 'js:test',
-    },
-    viewports: {
-      mobile: {
-        width: 400,
-        height: 1000,
-        isMobile: true,
-      },
-      // tablet: {
-      //   width: 700,
-      //   height: 1000,
-      //   isMobile: true,
-      // },
-      desktop: {
-        width: 1400,
-        height: 1000,
-      },
-    },
-    plugins: {
-      interact: async (page, logger) => {
-        // Run tests
-        const results = await estaticoQunit.puppeteer.run(page);
-
-        // Report results
-        if (results) {
-          estaticoQunit.puppeteer.log(results, logger);
-        }
-      },
-    },
-  }, env);
-
-  // Don't immediately run task when skipping build
-  if (env.watch && env.skipTests) {
-    return instance;
+gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
+  // Skip task when skipping tests
+  if (env.skipTests) {
+    return done();
   }
 
-  return instance();
+  const { spawn } = require('child_process');
+  let failed = false;
+
+  const tests = spawn('npm', ['run', 'jest'], {
+    // Add proper output coloring unless in CI env (where this would have weird side-effects)
+    stdio: env.ci ? 'pipe' : ['inherit', 'inherit', 'pipe'],
+  });
+
+  tests.stderr.on('data', (data) => {
+    if (`${data}`.match(/Test Suites: (.*?) failed/m)) {
+      failed = true;
+    }
+
+    process.stderr.write(data);
+  });
+
+  tests.on('close', () => {
+    if (failed && !env.dev) {
+      process.exit(1);
+    }
+
+    done();
+  });
 });
 
 /**
@@ -563,14 +548,14 @@ gulp.task('scaffold', () => {
               return [].concat(hasJs ? [
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: /(\s+)(\/\* autoinsertmodule \*\/)/m,
                   template: `$1this.modules.${moduleName} = ${className};$1$2`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: /(\s+)(\/\* autoinsertmodulereference \*\/)/m,
                   template: `$1import ${className} from '../../../modules/${fileName}/${fileName}';$1$2`,
                   abortOnFail: true,
@@ -589,14 +574,14 @@ gulp.task('scaffold', () => {
               return [].concat(hasJs ? [
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: new RegExp(`(\\s+)?this.modules.${answers.moduleName} = ${answers.className};`, 'm'),
                   template: isRemove ? '' : `$1this.modules.${moduleName} = ${className};`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: new RegExp(`(\\s+)?import ${answers.className} from '../../../modules/${answers.fileName}/${answers.fileName}';`, 'm'),
                   template: isRemove ? '' : `$1import ${className} from '../../../modules/${fileName}/${fileName}';`,
                   abortOnFail: true,
@@ -727,7 +712,7 @@ gulp.task('clean', () => {
 /**
  * Test & lint / validate
  */
-gulp.task('lint', gulp.parallel(/* 'css:lint', */ 'js:lint'));
+gulp.task('lint', gulp.parallel('css:lint', 'js:lint'));
 gulp.task('test', gulp.parallel('html:validate', 'js:test'));
 
 /**
@@ -777,7 +762,18 @@ gulp.task('build', (done) => {
     });
   }
 
-  readEnv.then(() => task(done));
+  readEnv.then(() => {
+    if (!env.skipTests || (env.watch && env.skipBuild)) {
+      // In watch mode, the main task will not finish so we need to run everything in parallel
+      if (env.watch && env.skipBuild) {
+        task = gulp.parallel(task, 'lint', 'test');
+      } else {
+        task = gulp.series(task, gulp.parallel('lint', 'test'));
+      }
+    }
+
+    task(done);
+  });
 });
 
 /**
@@ -809,6 +805,8 @@ gulp.task('default', (done) => {
     // When starting watcher without building, "build" will never finish
     // In order for "serve" to still run properly, we switch from serial to parallel execution
     if (env.skipBuild) {
+      env.skipTests = true;
+
       return gulp.parallel('build', 'serve')(done);
     }
 

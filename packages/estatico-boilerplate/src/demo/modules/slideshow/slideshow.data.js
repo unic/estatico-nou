@@ -10,9 +10,6 @@ const data = _.merge({}, defaultData, {
     className: 'SlideShow',
     jira: 'JIRA-4',
     documentation: dataHelper.getDocumentation('slideshow.md'),
-    testScripts: [
-      dataHelper.getTestScriptPath('slideshow.test.js'),
-    ],
     mocks: [
       {
         description: null,
@@ -25,11 +22,15 @@ const data = _.merge({}, defaultData, {
       src: `http://www.fillmurray.com/${size}`,
       alt: `Bill Murray ${index + 1}`,
     })),
-
-    i18n: {
-      prev: 'Previous Slide',
-      next: 'Next Slide',
-    },
+    data: JSON.stringify({
+      i18n: {
+        prev: 'Previous Slide',
+        next: 'Next Slide',
+      },
+    }),
+    options: JSON.stringify({
+      url: '/mocks/demo/modules/slideshow/slideshow.json?delay=5000',
+    }),
   },
 });
 const variants = _.mapValues({
