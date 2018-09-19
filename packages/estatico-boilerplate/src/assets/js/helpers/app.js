@@ -4,16 +4,17 @@
  * @license APLv2
  */
 import $ from 'jquery';
+import namespace from './namespace';
 
 /** Demo modules * */
 import SkipLinks from '../../../demo/modules/skiplinks/skiplinks';
 import SlideShow from '../../../demo/modules/slideshow/slideshow';
 /* autoinsertmodulereference */ // eslint-disable-line
 
-class EstaticoApp {
+class App {
   constructor() {
     // Module instances
-    window.estatico.modules = {};
+    window[namespace].modules = {};
 
     this.initEvents = [];
 
@@ -25,7 +26,7 @@ class EstaticoApp {
     /* autoinsertmodule */ // eslint-disable-line
 
     // expose initModule function
-    estatico.helpers.initModule = this.initModule;
+    window[namespace].helpers.initModule = this.initModule;
   }
 
   start() {
@@ -34,12 +35,12 @@ class EstaticoApp {
   }
 
   initModule(moduleName, $node) {
-    const Module = estatico.modules[moduleName].Class;
+    const Module = window[namespace].modules[moduleName].Class;
     const metaData = $node.data(`${moduleName}-data`) || {};
     const metaOptions = $node.data(`${moduleName}-options`) || {};
     const moduleInstance = new Module($node, metaData, metaOptions);
 
-    estatico.modules[moduleName].instances[moduleInstance.uuid] = moduleInstance;
+    window[namespace].modules[moduleName].instances[moduleInstance.uuid] = moduleInstance;
     $node.data(`${moduleName}Instance`, moduleInstance);
   }
 
@@ -54,10 +55,10 @@ class EstaticoApp {
   }
 
   registerModule(moduleName) {
-    if (!estatico.modules[moduleName] && this.modules[moduleName]) {
+    if (!window[namespace].modules[moduleName] && this.modules[moduleName]) {
       const Module = this.modules[moduleName];
 
-      estatico.modules[moduleName] = {
+      window[namespace].modules[moduleName] = {
         initEvents: Module.initEvents,
         events: Module.events,
         instances: {},
@@ -72,7 +73,7 @@ class EstaticoApp {
   }
 
   isRegistered(moduleName) {
-    return estatico.modules[moduleName];
+    return window[namespace].modules[moduleName];
   }
 
   isInitialised($element, moduleName) {
@@ -81,7 +82,7 @@ class EstaticoApp {
   }
 
   isInitEvent(eventType, moduleName) {
-    return estatico.modules[moduleName].initEvents.indexOf(eventType) !== -1;
+    return window[namespace].modules[moduleName].initEvents.indexOf(eventType) !== -1;
   }
 
   initModules(event) {
@@ -111,4 +112,4 @@ class EstaticoApp {
   }
 }
 
-export default EstaticoApp;
+export default App;

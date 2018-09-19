@@ -570,14 +570,14 @@ gulp.task('scaffold', () => {
               return [].concat(hasJs ? [
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: /(\s+)(\/\* autoinsertmodule \*\/)/m,
                   template: `$1this.modules.${moduleName} = ${className};$1$2`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: /(\s+)(\/\* autoinsertmodulereference \*\/)/m,
                   template: `$1import ${className} from '../../../modules/${fileName}/${fileName}';$1$2`,
                   abortOnFail: true,
@@ -596,14 +596,14 @@ gulp.task('scaffold', () => {
               return [].concat(hasJs ? [
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: new RegExp(`(\\s+)?this.modules.${answers.moduleName} = ${answers.className};`, 'm'),
                   template: isRemove ? '' : `$1this.modules.${moduleName} = ${className};`,
                   abortOnFail: true,
                 },
                 {
                   type: 'modify',
-                  path: './src/assets/js/helpers/estaticoapp.js',
+                  path: './src/assets/js/helpers/app.js',
                   pattern: new RegExp(`(\\s+)?import ${answers.className} from '../../../modules/${answers.fileName}/${answers.fileName}';`, 'm'),
                   template: isRemove ? '' : `$1import ${className} from '../../../modules/${fileName}/${fileName}';`,
                   abortOnFail: true,
