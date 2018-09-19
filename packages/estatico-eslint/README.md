@@ -10,6 +10,17 @@ $ npm install --save-dev @unic/estatico-eslint
 
 ## Usage
 
+Recommended: Create `.eslintrc.js` which extends the default config:
+```
+module.exports = {
+  extends: require.resolve('@unic/estatico-eslint/.eslintrc.js'),
+  globals: {
+    Modernizr: true,
+  },
+};
+```
+
+Specify gulp task:
 ```js
 const gulp = require('gulp');
 const env = require('minimist')(process.argv.slice(2));
