@@ -1,3 +1,4 @@
+/* eslint-disable no-var,prefer-arrow-callback,func-names */
 import $ from 'jquery';
 import QUnit from 'qunitjs';
 
@@ -5,9 +6,9 @@ import 'qunitjs/qunit/qunit.css';
 
 QUnit.config.autostart = false;
 
-$(() => {
-  const $container = $('#qunit');
-  const $button = $('<button>Run QUnit tests</button>');
+$(function () {
+  var $container = $('#qunit');
+  var $button = $('<button>Run QUnit tests</button>');
 
   function startTests() {
     $container.show();

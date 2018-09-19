@@ -18,7 +18,6 @@
 
   .nav {
     @include clearfix;
-
     margin-top: 1em;
   }
 
@@ -36,15 +35,25 @@
       background-color: $colorGraspingGrass;
     }
   }
-
+  
   .next {
     float: right;
   }
 
   .js & {
+    
+    &:not(.is_activated) {
+      // stylelint-disable-next-line max-nesting-depth
+      .slide + .slide {
+        display: none;
+      }
+    }
 
-    .slide + .slide {
-      display: none;
+    &.is_activated {
+      // stylelint-disable-next-line max-nesting-depth
+      .slide:not(.is_current) {
+        display: none;
+      }
     }
   }
 }

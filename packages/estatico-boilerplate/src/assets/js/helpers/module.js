@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import { Delegate } from 'dom-delegate';
 import extend from 'lodash/extend';
 import uniqueId from 'lodash/uniqueId';
 import namespace from './namespace';
@@ -6,17 +6,17 @@ import namespace from './namespace';
 class Module {
   /**
    * Helper Class
-   * @param  {jQuery DOM} $element - jQuery DOM element where to initialise the module
+   * @param  {DOMNode} element - DOM element where to initialise the module
    * @param  {object} _defaultData - The default data object
    * @param  {object} _defaultOptions - The default options object
    * @param  {object} data - The data passed for this Module
    * @param  {object} options - The options passed as data attribute in the Module
    */
-  constructor($element, _defaultData, _defaultOptions, data, options) {
+  constructor(element, _defaultData, _defaultOptions, data, options) {
     this.name = this.constructor.name.toLowerCase();
 
     this.ui = {
-      $element,
+      element,
     };
 
     const globalData = window[namespace].data[this.name];
@@ -32,10 +32,12 @@ class Module {
 
     // Expose original log helper
     this._log = window[namespace].helpers.log; // eslint-disable-line no-underscore-dangle
+
+    this.eventDelegate = new Delegate(element);
   }
 
   static get initEvents() {
-    return ['ready', 'ajax_loaded'];
+    return ['DOMContentLoaded', 'ajaxLoaded'];
   }
 
   /**
@@ -51,11 +53,10 @@ class Module {
    */
   destroy() {
     // Remove event listeners connected to this instance
-    this.ui.$element.off(`.${this.uuid}`);
-    $(document).off(`.${this.uuid}`);
+    this.eventDelegate.off();
 
     // Delete references to instance
-    this.ui.$element.removeData(`${this.name}Instance`);
+    delete this.ui.element.dataset[`${this.name}Instance`];
 
     delete window[namespace].modules[this.name].instances[this.uuid];
   }
