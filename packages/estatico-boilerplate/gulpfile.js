@@ -245,6 +245,7 @@ gulp.task('css', () => {
  *
  * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * Adding `--fix` will auto-fix issues and save the files back to the file system
  */
 gulp.task('css:lint', () => {
   const task = require('@unic/estatico-stylelint');
@@ -258,7 +259,7 @@ gulp.task('css:lint', () => {
     dest: './dist',
     plugins: {
       stylelint: {
-        // fix: true,
+        fix: env.fix,
       },
     },
     watch: {
