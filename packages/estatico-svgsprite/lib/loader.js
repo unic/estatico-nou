@@ -73,7 +73,7 @@ function loadSvgSprites() {
           new RequestSVG(spritesToLoad[i]); // eslint-disable-line no-new
         }
 
-        html.setAttribute('class', html.getAttribute('class') + ' svgSpritesLoaded'); // word of caution: the SVG files might not really be loaded yet, this is rather about having them requested (for now)
+        html.setAttribute('class', html.getAttribute('class') + ' svgsprites--loaded'); // word of caution: the SVG files might not really be loaded yet, this is rather about having them requested (for now)
       }
     }
   }, 100);
