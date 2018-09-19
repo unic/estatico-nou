@@ -358,12 +358,12 @@ gulp.task('js:lint', () => {
  *
  * Instead of running this task it is possible to just execute `npm run jest`
  */
-gulp.task('js:test', () => {
+gulp.task('js:test', (done) => {
   const { spawn } = require('child_process');
   let failed = false;
 
   const tests = spawn('npm', ['run', 'jest'], {
-    stdio: ['inherit', 'inherit', 'pipe'],
+    // stdio: ['inherit', 'inherit', 'pipe'],
   });
 
   tests.stderr.on('data', (data) => {
@@ -375,12 +375,14 @@ gulp.task('js:test', () => {
   });
 
   tests.on('close', () => {
+    console.log('done', failed);
+
     if (failed && !env.dev) {
       process.exit(1);
     }
-  });
 
-  return tests;
+    done();
+  });
 });
 
 /**
