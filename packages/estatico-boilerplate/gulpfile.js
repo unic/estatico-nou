@@ -765,9 +765,9 @@ gulp.task('build', (done) => {
   }
 
   readEnv.then(() => {
-    if (!env.skipTests || env.watch) {
+    if (!env.skipTests || (env.watch && env.skipBuild)) {
       // In watch mode, the main task will not finish so we need to run everything in parallel
-      if (env.watch) {
+      if (env.watch && env.skipBuild) {
         task = gulp.parallel(task, 'lint', 'test');
       } else {
         task = gulp.series(task, gulp.parallel('lint', 'test'));
