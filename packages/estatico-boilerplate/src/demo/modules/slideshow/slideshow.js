@@ -1,6 +1,7 @@
 import EstaticoModule from '../../../assets/js/helpers/module';
 import MediaQuery from '../../../assets/js/helpers/mediaqueries';
 import WindowEventListener from '../../../assets/js/helpers/events';
+import namespace from '../../../assets/js/helpers/namespace';
 
 const templates = {
   nav: require('./_slideshow_nav.js.hbs'), // eslint-disable-line global-require
@@ -174,10 +175,13 @@ class SlideShow extends EstaticoModule {
     MediaQuery.addMQChangeListener(this.resize.bind(this), this.uuid);
   }
 
-  fetchSlides() {
+  async fetchSlides() {
+    if (!window.fetch) {
+      await import('whatwg-fetch');
+    }
     // Exemplary AJAX request to mocked data with optional delay parameter
     // (works with local preview server only)
-    fetch(this.options.url)
+    return fetch(this.options.url)
       .then(response => response.json())
       .then((response) => {
         // Loop through slides and add them

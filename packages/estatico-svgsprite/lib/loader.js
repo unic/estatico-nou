@@ -1,3 +1,4 @@
+/* eslint-disable no-var,vars-on-top,prefer-arrow-callback,func-names,prefer-template */
 /* globals document, window, ActiveXObject */
 
 /**
@@ -8,12 +9,12 @@
  */
 
 function loadSvgSprites() {
-  const id = 'mod_svgsprites';
-  const spriteContainer = document.createElement('div');
-  let spritesToLoad;
-  let spritesAmount;
+  var id = 'mod_svgsprites';
+  var spriteContainer = document.createElement('div');
+  var spritesToLoad;
+  var spritesAmount;
 
-  setTimeout(() => {
+  setTimeout(function () {
     spritesToLoad = JSON.parse(document.body.getAttribute('data-svgsprites-options'));
     spritesAmount = spritesToLoad.length;
 
@@ -38,9 +39,9 @@ function loadSvgSprites() {
      * @constructor
      */
     function RequestSVG(url) {
-      const oReq = getXMLHttpRequest();
-      const container = document.getElementById(id);
-      const handler = () => {
+      var oReq = getXMLHttpRequest();
+      var container = document.getElementById(id);
+      var handler = function () {
         if (oReq.readyState === 4) { // complete
           if (oReq.status === 200) {
             container.innerHTML += oReq.responseText;
@@ -58,8 +59,8 @@ function loadSvgSprites() {
      * found in the data-icon-sets attribute on the body tag
      */
     if (spritesAmount > 0 && (document.getElementById(id) === null)) {
-      let i = spritesAmount;
-      const html = document.getElementsByTagName('html')[0];
+      var i = spritesAmount;
+      var html = document.getElementsByTagName('html')[0];
 
       if (getXMLHttpRequest() !== null) {
         spriteContainer.setAttribute('id', id);
@@ -72,7 +73,7 @@ function loadSvgSprites() {
           new RequestSVG(spritesToLoad[i]); // eslint-disable-line no-new
         }
 
-        html.setAttribute('class', `${html.getAttribute('class')} svgSpritesLoaded`); // word of caution: the SVG files might not really be loaded yet, this is rather about having them requested (for now)
+        html.setAttribute('class', html.getAttribute('class') + ' svgSpritesLoaded'); // word of caution: the SVG files might not really be loaded yet, this is rather about having them requested (for now)
       }
     }
   }, 100);

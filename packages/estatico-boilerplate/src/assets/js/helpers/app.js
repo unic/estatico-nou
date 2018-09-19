@@ -3,7 +3,6 @@
  *
  * @license APLv2
  */
-import EventDelegate from 'dom-delegate';
 import namespace from './namespace';
 
 /** Demo modules * */
@@ -76,7 +75,6 @@ class App {
   }
 
   isInitialised(element, moduleName) {
-    // jQuery 3 does not allow kebab-case in data() when retrieving whole data object https://jquery.com/upgrade-guide/3.0/#breaking-change-data-names-containing-dashes
     return element.dataset[`${moduleName}Instance`];
   }
 
@@ -103,10 +101,8 @@ class App {
       return;
     }
 
-    const eventDelegate = new EventDelegate(document);
-
     this.initEvents.forEach((event) => {
-      eventDelegate.on(event, this.initModules.bind(this));
+      document.addEventListener(event, this.initModules.bind(this), false);
     });
   }
 }

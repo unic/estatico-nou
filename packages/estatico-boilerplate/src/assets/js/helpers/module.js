@@ -1,4 +1,4 @@
-import EventDelegate from 'dom-delegate';
+import { Delegate } from 'dom-delegate';
 import extend from 'lodash/extend';
 import uniqueId from 'lodash/uniqueId';
 import namespace from './namespace';
@@ -31,9 +31,9 @@ class Module {
     this.log = window[namespace].helpers.log(this.name);
 
     // Expose original log helper
-    this._log = window.estatico.helpers.log; // eslint-disable-line no-underscore-dangle
+    this._log = window[namespace].helpers.log; // eslint-disable-line no-underscore-dangle
 
-    this.eventDelegate = new EventDelegate(element);
+    this.eventDelegate = new Delegate(element);
   }
 
   static get initEvents() {

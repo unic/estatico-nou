@@ -1,4 +1,4 @@
-# @unic/estatico-boilerplate [WIP]
+# @unic/estatico-boilerplate
 
 Demo repo based on old Estático. Tasks were completely replaced with new ones and the source files were adapted where necessary.
 
