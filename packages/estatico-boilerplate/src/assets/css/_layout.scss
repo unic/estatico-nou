@@ -17,6 +17,7 @@ nav {
 .l-wrapper {
   margin: 0 auto;
   width: pxToEm($sizeWidthContent);
+  max-width: 100%;
 }
 
 .l-columns {
