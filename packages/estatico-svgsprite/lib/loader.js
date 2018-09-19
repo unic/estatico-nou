@@ -8,7 +8,7 @@
  */
 
 function loadSvgSprites() {
-  const id = 'mod_svgsprites';
+  const id = 'mod-svgsprites';
   const spriteContainer = document.createElement('div');
   let spritesToLoad;
   let spritesAmount;

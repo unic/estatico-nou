@@ -21,7 +21,7 @@ class SlideShow extends EstaticoModule {
       animationDuration: 300,
       url: '/mocks/demo/modules/slideshow/slideshow.json?delay=5000',
       stateClasses: {
-        activated: 'is_activated',
+        activated: 'is-activated',
       },
       domSelectors: {
         slides: `[data-${SlideShow.name}="slides"]`,

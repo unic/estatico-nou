@@ -2,7 +2,7 @@ const $ = require('jquery');
 const QUnit = require('qunit');
 
 const moduleName = 'slideshow';
-const $node = $(`.mod_${moduleName}`).eq(0);
+const $node = $(`.mod-${moduleName}`).eq(0);
 let instance;
 
 // Setup QUnit module
