@@ -37,8 +37,8 @@ class App {
 
   initModule(moduleName, element) {
     const Module = window[namespace].modules[moduleName].Class;
-    const metaData = element.dataset[`${moduleName}Data`] || {};
-    const metaOptions = element.dataset[`${moduleName}Options`] || {};
+    const metaData = this.parseData(element, `${moduleName}Data`);
+    const metaOptions = this.parseData(element, `${moduleName}Options`);
     const moduleInstance = new Module(element, metaData, metaOptions);
 
     window[namespace].modules[moduleName].instances[moduleInstance.uuid] = moduleInstance;
@@ -107,6 +107,22 @@ class App {
     this.initEvents.forEach((event) => {
       document.addEventListener(event, this.initModules.bind(this), false);
     });
+  }
+
+  parseData(element, key) {
+    const data = element.dataset[key];
+
+    if (!data) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(data);
+    } catch(err) {
+      console.log(`Failed when parsing "${data}"`, element, err);
+
+      return null;
+    }
   }
 }
 
