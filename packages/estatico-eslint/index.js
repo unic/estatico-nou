@@ -31,14 +31,14 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (/* env */) => ({
+const defaults = env => ({
   src: null,
   srcBase: null,
   dest: null,
   watch: null,
   plugins: {
     eslint: {
-      fix: true,
+      fix: env.fix,
     },
     changed: {
       firstPass: true,
