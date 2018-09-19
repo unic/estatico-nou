@@ -369,6 +369,11 @@ gulp.task('js:lint', () => {
  * Instead of running this task it is possible to just execute `npm run jest`
  */
 gulp.task('js:test', (done) => {
+  // Skip task when skipping build
+  if (env.skipTests) {
+    return done();
+  }
+
   const { spawn } = require('child_process');
   let failed = false;
 
@@ -392,6 +397,8 @@ gulp.task('js:test', (done) => {
 
     done();
   });
+
+  return tests;
 });
 
 /**
@@ -758,8 +765,13 @@ gulp.task('build', (done) => {
   }
 
   readEnv.then(() => {
-    if (!env.skipTests) {
-      task = gulp.series(task, gulp.parallel('lint', 'test'));
+    if (!env.skipTests || env.watch) {
+      // In watch mode, the main task will not finish so we need to run everything in parallel
+      if (env.watch) {
+        task = gulp.parallel(task, 'lint', 'test');
+      } else {
+        task = gulp.series(task, gulp.parallel('lint', 'test'));
+      }
     }
 
     task(done);
@@ -795,6 +807,8 @@ gulp.task('default', (done) => {
     // When starting watcher without building, "build" will never finish
     // In order for "serve" to still run properly, we switch from serial to parallel execution
     if (env.skipBuild) {
+      env.skipTests = true;
+
       return gulp.parallel('build', 'serve')(done);
     }
 
