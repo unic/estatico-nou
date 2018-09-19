@@ -13,7 +13,7 @@ class A11y extends Helper {
 
     this.mode = null;
     this.dataAttribute = 'estaticoDev';
-    this.className = 'estatico_dev_overlay';
+    this.className = 'estatico-dev-overlay';
     this.activeElInterval = null;
     this.currentActiveEl = null;
 

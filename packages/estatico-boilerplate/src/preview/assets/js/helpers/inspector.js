@@ -17,8 +17,8 @@ class Inspector extends Helper {
     this.DOM = {
       dataAttribute: 'estaticoDev',
       class: {
-        moduleDecorator: 'estatico_dev_overlay',
-        variantDecorator: 'var_variant',
+        moduleDecorator: 'estatico-dev-overlay',
+        variantDecorator: 'estatico-dev-overlay--variant',
       },
     };
 
@@ -46,12 +46,12 @@ class Inspector extends Helper {
       const variations = [];
 
       node.classList.forEach((className) => {
-        if (className.substring(0, 4) === 'mod_') {
-          module = className.substring(4).replace(/_/g, ' ');
+        if (className.substring(0, 2) === 'm-') {
+          module = className.substring(2).replace(/_/g, ' ');
         }
 
-        if (className.substring(0, 4) === 'var_') {
-          variations.push(className.substring(4).replace(/_/g, ' '));
+        if (className.match(/(.*?)--/)) {
+          variations.push(className.replace(/(.*?)--/g, ''));
         }
       });
 

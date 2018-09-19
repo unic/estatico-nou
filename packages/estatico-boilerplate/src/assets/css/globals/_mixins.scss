@@ -83,10 +83,10 @@
  *
  * Usage:
  *
- * .var_dark_on_light {
+ * .xy--dark-on-light {
  * 	@include fontSmoothing;
  * }
- * .var_light_on_dark {
+ * .xy--light-on-dark {
  * 	@include fontSmoothingReset;
  * }
  */

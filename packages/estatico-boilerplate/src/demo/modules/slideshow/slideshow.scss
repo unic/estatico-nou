@@ -1,59 +1,63 @@
-.mod_slideshow {
+.m-slideshow {
 
-  .slide {
-    height: 0;
-    overflow: hidden;
-    padding-bottom: 33.3333333%;
-    position: relative;
-
-    img {
-      display: block;
-      height: auto;
-      left: 0;
-      position: absolute;
-      top: 0;
-      width: 100%;
-    }
-  }
-
-  .nav {
-    @include clearfix;
-    margin-top: 1em;
-  }
-
-  .prev,
-  .next {
-    background-color: $colorSoulSide; // for anything smaller than a tablet
-    border: 0;
-    float: left;
-
-    @include mq($from: small, $to: medium) { // for tablets
-      background-color: $colorBondiBlue;
-      color: $colorAlpineAlabaster;
-    }
-    @include mq($from: medium) { // for anything bigger than a tablet
-      background-color: $colorGraspingGrass;
-    }
-  }
-  
-  .next {
-    float: right;
-  }
-
+  // stylelint-disable-next-line plugin/selector-bem-pattern
   .js & {
     
-    &:not(.is_activated) {
-      // stylelint-disable-next-line max-nesting-depth
-      .slide + .slide {
+    // stylelint-disable-next-line max-nesting-depth
+    &:not(.is-activated) {
+      // stylelint-disable-next-line max-nesting-depth,plugin/selector-bem-pattern
+      .m-slideshow__slide:not(:first-child) {
         display: none;
       }
     }
 
-    &.is_activated {
-      // stylelint-disable-next-line max-nesting-depth
-      .slide:not(.is_current) {
+    // stylelint-disable-next-line max-nesting-depth
+    &.is-activated {
+      // stylelint-disable-next-line max-nesting-depth,plugin/selector-bem-pattern
+      .m-slideshow__slide:not(.is-current) {
         display: none;
       }
     }
   }
+}
+
+.m-slideshow__slide {
+  height: 0;
+  overflow: hidden;
+  padding-bottom: 33.3333333%;
+  position: relative;
+}
+
+.m-slideshow__slide-img {
+  display: block;
+  height: auto;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.m-slideshow__nav {
+  @include clearfix;
+
+  margin-top: 1em;
+}
+
+.m-slideshow__nav-prev,
+.m-slideshow__nav-next {
+  background-color: $colorSoulSide; // for anything smaller than a tablet
+  border: 0;
+  float: left;
+
+  @include mq($from: small, $to: medium) { // for tablets
+    background-color: $colorBondiBlue;
+    color: $colorAlpineAlabaster;
+  }
+  @include mq($from: medium) { // for anything bigger than a tablet
+    background-color: $colorGraspingGrass;
+  }
+}
+
+.m-slideshow__nav-next {
+  float: right;
 }

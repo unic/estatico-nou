@@ -1,8 +1,8 @@
-.mod_teaser {
+.m-teaser {
   padding: .2em 1em;
+}
 
-  &.var_inverted {
-    background: black;
-    color: white;
-  }
+.m-teaser--inverted {
+  background: black;
+  color: white;
 }

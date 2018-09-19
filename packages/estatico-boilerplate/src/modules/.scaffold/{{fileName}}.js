@@ -16,7 +16,7 @@ class {{className}} extends EstaticoModule {
         // item: '[data-$\{{{className}}.name}="item"]'
       },
       stateClasses: {
-        // activated: 'is_activated'
+        // activated: 'is-activated'
       },
     };
 

@@ -1,10 +1,12 @@
-.mod_teasers {
+.m-teasers {
   display: flex;
 
+  // stylelint-disable-next-line max-nesting-depth
   .no-flexbox.no-flexboxlegacy.no-flexboxtweener & {
     @include clearfix;
 
-    .mod_teaser {
+    // stylelint-disable-next-line plugin/selector-bem-pattern,max-nesting-depth
+    .m-teaser {
       float: left;
       width: 25%;
     }

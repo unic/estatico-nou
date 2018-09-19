@@ -1,28 +1,29 @@
-.mod_svgsprite {
+.m-svgsprite {
   padding: 0 50px;
+}
 
-  .list {
-    @include resetList;
+.m-svgsprite__list {
+  @include resetList;
+}
+
+.m-svgsprite__item {
+  @include clearfix;
+}
+
+.m-svgsprite__icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  opacity: 0;
+  fill: $colorClearChill;
+  transition: fill 1s ease;
+
+  &:hover {
+    fill: $colorLambentLagoon;
   }
 
-  .item {
-    @include clearfix;
-  }
-
-  .icon {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    opacity: 0;
-    fill: $colorClearChill;
-    transition: fill 1s ease;
-
-    &:hover {
-      fill: $colorLambentLagoon;
-    }
-
-    .svgSpritesLoaded & {
-      opacity: 1;
-    }
+  // stylelint-disable-next-line plugin/selector-bem-pattern
+  .svgsprites--loaded & {
+    opacity: 1;
   }
 }

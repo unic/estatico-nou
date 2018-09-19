@@ -247,6 +247,7 @@ gulp.task('css:lint', () => {
     src: [
       './src/**/*.scss',
       '!./src/assets/css/templates/*.scss',
+      '!./src/preview/assets/css/main.scss',
     ],
     srcBase: './src/',
     dest: './dist',
