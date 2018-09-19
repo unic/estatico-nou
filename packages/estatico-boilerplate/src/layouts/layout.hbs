@@ -30,9 +30,6 @@
 	<script src="/assets/js/main{{#unless env.dev}}.min{{/unless}}.js"></script>
 
 	{{#block "scripts"}}
-		{{#if meta.testScripts}}
-			{{> "preview/partials/test"}}
-		{{/if}}
 	{{/block}}
 </body>
 </html>
