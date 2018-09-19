@@ -3,8 +3,8 @@
  *
  * @license APLv2
  */
-import $ from 'jquery';
 import namespace from './namespace';
+import loadPolyfills from './polyfills';
 
 /** Demo modules * */
 import SkipLinks from '../../../demo/modules/skiplinks/skiplinks';
@@ -18,35 +18,36 @@ class App {
 
     this.initEvents = [];
 
-    SkipLinks.init();
-
     // Module registry - mapping module name (used in data-init) to module Class
     this.modules = {};
     this.modules.slideshow = SlideShow;
-    /* autoinsertmodule */ // eslint-disable-line
+    this.modules.skiplinks = SkipLinks;
+		/* autoinsertmodule */ // eslint-disable-line
 
     // expose initModule function
     window[namespace].helpers.initModule = this.initModule;
   }
 
-  start() {
+  async start() {
+    await loadPolyfills();
+
     this.registerModules();
     this.initModuleInitialiser();
   }
 
-  initModule(moduleName, $node) {
+  initModule(moduleName, element) {
     const Module = window[namespace].modules[moduleName].Class;
-    const metaData = $node.data(`${moduleName}-data`) || {};
-    const metaOptions = $node.data(`${moduleName}-options`) || {};
-    const moduleInstance = new Module($node, metaData, metaOptions);
+    const metaData = element.dataset[`${moduleName}Data`] || {};
+    const metaOptions = element.dataset[`${moduleName}Options`] || {};
+    const moduleInstance = new Module(element, metaData, metaOptions);
 
     window[namespace].modules[moduleName].instances[moduleInstance.uuid] = moduleInstance;
-    $node.data(`${moduleName}Instance`, moduleInstance);
+    element.dataset[`${moduleName}Instance`] = moduleInstance.uuid; // eslint-disable-line no-param-reassign
   }
 
   registerModules() {
-    $('[data-init]').each((key, element) => {
-      const modules = $(element).data('init').split(' ');
+    [].slice.call(document.querySelectorAll('[data-init]')).forEach((element) => {
+      const modules = element.dataset.init.split(' ');
 
       modules.forEach((moduleName) => {
         this.registerModule(moduleName);
@@ -76,9 +77,8 @@ class App {
     return window[namespace].modules[moduleName];
   }
 
-  isInitialised($element, moduleName) {
-    // jQuery 3 does not allow kebab-case in data() when retrieving whole data object https://jquery.com/upgrade-guide/3.0/#breaking-change-data-names-containing-dashes
-    return $element.data(`${moduleName}Instance`);
+  isInitialised(element, moduleName) {
+    return element.dataset[`${moduleName}Instance`];
   }
 
   isInitEvent(eventType, moduleName) {
@@ -86,15 +86,14 @@ class App {
   }
 
   initModules(event) {
-    $('[data-init]').each((key, element) => {
-      const $element = $(element);
-      const modules = $element.data('init').split(' ');
+    [].slice.call(document.querySelectorAll('[data-init]')).forEach((element) => {
+      const modules = element.dataset.init.split(' ');
 
       modules.forEach((moduleName) => {
         if (this.isRegistered(moduleName)
-          && !this.isInitialised($element, moduleName)
-          && this.isInitEvent(event.type, moduleName)) {
-          this.initModule(moduleName, $element);
+            && !this.isInitialised(element, moduleName)
+            && this.isInitEvent(event.type, moduleName)) {
+          this.initModule(moduleName, element);
         }
       });
     });
@@ -105,10 +104,9 @@ class App {
       return;
     }
 
-    // jQuery 3 does not support `ready` event in $(document).on() https://jquery.com/upgrade-guide/3.0/#breaking-change-on-quot-ready-quot-fn-removed
-    // But lets sent 'ready' information to modules initialising on that event
-    $(this.initModules.bind(this, { type: 'ready' }));
-    $(document).on(this.initEvents.join(' '), this.initModules.bind(this));
+    this.initEvents.forEach((event) => {
+      document.addEventListener(event, this.initModules.bind(this), false);
+    });
   }
 }
 

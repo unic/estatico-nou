@@ -26,13 +26,14 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (/* env */) => ({
+const defaults = env => ({
   src: null,
   srcBase: null,
   dest: null,
   watch: null,
   plugins: {
     stylelint: {
+      fix: env.fix,
       failAfterError: true,
       reporters: [
         {
@@ -57,6 +58,7 @@ const task = (config, env = {}) => {
   const plumber = require('gulp-plumber');
   const changed = require('gulp-changed-in-place');
   const gulpStylelint = require('gulp-stylelint');
+  const through = require('through2');
 
   return gulp.src(config.src, {
     base: config.srcBase,
@@ -73,8 +75,8 @@ const task = (config, env = {}) => {
     // Stylelint verification
     .pipe(gulpStylelint(config.plugins.stylelint).on('error', err => config.logger.error(err, env.dev)))
 
-    // Write back to disc to allow for autofixing
-    .pipe(gulp.dest(config.srcBase));
+    // Write back to disc to allow for auto-fixing
+    .pipe(config.plugins.stylelint.fix ? gulp.dest(config.srcBase) : through.obj());
 };
 
 /**

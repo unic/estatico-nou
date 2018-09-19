@@ -37,7 +37,7 @@ class Helper {
     }
   }
 
-  // Deep extend (before $.extend is available)
+  // Deep extend
   extend(destination, source) {
     let property;
 

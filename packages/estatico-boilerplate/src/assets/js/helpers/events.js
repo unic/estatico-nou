@@ -1,7 +1,6 @@
-import $ from 'jquery';
+import { Delegate } from 'dom-delegate';
 import debounce from 'lodash/debounce';
 import throttle from 'raf-throttle';
-import namespace from './namespace';
 
 /**
  * Adds debounced and throttled global resize and scroll events and generates public methods
@@ -13,15 +12,13 @@ import namespace from './namespace';
  * @example
  * // Listen to debounced scroll event:
  * import WindowEventListener from './events';
- * WindowEventListener.addDebouncedScrollListener((originalEvent, event) => {
- *   this.log(event, originalEvent);
+ * WindowEventListener.addDebouncedScrollListener((event) => {
+ *   this.log(event);
  * });
  */
 
 class WindowEventListener {
   constructor() {
-    this.$window = $(window);
-
     const events = {
       resize: {
         interval: 50,
@@ -31,10 +28,24 @@ class WindowEventListener {
       },
     };
 
+    this.eventDelegate = new Delegate(document);
+    this.eventHandlers = {};
+
     for (const eventName of Object.keys(events)) { // eslint-disable-line no-restricted-syntax
       this.registerDebouncedEvent(eventName, events[eventName]);
       this.registerThrottledEvent(eventName, events[eventName]);
     }
+  }
+
+  /**
+   * Dispatch custom event on document
+   * @param {String} eventName
+   * @param {Object} data
+   */
+  dispatch(eventName, data) {
+    this.eventDelegate.rootElement.dispatchEvent(new CustomEvent(eventName, {
+      detail: data,
+    }));
   }
 
   /**
@@ -45,20 +56,18 @@ class WindowEventListener {
    * @private
    */
   registerDebouncedEvent(eventName, config) {
-    const debouncedEventName = `debounced${eventName}.${namespace}`;
     const methodName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
+    const debouncedEventName = `debounced${methodName}`;
 
-    this.$window.on(eventName, debounce((event) => {
-      $(document).triggerHandler(debouncedEventName, event);
-    }, config.interval));
+    window.addEventListener(eventName, debounce((event) => {
+      this.dispatch(debouncedEventName, {
+        originalEvent: event,
+      });
+    }, config.interval), false);
 
     // adds a public shorthand method, e.g. addResizeListener to the WindowEventListener class
     this[`addDebounced${methodName}Listener`] = this.addEventListener.bind(this, debouncedEventName);
     this[`removeDebounced${methodName}Listener`] = this.removeEventListener.bind(this, debouncedEventName);
-
-    // Save to global namespace
-    $.extend(true, window[namespace], { events: {} });
-    window[namespace].events[debouncedEventName.split('.')[0]] = debouncedEventName;
   }
 
   /**
@@ -68,20 +77,18 @@ class WindowEventListener {
    * @private
    */
   registerThrottledEvent(eventName) {
-    const throttledEventName = `throttled${eventName}.${namespace}`;
     const methodName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
+    const throttledEventName = `throttled${methodName}`;
 
-    this.$window.on(eventName, throttle((event) => {
-      $(document).triggerHandler(throttledEventName, event);
+    window.addEventListener(eventName, throttle((event) => {
+      this.dispatch(throttledEventName, {
+        originalEvent: event,
+      });
     }));
 
     // adds a public shorthand method, e.g. addResizeListener to the WindowEventListener class
     this[`addThrottled${methodName}Listener`] = this.addEventListener.bind(this, throttledEventName);
     this[`removeThrottled${methodName}Listener`] = this.removeEventListener.bind(this, throttledEventName);
-
-    // Save to global namespace
-    $.extend(true, window[namespace], { events: {} });
-    window[namespace].events[throttledEventName.split('.')[0]] = throttledEventName;
   }
 
   /**
@@ -95,7 +102,10 @@ class WindowEventListener {
   addEventListener(eventName, callback, uuid) {
     const name = uuid ? `${eventName}.${uuid}` : eventName;
 
-    $(document).on(name, callback);
+    // Keep track of handler
+    this.eventHandlers[name] = callback;
+
+    this.eventDelegate.on(eventName, callback);
   }
 
   /**
@@ -108,9 +118,9 @@ class WindowEventListener {
   removeEventListener(eventName, uuid) {
     const name = uuid ? `${eventName}.${uuid}` : eventName;
 
-    $(document).off(name);
+    this.eventDelegate.off(eventName, this.eventHandlers[name]);
   }
 }
 
-// Exports an INSTANCE
+// Export default instance
 export default new WindowEventListener();

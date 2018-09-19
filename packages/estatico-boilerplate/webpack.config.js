@@ -47,6 +47,10 @@ module.exports = [
     module: {
       rules: defaults.module.rules.concat([
         {
+          test: /jquery\.js$/,
+          loader: 'expose-loader?$!expose-loader?jQuery',
+        },
+        {
           test: /qunit\.js$/,
           loader: 'expose-loader?QUnit',
         },
@@ -55,9 +59,6 @@ module.exports = [
           loader: 'style-loader!css-loader',
         },
       ]),
-    },
-    externals: {
-      jquery: 'jQuery',
     },
     output: {
       path: path.resolve('./dist/preview/assets/js'),
