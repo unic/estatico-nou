@@ -35,6 +35,7 @@
     "@unic/estatico-webpack": "0.0.16",
     "change-case": "^3.0.2",
     "del": "^3.0.0",
+    "eslint-plugin-jest": "^21.22.0",
     "glob": "^7.1.2",
     "gulp": "^4.0.0",
     "inquirer": "^5.2.0",

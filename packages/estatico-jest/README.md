@@ -81,6 +81,8 @@ $ npm install --save-dev jest @unic/estatico-jest
 
 4. Add test files to repository (their file name needs to match the `testRegex` above).
 
+5. Recommended: Add `eslint-plugin-jest` with `jest/globals` to `.eslintrc.js`.
+
 ### Example test
 
 ```js

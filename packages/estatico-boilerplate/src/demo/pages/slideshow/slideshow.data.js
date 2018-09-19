@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const dataHelper = require('@unic/estatico-data');
 const defaultData = require('../../../data/default.data.js');
 const skiplinksData = require('../../modules/skiplinks/skiplinks.data.js');
 const slideshowData = require('../../modules/slideshow/slideshow.data.js');
