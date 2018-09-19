@@ -53,7 +53,8 @@ The [estatico-boilerplate](packages/estatico-boilerplate) package is meant as a 
 ### Helpers
 
 - [estatico-data](packages/estatico-data)
-- [estatico-qunit](packages/estatico-qunit)
+- [estatico-jest](packages/estatico-jest)
+- [estatico-qunit](packages/estatico-qunit) [deprecated]
 - [estatico-utils](packages/estatico-utils)
 
 ## How can I contribute?

@@ -1,94 +1,54 @@
-const $ = require('jquery');
-const QUnit = require('qunit');
-const namespace = require('../../../assets/js/helpers/namespace').default;
+describe('Slideshow Tests', () => {
+  let page;
 
-const moduleName = 'slideshow';
-const $node = $(`.mod_${moduleName}`).eq(0);
-let instance;
+  beforeAll(async () => {
+    // eslint-disable-next-line no-underscore-dangle
+    const url = `http://localhost:${global.__STATIC_PORT__}/demo/modules/slideshow/slideshow.html`;
 
-// Setup QUnit module
-QUnit.module('slideshow', {
-  beforeEach() {
-    instance = $node.data(`${moduleName}Instance`);
-  },
+    // eslint-disable-next-line no-underscore-dangle
+    page = await global.__BROWSER__.newPage();
 
-  afterEach() {
-    instance.destroy();
-    window[namespace].helpers.initModule(moduleName, $node);
-  },
-});
+    page.on('pageerror', console.log);
 
-QUnit.test('Test correct plugin registration', (assert) => {
-  assert.expect(1);
+    await page.goto(url, {
+      waitUntil: ['networkidle2'],
+    });
+  });
 
-  assert.equal(typeof instance, 'object', 'Plugin instance is an object');
-});
+  afterEach(async () => {
+    await page.reload();
+  });
 
-QUnit.test('Test correct plugin init', (assert) => {
-  assert.expect(7);
+  afterAll(async () => {
+    await page.close();
+  });
 
-  const $buttons = $node.find(`button[data-${moduleName}]`);
-  const events = $._data($node.get(0), 'events') || {}; // eslint-disable-line no-underscore-dangle
-  const clickEvents = $.grep(events.click || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  it('should load without error', async () => {
+    const text = await page.evaluate(() => document.body.textContent);
 
-  const docEvents = $._data(document, 'events'); // eslint-disable-line no-underscore-dangle
-  const resizeEvent = $.grep(docEvents[window[namespace].events.debouncedresize.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+    expect(text).toContain('Slideshow');
+  });
 
-  const scrollEvent = $.grep(docEvents[window[namespace].events.throttledscroll.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+  it('should return initial image source', async () => {
+    const src = await page.evaluate(async () => {
+      const img = document.querySelector('[data-slideshow="slide"] img');
 
-  const mqEvent = $.grep(docEvents[window[namespace].events.mq.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
+      return img.src;
+    });
 
-  assert.equal($buttons.length, 2, 'Two buttons found');
+    expect(src).toBe('http://www.fillmurray.com/600/201');
+  });
 
-  assert.equal(clickEvents.length, 2, 'Two click events attached to slideshow');
+  it('should change the active slide on "next" button click', async () => {
+    const currentItem = await page.evaluate(async () => {
+      const button = document.querySelector('[data-slideshow="next"]');
+      const uuid = document.querySelector('[data-init="slideshow"]').dataset.slideshowInstance;
 
-  assert.equal(events.click[0].selector.toLowerCase(), `[data-${moduleName}="prev"]`, 'Prev button event reporting correct selector');
-  assert.equal(events.click[1].selector.toLowerCase(), `[data-${moduleName}="next"]`, 'Next button event reporting correct selector');
+      await button.click();
 
-  assert.equal(resizeEvent.length, 1, 'Resize event set');
-  assert.equal(scrollEvent.length, 1, 'Scroll event set');
-  assert.equal(mqEvent.length, 1, 'Media-query event set');
-});
+      return window.estatico.modules.slideshow.instances[uuid].currentItem;
+    });
 
-QUnit.test('Test correct plugin destroy', (assert) => {
-  assert.expect(5);
-
-  instance.destroy();
-
-  const $buttons = $node.find(`button[data-${moduleName}]`);
-  const events = $._data($node.get(0), 'events') || {}; // eslint-disable-line no-underscore-dangle
-  const clickEvents = $.grep(events.click || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
-
-  const docEvents = $._data(document, 'events'); // eslint-disable-line no-underscore-dangle
-  const resizeEvent = $.grep(docEvents[window[namespace].events.debouncedresize.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
-
-  const scrollEvent = $.grep(docEvents[window[namespace].events.throttledscroll.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
-
-  const mqEvent = $.grep(docEvents[window[namespace].events.mq.split('.')[0]] || [], event => $.inArray(instance.uuid, event.namespace.split('.')) !== -1);
-
-  assert.equal($buttons.length, 0, 'No more button found');
-
-  assert.equal(clickEvents.length, 0, 'No more click events attached to slideshow');
-
-  assert.equal(resizeEvent.length, 0, 'Resize event unset');
-  assert.equal(scrollEvent.length, 0, 'Scroll event unset');
-  assert.equal(mqEvent.length, 0, 'Media-query event unset');
-});
-
-QUnit.test('Test whether clicking prev button updates "currentItem" property', (assert) => {
-  assert.expect(1);
-
-  const $button = $node.find('button.next');
-
-  $button.trigger('click');
-
-  assert.equal(instance.currentItem, 1, 'currentItem is 1');
-});
-
-QUnit.test('Test whether "show" method updates "currentItem" property', (assert) => {
-  assert.expect(1);
-
-  instance.show(2);
-
-  assert.equal(instance.currentItem, 2, 'currentItem is 2');
+    expect(currentItem).toBe(1);
+  });
 });

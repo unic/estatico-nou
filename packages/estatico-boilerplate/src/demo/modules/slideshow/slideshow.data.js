@@ -10,9 +10,6 @@ const data = _.merge({}, defaultData, {
     className: 'SlideShow',
     jira: 'JIRA-4',
     documentation: dataHelper.getDocumentation('slideshow.md'),
-    testScripts: [
-      dataHelper.getTestScriptPath('slideshow.test.js'),
-    ],
     mocks: [
       {
         description: null,

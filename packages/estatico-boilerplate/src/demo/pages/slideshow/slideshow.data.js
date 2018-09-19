@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const dataHelper = require('@unic/estatico-data');
 const defaultData = require('../../../data/default.data.js');
 const skiplinksData = require('../../modules/skiplinks/skiplinks.data.js');
 const slideshowData = require('../../modules/slideshow/slideshow.data.js');
@@ -7,9 +6,6 @@ const slideshowData = require('../../modules/slideshow/slideshow.data.js');
 const data = _.merge({}, defaultData, {
   meta: {
     title: 'Demo: 05 Unit test on page',
-    testScripts: [
-      dataHelper.getTestScriptPath('../../modules/slideshow/slideshow.test.js'),
-    ],
   },
   props: {
     title: 'Unit test',

@@ -15,7 +15,6 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
   const estaticoWatch = require('@unic/estatico-watch');
-  const estaticoQunit = require('@unic/estatico-qunit');
   const { readFileSyncCached } = require('@unic/estatico-utils');
 
   const instance = task({
@@ -73,13 +72,7 @@ gulp.task('html', () => {
       handlebars: {
         partials: [
           './src/**/*.hbs',
-          './node_modules/estatico-qunit/**/*.hbs',
         ],
-        helpers: {
-          register: (handlebars) => {
-            handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
-          },
-        },
       },
       // Wrap with module layout
       transformBefore: (file) => {
@@ -366,61 +359,38 @@ gulp.task('js:lint', () => {
 
 /**
  * JavaScript testing task
- * Uses Puppeteer to check for JS errors and run tests
+ * Uses Jest with Puppeteer to check for JS errors and run tests
+ * Expects an npm script called "jest" which is running jest
  *
- * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
- * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ * An alternative would be to use jest.runCLI instead. However, this currently fails
+ * due to the teardown script terminating the process in order to close the static webserver.
+ *
+ * Instead of running this task it is possible to just execute `npm run jest`
  */
-gulp.task('js:test', () => {
-  const task = require('@unic/estatico-puppeteer');
-  const estaticoQunit = require('@unic/estatico-qunit');
+gulp.task('js:test', (done) => {
+  const { spawn } = require('child_process');
+  let failed = false;
 
-  const instance = task({
-    src: [
-      './dist/{pages,modules,demo}/**/*.html',
-    ],
-    srcBase: './dist',
-    watch: {
-      src: [
-        './src/**/*.test.js',
-      ],
-      name: 'js:test',
-    },
-    viewports: {
-      mobile: {
-        width: 400,
-        height: 1000,
-        isMobile: true,
-      },
-      // tablet: {
-      //   width: 700,
-      //   height: 1000,
-      //   isMobile: true,
-      // },
-      desktop: {
-        width: 1400,
-        height: 1000,
-      },
-    },
-    plugins: {
-      interact: async (page, logger) => {
-        // Run tests
-        const results = await estaticoQunit.puppeteer.run(page);
+  const tests = spawn('npm', ['run', 'jest'], {
+    // Add proper output coloring unless in CI env (where this would have weird side-effects)
+    stdio: env.ci ? 'pipe' : ['inherit', 'inherit', 'pipe'],
+  });
 
-        // Report results
-        if (results) {
-          estaticoQunit.puppeteer.log(results, logger);
-        }
-      },
-    },
-  }, env);
+  tests.stderr.on('data', (data) => {
+    if (`${data}`.match(/Test Suites: (.*?) failed/m)) {
+      failed = true;
+    }
 
-  // Don't immediately run task when skipping build
-  if (env.watch && env.skipTests) {
-    return instance;
-  }
+    process.stderr.write(data);
+  });
 
-  return instance();
+  tests.on('close', () => {
+    if (failed && !env.dev) {
+      process.exit(1);
+    }
+
+    done();
+  });
 });
 
 /**

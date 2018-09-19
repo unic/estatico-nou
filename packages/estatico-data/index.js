@@ -71,13 +71,6 @@ module.exports = {
     return getFile(requirePath);
   },
 
-  getTestScriptPath(filePath) {
-    const requirePath = getRequirePath(filePath);
-    const scriptPath = path.join('/preview/assets/js/test/', path.basename(requirePath));
-
-    return scriptPath;
-  },
-
   getFormattedHtml(content) {
     const html = prettify.html(content, {
       indent_char: '\t',
