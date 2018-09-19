@@ -1,7 +1,6 @@
 const defaults = require('@unic/estatico-webpack/webpack.config.js');
 const env = require('minimist')(process.argv.slice(2));
 const merge = require('lodash.merge');
-const glob = require('glob');
 const path = require('path');
 
 module.exports = [
