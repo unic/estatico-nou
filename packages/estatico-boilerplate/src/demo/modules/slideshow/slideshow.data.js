@@ -22,11 +22,15 @@ const data = _.merge({}, defaultData, {
       src: `http://www.fillmurray.com/${size}`,
       alt: `Bill Murray ${index + 1}`,
     })),
-
-    i18n: {
-      prev: 'Previous Slide',
-      next: 'Next Slide',
-    },
+    data: JSON.stringify({
+      i18n: {
+        prev: 'Previous Slide',
+        next: 'Next Slide',
+      },
+    }),
+    options: JSON.stringify({
+      url: '/mocks/demo/modules/slideshow/slideshow.json?delay=5000',
+    }),
   },
 });
 const variants = _.mapValues({
