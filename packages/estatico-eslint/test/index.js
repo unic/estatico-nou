@@ -51,7 +51,7 @@ test.cb('without --fix', (t) => {
     const log = utils.stripLogs(spy);
 
     t.regex(log, /'hello' is never reassigned. Use 'const' instead/);
-    t.regex(log, /estatico-eslint Linting error in file main\.js \(details above\)/);
+    t.regex(log, /estatico-eslint main\.js Linting error \(details above\)/);
 
     t.end();
   });
