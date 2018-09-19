@@ -52,7 +52,12 @@ $ npm install --save-dev jest @unic/estatico-jest
    *
    * Instead of running this task it is possible to just execute `npm run jest`
    */
-  gulp.task('js:test', () => {
+  gulp.task('js:test', (done) => {
+    // Skip task when skipping tests
+    if (env.skipTests) {
+      return done();
+    }
+
     const { spawn } = require('child_process');
     let failed = false;
 
@@ -73,6 +78,8 @@ $ npm install --save-dev jest @unic/estatico-jest
       if (failed && !env.dev) {
         process.exit(1);
       }
+
+      done();
     });
 
     return tests;
