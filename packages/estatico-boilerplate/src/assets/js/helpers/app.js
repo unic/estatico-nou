@@ -4,7 +4,7 @@
  * @license APLv2
  */
 import namespace from './namespace';
-import { loadPolyfills } from './polyfills';
+import loadPolyfills from './polyfills';
 
 /** Demo modules * */
 import SkipLinks from '../../../demo/modules/skiplinks/skiplinks';
