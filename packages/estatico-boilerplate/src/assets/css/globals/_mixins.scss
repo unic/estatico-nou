@@ -6,32 +6,30 @@
  */
 
 @mixin visuallyhidden() {
-	border: 0;
-	clip: rect(0 0 0 0);
-	height: 1px;
-	margin: -1px;
-	overflow: hidden;
-	padding: 0;
-	position: absolute;
-	width: 1px;
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
-
 @mixin visuallyhiddenReset() {
-	clip: auto;
-	height: auto;
-	margin: 0;
-	overflow: visible;
-	position: static;
-	width: auto;
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  width: auto;
 }
-
 @mixin visuallyhiddenFocusable() {
-	@include visuallyhidden;
+  @include visuallyhidden;
 
-	&:focus,
-	&:active {
-		@include visuallyhiddenReset;
-	}
+  &:focus,
+  &:active {
+    @include visuallyhiddenReset;
+  }
 }
 
 
@@ -42,17 +40,17 @@
  */
 
 @mixin clearfix() {
-	*zoom: 1;
+  *zoom: 1;
 
-	&:before,
-	&:after {
-		content: " ";
-		display: table;
-	}
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
 
-	&:after {
-		clear: both;
-	}
+  &:after {
+    clear: both;
+  }
 }
 
 
@@ -61,9 +59,9 @@
  */
 
 @mixin resetList() {
-	list-style: none;
-	margin: 0;
-	padding: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 
@@ -72,10 +70,10 @@
  */
 
 @mixin replaceText() {
-	display: block;
-	overflow: hidden;
-	text-indent: 100%;
-	white-space: nowrap;
+  display: block;
+  overflow: hidden;
+  text-indent: 100%;
+  white-space: nowrap;
 }
 
 
@@ -94,13 +92,12 @@
  */
 
 @mixin fontSmoothing() {
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-
 @mixin fontSmoothingReset() {
-	-webkit-font-smoothing: subpixel-antialiased;
-	-moz-osx-font-smoothing: auto;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
 }
 
 
@@ -110,16 +107,19 @@
 
 @mixin placeholder() {
 
-	&::-webkit-input-placeholder {
-		@content;
-	}
-	&:-moz-placeholder { // Firefox 18-
-		@content;
-	}
-	&::-moz-placeholder { // Firefox 19+
-		@content;
-	}
-	&:-ms-input-placeholder {
-		@content;
-	}
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder { // Firefox 18-
+    @content;
+  }
+
+  &::-moz-placeholder { // Firefox 19+
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
 }
