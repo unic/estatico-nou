@@ -18,5 +18,11 @@
   },
   "peerDependencies": {
     "jest": "^23.6.0"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
