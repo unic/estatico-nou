@@ -28,7 +28,8 @@ test.cb('error', (t) => {
 
     const log = utils.stripLogs(spy);
 
-    t.notRegex(log, /default\/data.js should have required property \\'firstName\\'/);
+    t.regex(log, /default\/error\.js #\/required: should have required property 'firstName'/);
+    t.regex(log, /default\/error\.js #\/properties\/age\/type: should be integer/);
 
     t.end();
   });
