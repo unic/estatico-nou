@@ -96,14 +96,8 @@ const task = (config, env = {}, watcher) => {
 
     // Decide based on watcher dependency graph which files to pass through
     .pipe(through.obj((file, enc, done) => {
-      if (watcher && watcher.resolvedGraph) {
-        config.logger.debug('Resolved watch graph:', watcher.resolvedGraph);
-
-        if (!watcher.resolvedGraph.includes(file.path)) {
-          config.logger.debug(`${chalk.yellow(file.path)} not found in resolved graph. It will not be rebuilt.`);
-
-          return done();
-        }
+      if (watcher && watcher.matchGraph && !watcher.matchGraph(file.path)) {
+        return done();
       }
 
       return done(null, file);

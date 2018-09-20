@@ -46,8 +46,6 @@ const defaults = (/* env */) => ({
  */
 const task = (config /* , env = {} */) => {
   const gulp = require('gulp');
-  const path = require('path');
-  // const decache = require('decache');
 
   const DependencyGraph = require('./lib/dependencygraph');
 
@@ -65,12 +63,9 @@ const task = (config /* , env = {} */) => {
   // Create named callback function for gulp-cli to be able to log it
   const cb = {
     [config.name]() {
-      const resolvedGraph = dependencyGraph ? events.map((event) => {
-        const resolvedPath = path.resolve(config.dependencyGraph.srcBase, event.path);
-        const ancestors = dependencyGraph.getAncestors(resolvedPath);
-
-        return ancestors.concat(resolvedPath);
-      }).reduce((curr, acc) => acc.concat(curr), []) : [];
+      const resolvedGraph = dependencyGraph ? dependencyGraph.resolve(events) : [];
+      // eslint-disable-next-line max-len
+      const matchGraph = dependencyGraph ? dependencyGraph.match.bind(dependencyGraph, resolvedGraph) : null;
 
       // Remove data files from require cache
       resolvedGraph.forEach(filePath => delete require.cache[require.resolve(filePath)]);
@@ -79,6 +74,7 @@ const task = (config /* , env = {} */) => {
       const watchedTask = config.task({
         events,
         resolvedGraph,
+        matchGraph,
       });
 
       config.logger.debug(`Resolving the following events for "${config.name}": ${events}`);
