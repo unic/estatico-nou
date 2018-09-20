@@ -26,7 +26,7 @@ const variants = _.mapValues({
   },
 }, (variant) => {
   const variantProps = _.merge({}, data, variant).props;
-  const compiledVariant = handlebars.compile(template)(variantProps);
+  const compiledVariant = () => handlebars.compile(template)(variantProps);
   const variantData = _.merge({}, data, variant, {
     meta: {
       demo: compiledVariant,
