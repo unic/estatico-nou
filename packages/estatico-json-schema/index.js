@@ -9,6 +9,10 @@ const schema = Joi.object().keys({
   srcBase: Joi.string().required(),
   watch: Joi.object().keys({
     src: [Joi.string().required(), Joi.array().required()],
+    dependencyGraph: Joi.object().keys({
+      srcBase: Joi.string().required(),
+      resolver: Joi.object().required(),
+    }),
     name: Joi.string().required(),
   }).allow(null),
   plugins: {
@@ -16,9 +20,6 @@ const schema = Joi.object().keys({
       getPath: Joi.func(),
     }).allow(null),
     ajv: Joi.object().keys({
-    }).allow(null),
-    changed: Joi.object().keys({
-      firstPass: Joi.boolean(),
     }).allow(null),
   },
   logger: Joi.object().keys({
@@ -38,23 +39,23 @@ const defaults = (/* env */) => ({
   srcBase: null,
   watch: null,
   plugins: {
-    input: {
+    setup: {
       // Which part of the input data to validate against the schema
       // Both default data and variants will be validated
-      getData: (data) => {
-        const defaultData = data.props;
-        const variants = data.variants ? data.variants.map(variant => variant.props) : [];
+      getData: (content /* , filePath */) => {
+        const defaultData = content.props;
+        const variants = content.variants ? Object.values(content.variants).map(v => v.props) : [];
 
         return [defaultData].concat(variants);
       },
       // Where to find the schema
-      getSchemaPath: filePath => filePath.replace(/\.data\.js$/, '.schema.json'),
+      // eslint-disable-next-line arrow-body-style
+      getSchema: (content /* , filePath */) => {
+        return content.meta ? content.meta.schema : null;
+      },
     },
     ajv: {
       allErrors: true,
-    },
-    changed: {
-      firstPass: true,
     },
   },
   logger: new Logger('estatico-json-schema'),
@@ -64,15 +65,14 @@ const defaults = (/* env */) => ({
  * Task function
  * @param {object} config - Complete task config
  * @param {object} env - Optional environment config, e.g. { dev: true }
+ * @param {object} [watcher] - Watch file events (requires `@unic/estatico-watch`)
  * @return {object} gulp stream
  */
-const task = (config, env = {}) => {
+const task = (config, env = {}, watcher) => {
   const gulp = require('gulp');
   const plumber = require('gulp-plumber');
-  const changed = require('gulp-changed-in-place');
   const Ajv = require('ajv');
   const through = require('through2');
-  const fs = require('fs');
 
   const ajv = new Ajv(config.plugins.ajv);
 
@@ -84,38 +84,40 @@ const task = (config, env = {}) => {
     // Prevent stream from unpiping on error
     .pipe(plumber())
 
-    // Do not pass unchanged files
-    .pipe(config.plugins.changed ? changed(config.plugins.changed) : through.obj())
-
-    // Validate
+    // Decide based on watcher dependency graph which files to pass through
     .pipe(through.obj((file, enc, done) => {
-      const schemaPath = config.plugins.input.getSchemaPath(file.path);
-
-      if (!fs.existsSync(schemaPath)) {
-        config.logger.error({
-          plugin: 'estatico-json-schema',
-          message: `Schema not found in ${schemaPath}`,
-        }, env.dev);
-
+      if (watcher && watcher.matchGraph && !watcher.matchGraph(file.path, true)) {
         return done();
       }
 
-      const validationSchema = require(schemaPath); // eslint-disable-line import/no-dynamic-require
-      const originalData = require(file.path); // eslint-disable-line import/no-dynamic-require
-      let data = config.plugins.input.getData(originalData);
+      return done(null, file);
+    }))
 
-      // Unless we already have an array of variants, we create an array of the only variant we have
+    // Validate
+    .pipe(through.obj((file, enc, done) => {
+      const content = require(file.path); // eslint-disable-line import/no-dynamic-require
+      const validationSchema = config.plugins.setup.getSchema(content, file.path);
+
+      if (!validationSchema) {
+        return done();
+      }
+
+      // Get data object (or array of data objects)
+      let data = config.plugins.setup.getData(content);
+
+      // Make sure we have an array anyway
       if (!Array.isArray(data)) {
         data = [data];
       }
 
+      // Loop through variants and validate each
       data.forEach((variantData, i) => {
         const validation = ajv.compile(validationSchema);
-        const isValid = validation(variantData);
+        const valid = validation(variantData);
         const variantName = i ? `Variant ${i}` : 'Default';
         const errorPrefix = data.length > 1 ? `[${variantName}] ` : '';
 
-        if (!isValid) {
+        if (!valid) {
           const fileName = path.relative(config.srcBase, file.path);
 
           validation.errors.forEach((error) => {

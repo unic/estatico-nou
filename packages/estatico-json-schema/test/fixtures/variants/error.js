@@ -1,6 +1,7 @@
 module.exports = {
   meta: {
     title: 'Default',
+    schema: require('./schema.json'), // eslint-disable-line global-require
   },
   props: {
     age: 50,

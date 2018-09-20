@@ -23,7 +23,8 @@ const env = require('minimist')(process.argv.slice(2));
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('data:lint', () => {
-  const task = require('@unic/estatico-json-schema');
+  const task = require('../estatico-json-schema');
+  const estaticoWatch = require('@unic/estatico-watch');
 
   const instance = task({
     src: [
@@ -32,12 +33,30 @@ gulp.task('data:lint', () => {
     srcBase: './src',
     watch: {
       src: [
-      './src/**/*.data.js',
+        './src/**/*.data.js',
+        './src/**/*.schema.json',
       ],
       name: 'data:lint',
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          js: {
+            match: /(?:require\('(.*?\.data\.js)'\)|require\('(.*?\.schema\.json))/g,
+            resolve: (match, filePath) => {
+              if (!(match[1] || match[2])) {
+                return null;
+              }
+
+              return path.resolve(path.dirname(filePath), match[1] || match[2]);
+            },
+          },
+          json: {},
+        },
+      },
+      watcher: estaticoWatch,
     },
   }, env);
-  
+
   // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
@@ -83,22 +102,25 @@ Passed to file watcher when `--watch` is used.
 
 Type: `Object`
 
-##### plugins.input
+##### plugins.setup
 
 Type: `Object`<br>
 Default:
 ```js
 {
   // Which part of the input data to validate against the schema
-  // Returning an array will validate each item
-  getData: (data) => {
-    const defaultData = data.props;
-    const variants = data.variants ? data.variants.map(variant => variant.props) : [];
+  // Both default data and variants will be validated
+  getData: (content /* , filePath */) => {
+    const defaultData = content.props;
+    const variants = content.variants ? Object.values(content.variants).map(v => v.props) : [];
 
     return [defaultData].concat(variants);
   },
   // Where to find the schema
-  getSchemaPath: filePath => filePath.replace(/\.data\.js$/, '.schema.json'),
+  // eslint-disable-next-line arrow-body-style
+  getSchema: (content /* , filePath */) => {
+    return content.meta ? content.meta.schema : null;
+  },
 }
 ```
 
@@ -115,18 +137,6 @@ Default:
 ```
 
 Passed to [`Ajv`](https://www.npmjs.com/package/ajv#options).
-
-##### plugins.changed
-
-Type: `Object`<br>
-Default:
-```js
-{
-  firstPass: true,
-}
-```
-
-Passed to [`gulp-changed-in-place`](https://www.npmjs.com/package/gulp-changed-in-place).
 
 #### logger
 

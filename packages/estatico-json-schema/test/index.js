@@ -1,17 +1,11 @@
 const test = require('ava');
 const sinon = require('sinon');
 const utils = require('@unic/estatico-utils').test;
-const path = require('path');
 const merge = require('lodash.merge');
 const task = require('../index.js');
 
 const defaults = {
   srcBase: './test/fixtures',
-  plugins: {
-    input: {
-      getSchemaPath: filePath => filePath.replace(path.basename(filePath), 'schema.json'),
-    },
-  },
 };
 
 test.cb('default', (t) => {
@@ -19,8 +13,9 @@ test.cb('default', (t) => {
   const options = merge({}, defaults, {
     src: ['./test/fixtures/default/*.js'],
     plugins: {
-      input: {
-        getData: data => data,
+      setup: {
+        getData: content => content,
+        getSchema: () => require('./fixtures/default/schema.json'), // eslint-disable-line global-require
       },
     },
   });
@@ -47,6 +42,11 @@ test.cb('variants', (t) => {
   const spy = sinon.spy(console, 'log');
   const options = merge({}, defaults, {
     src: ['./test/fixtures/variants/*.js'],
+    plugins: {
+      setup: {
+        getSchema: () => require('./fixtures/variants/schema.json'), // eslint-disable-line global-require
+      },
+    },
   });
 
   task(options, {
