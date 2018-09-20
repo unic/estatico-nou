@@ -90,7 +90,13 @@ Default:
 ```js
 {
   // Which part of the input data to validate against the schema
-  getData: data => data.props,
+  // Returning an array will validate each item
+  getData: (data) => {
+    const defaultData = data.props;
+    const variants = data.variants ? data.variants.map(variant => variant.props) : [];
+
+    return [defaultData].concat(variants);
+  },
   // Where to find the schema
   getSchemaPath: filePath => filePath.replace(/\.data\.js$/, '.schema.json'),
 }

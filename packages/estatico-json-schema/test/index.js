@@ -9,16 +9,20 @@ const defaults = {
   srcBase: './test/fixtures',
   plugins: {
     input: {
-      getData: data => data,
       getSchemaPath: filePath => filePath.replace(path.basename(filePath), 'schema.json'),
     },
   },
 };
 
-test.cb('error', (t) => {
+test.cb('default', (t) => {
   const spy = sinon.spy(console, 'log');
   const options = merge({}, defaults, {
-    src: './test/fixtures/default/error.js',
+    src: ['./test/fixtures/default/*.js'],
+    plugins: {
+      input: {
+        getData: data => data,
+      },
+    },
   });
 
   task(options, {
@@ -28,17 +32,21 @@ test.cb('error', (t) => {
 
     const log = utils.stripLogs(spy);
 
+    // error.js should log two errors
     t.regex(log, /default\/error\.js #\/required: should have required property 'firstName'/);
     t.regex(log, /default\/error\.js #\/properties\/age\/type: should be integer/);
+
+    // success.js should not log any errors
+    t.notRegex(log, /default\/success\.js/);
 
     t.end();
   });
 });
 
-test.cb('success', (t) => {
+test.cb('variants', (t) => {
   const spy = sinon.spy(console, 'log');
   const options = merge({}, defaults, {
-    src: './test/fixtures/default/success.js',
+    src: ['./test/fixtures/variants/*.js'],
   });
 
   task(options, {
@@ -48,7 +56,12 @@ test.cb('success', (t) => {
 
     const log = utils.stripLogs(spy);
 
-    t.is(log, '');
+    // error.js should log two errors
+    t.regex(log, /variants\/error\.js \[Default\] #\/required: should have required property 'firstName'/);
+    t.regex(log, /variants\/error\.js \[Variant 1\] #\/properties\/age\/type: should be integer/);
+
+    // success.js should not log any errors
+    t.notRegex(log, /variants\/success\.js/);
 
     t.end();
   });

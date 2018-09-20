@@ -40,7 +40,13 @@ const defaults = (/* env */) => ({
   plugins: {
     input: {
       // Which part of the input data to validate against the schema
-      getData: data => data.props,
+      // Both default data and variants will be validated
+      getData: (data) => {
+        const defaultData = data.props;
+        const variants = data.variants ? data.variants.map(variant => variant.props) : [];
+
+        return [defaultData].concat(variants);
+      },
       // Where to find the schema
       getSchemaPath: filePath => filePath.replace(/\.data\.js$/, '.schema.json'),
     },
@@ -96,23 +102,30 @@ const task = (config, env = {}) => {
 
       const validationSchema = require(schemaPath); // eslint-disable-line import/no-dynamic-require
       const originalData = require(file.path); // eslint-disable-line import/no-dynamic-require
-      const data = config.plugins.input.getData(originalData);
+      let data = config.plugins.input.getData(originalData);
 
-      const validation = ajv.compile(validationSchema);
-      const isValid = validation(data);
-
-      if (!isValid) {
-        const fileName = path.relative(config.srcBase, file.path);
-
-        validation.errors.forEach((error) => {
-          config.logger.error({
-            fileName,
-            message: `${error.schemaPath}: ${error.message}`,
-          }, env.dev);
-        });
-
-        return done();
+      // Unless we already have an array of variants, we create an array of the only variant we have
+      if (!Array.isArray(data)) {
+        data = [data];
       }
+
+      data.forEach((variantData, i) => {
+        const validation = ajv.compile(validationSchema);
+        const isValid = validation(variantData);
+        const variantName = i ? `Variant ${i}` : 'Default';
+        const errorPrefix = data.length > 1 ? `[${variantName}] ` : '';
+
+        if (!isValid) {
+          const fileName = path.relative(config.srcBase, file.path);
+
+          validation.errors.forEach((error) => {
+            config.logger.error({
+              fileName,
+              message: `${errorPrefix}${error.schemaPath}: ${error.message}`,
+            }, env.dev);
+          });
+        }
+      });
 
       return done();
     }));
