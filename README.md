@@ -41,6 +41,7 @@ The [estatico-boilerplate](packages/estatico-boilerplate) package is meant as a 
 - [estatico-handlebars](packages/estatico-handlebars)
 - [estatico-imageversions](packages/estatico-imageversions)
 - [estatico-json-mocks](packages/estatico-json-mocks)
+- [estatico-json-schema](packages/estatico-json-schema)
 - [estatico-puppeteer](packages/estatico-puppeteer)
 - [estatico-sass](packages/estatico-sass)
 - [estatico-scaffold](packages/estatico-scaffold)
