@@ -16,8 +16,9 @@ const schema = Joi.object().keys({
     name: Joi.string().required(),
   }).allow(null),
   plugins: {
-    schema: Joi.object().keys({
-      getPath: Joi.func(),
+    setup: Joi.object().keys({
+      getData: Joi.func(),
+      getSchemaPath: Joi.func(),
     }).allow(null),
     ajv: Joi.object().keys({
     }).allow(null),
@@ -50,7 +51,7 @@ const defaults = (/* env */) => ({
       },
       // Where to find the schema
       // eslint-disable-next-line arrow-body-style
-      getSchema: (content /* , filePath */) => {
+      getSchemaPath: (content /* , filePath */) => {
         return content.meta ? content.meta.schema : null;
       },
     },
@@ -73,6 +74,8 @@ const task = (config, env = {}, watcher) => {
   const plumber = require('gulp-plumber');
   const Ajv = require('ajv');
   const through = require('through2');
+  const fs = require('fs');
+  const $RefParser = require('json-schema-ref-parser');
 
   const ajv = new Ajv(config.plugins.ajv);
 
@@ -94,13 +97,31 @@ const task = (config, env = {}, watcher) => {
     }))
 
     // Validate
-    .pipe(through.obj((file, enc, done) => {
+    .pipe(through.obj(async (file, enc, done) => {
+      const fileName = path.relative(config.srcBase, file.path);
       const content = require(file.path); // eslint-disable-line import/no-dynamic-require
-      const validationSchema = config.plugins.setup.getSchema(content, file.path);
+      const validationSchemaPath = config.plugins.setup.getSchemaPath(content, file.path);
 
-      if (!validationSchema) {
+      if (!validationSchemaPath) {
         return done();
       }
+
+      if (!fs.existsSync(validationSchemaPath)) {
+        config.logger.error({
+          fileName,
+          message: `${validationSchemaPath} not found`,
+        }, env.dev);
+
+        return done();
+      }
+
+      const validationSchema = require(validationSchemaPath); // eslint-disable-line import/no-dynamic-require,max-len
+
+      // Resolve local references
+      const resolvedValidationSchema = await $RefParser.dereference(validationSchemaPath, validationSchema, {}); // eslint-disable-line max-len
+
+      // Create validation function
+      const validation = ajv.compile(resolvedValidationSchema);
 
       // Get data object (or array of data objects)
       let data = config.plugins.setup.getData(content);
@@ -112,14 +133,11 @@ const task = (config, env = {}, watcher) => {
 
       // Loop through variants and validate each
       data.forEach((variantData, i) => {
-        const validation = ajv.compile(validationSchema);
         const valid = validation(variantData);
         const variantName = i ? `Variant ${i}` : 'Default';
         const errorPrefix = data.length > 1 ? `[${variantName}] ` : '';
 
         if (!valid) {
-          const fileName = path.relative(config.srcBase, file.path);
-
           validation.errors.forEach((error) => {
             config.logger.error({
               fileName,

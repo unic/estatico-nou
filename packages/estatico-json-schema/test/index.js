@@ -15,7 +15,7 @@ test.cb('default', (t) => {
     plugins: {
       setup: {
         getData: content => content,
-        getSchema: () => require('./fixtures/default/schema.json'), // eslint-disable-line global-require
+        getSchemaPath: () => require.resolve('./fixtures/default/schema.json'),
       },
     },
   });
@@ -44,7 +44,7 @@ test.cb('variants', (t) => {
     src: ['./test/fixtures/variants/*.js'],
     plugins: {
       setup: {
-        getSchema: () => require('./fixtures/variants/schema.json'), // eslint-disable-line global-require
+        getSchemaPath: () => require.resolve('./fixtures/variants/schema.json'),
       },
     },
   });
@@ -62,6 +62,34 @@ test.cb('variants', (t) => {
 
     // success.js should not log any errors
     t.notRegex(log, /variants\/success\.js/);
+
+    t.end();
+  });
+});
+
+test.cb('refs', (t) => {
+  const spy = sinon.spy(console, 'log');
+  const options = merge({}, defaults, {
+    src: ['./test/fixtures/refs/*.js'],
+    plugins: {
+      setup: {
+        getSchemaPath: () => require.resolve('./fixtures/refs/schema.json'),
+      },
+    },
+  });
+
+  task(options, {
+    dev: true,
+  })().on('finish', () => {
+    spy.restore();
+
+    const log = utils.stripLogs(spy);
+
+    // error.js should log an error
+    t.regex(log, /refs\/error\.js #\/properties\/items\/items\/properties\/age\/type: should be integer/);
+
+    // // success.js should not log any errors
+    t.notRegex(log, /refs\/success\.js/);
 
     t.end();
   });

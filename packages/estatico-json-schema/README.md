@@ -118,13 +118,13 @@ Default:
   },
   // Where to find the schema
   // eslint-disable-next-line arrow-body-style
-  getSchema: (content /* , filePath */) => {
+  getSchemaPath: (content /* , filePath */) => {
     return content.meta ? content.meta.schema : null;
   },
 }
 ```
 
-Passed to [`Ajv`](https://www.npmjs.com/package/ajv#options).
+The result of `setup.getSchemaPath` is passed to [`json-schema-ref-parser`](https://www.npmjs.com/package/json-schema-ref-parser).
 
 ##### plugins.ajv
 
