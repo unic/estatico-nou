@@ -10,6 +10,8 @@ const data = _.merge({}, defaultData, {
     title: 'Demo: Teasers',
     jira: 'JIRA-1',
     feature: 'Feature X',
+    // See `estatico-json-schema` for validation (disabled by default)
+    // schema: require.resolve('./teasers.schema.json'),
   },
   props: {
     teasers: _.map(['Teaser 1', 'Teaser 2', 'Teaser 3', 'Teaser 4'], value => _.merge({}, teaserData, {

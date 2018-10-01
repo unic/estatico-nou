@@ -16,8 +16,6 @@ const data = _.merge({}, defaultData, {
         data: dataHelper.getDataMock('slideshow.mock.js'),
       },
     ],
-    // See `estatico-json-schema` for validation (disabled by default)
-    // schema: require('./slideshow.schema.json'),
   },
   props: {
     slides: _.map(['600/201', '600/202', '600/203'], (size, index) => ({
