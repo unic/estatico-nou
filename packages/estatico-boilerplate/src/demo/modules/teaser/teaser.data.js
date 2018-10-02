@@ -7,8 +7,7 @@ const template = dataHelper.getFileContent('teaser.hbs');
 const data = _.merge({}, defaultData, {
   meta: {
     title: 'Demo: Teaser with module variants',
-    // See `estatico-json-schema` for validation (disabled by default)
-    // schema: require.resolve('./teaser.schema.json'),
+    schema: require.resolve('./teaser.schema.json'),
   },
   props: {
     title: 'Teaser title',
