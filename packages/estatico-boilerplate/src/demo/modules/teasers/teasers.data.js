@@ -10,6 +10,7 @@ const data = _.merge({}, defaultData, {
     title: 'Demo: Teasers',
     jira: 'JIRA-1',
     feature: 'Feature X',
+    schema: require.resolve('./teasers.schema.json'),
   },
   props: {
     teasers: _.map(['Teaser 1', 'Teaser 2', 'Teaser 3', 'Teaser 4'], value => _.merge({}, teaserData, {
@@ -26,7 +27,7 @@ const variants = _.mapValues({
   },
 }, (variant) => {
   const variantProps = _.merge({}, data, variant).props;
-  const compiledVariant = handlebars.compile(template)(variantProps);
+  const compiledVariant = () => handlebars.compile(template)(variantProps);
   const variantData = _.merge({}, data, variant, {
     meta: {
       demo: compiledVariant,

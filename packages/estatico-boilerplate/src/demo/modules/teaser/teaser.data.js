@@ -7,6 +7,7 @@ const template = dataHelper.getFileContent('teaser.hbs');
 const data = _.merge({}, defaultData, {
   meta: {
     title: 'Demo: Teaser with module variants',
+    schema: require.resolve('./teaser.schema.json'),
   },
   props: {
     title: 'Teaser title',
@@ -43,7 +44,7 @@ const variants = _.mapValues({
   },
 }, (variant) => {
   const variantProps = _.merge({}, data, variant).props;
-  const compiledVariant = handlebars.compile(template)(variantProps);
+  const compiledVariant = () => handlebars.compile(template)(variantProps);
   const variantData = _.merge({}, data, variant, {
     meta: {
       demo: compiledVariant,

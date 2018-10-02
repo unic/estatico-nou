@@ -6,6 +6,12 @@ const graphlib = require('graphlib');
 
 const Graph = graphlib.Graph; // eslint-disable-line prefer-destructuring
 
+function removeFileExtension(filePath) {
+  const fileName = path.basename(filePath).split('.')[0];
+
+  return filePath.replace(path.basename(filePath), fileName);
+}
+
 // API Docs: https://github.com/dagrejs/graphlib/wiki/API-Reference
 
 class DependencyGraph {
@@ -47,7 +53,7 @@ class DependencyGraph {
     // Skip missing resolvers
     if (!resolver) {
       if (this.options.logger) {
-        this.options.logger.debug(`Dependency graph: Resolver '${path.extname(filePath)}' not found`);
+        this.options.logger.debug(`Dependency graph: Resolver '${type}' not found`);
       }
 
       return [];
@@ -75,13 +81,15 @@ class DependencyGraph {
     }
 
     // Find matches
-    while (match = resolver.match.exec(content)) { // eslint-disable-line no-cond-assign
-      const matchedFilePath = resolver.resolve(match, filePath);
+    if (resolver.match) {
+      while (match = resolver.match.exec(content)) { // eslint-disable-line no-cond-assign
+        const matchedFilePath = resolver.resolve(match, filePath);
 
-      if (matchedFilePath) {
-        matches.push(matchedFilePath);
-      } else if (this.options.logger) {
-        this.options.logger.debug(`Dependency graph: ${chalk.yellow(match[0])} not found`);
+        if (matchedFilePath) {
+          matches.push(matchedFilePath);
+        } else if (this.options.logger) {
+          this.options.logger.debug(`Dependency graph: ${chalk.yellow(match[0])} not found`);
+        }
       }
     }
 
@@ -133,6 +141,38 @@ class DependencyGraph {
     };
 
     return content;
+  }
+
+  resolve(events) {
+    return events.map((event) => {
+      const resolvedPath = path.resolve(this.options.srcBase, event.path);
+      const ancestors = this.getAncestors(resolvedPath);
+
+      return ancestors.concat(resolvedPath);
+    }).reduce((curr, acc) => acc.concat(curr), []);
+  }
+
+  match(originalResolvedGraph, originalFilePath, ignoreFileExtension) {
+    let resolvedGraph = originalResolvedGraph;
+    let filePath = originalFilePath;
+
+    // Optionally match files without file extension
+    if (ignoreFileExtension) {
+      resolvedGraph = originalResolvedGraph.map(removeFileExtension);
+      filePath = removeFileExtension(originalFilePath);
+    }
+
+    const matched = resolvedGraph.includes(filePath);
+
+    if (this.options.logger) {
+      this.options.logger.debug('Resolved watch graph:', resolvedGraph);
+
+      if (!matched) {
+        this.options.logger.debug(`${chalk.yellow(filePath)} not found in resolved graph. It will not be rebuilt.`);
+      }
+    }
+
+    return matched;
   }
 }
 

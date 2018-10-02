@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["teasers"],
+  "properties": {
+    "teasers": {
+      "type": "array",
+      "items": {
+        "$ref":  "../teaser/teaser.schema.json"
+      }
+    }
+  }
+}

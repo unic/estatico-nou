@@ -144,6 +144,52 @@ gulp.task('html:validate', () => {
 });
 
 /**
+ * Lint data file structure
+ * Uses Ajv to to validate against a JSON schema
+ *
+ * Using `--watch` (or manually setting `env` to `{ watch: true }`) starts file watcher
+ * When combined with `--skipBuild`, the task will not run immediately but only after changes
+ */
+gulp.task('data:lint', () => {
+  const task = require('../estatico-json-schema');
+  const estaticoWatch = require('@unic/estatico-watch');
+  const instance = task({
+    src: [
+      './src/**/*.data.js',
+    ],
+    srcBase: './src',
+    watch: {
+      src: [
+        './src/**/*.data.js',
+        './src/**/*.schema.json',
+      ],
+      name: 'data:lint',
+      dependencyGraph: {
+        srcBase: './',
+        resolver: {
+          js: {
+            match: /(?:require\('(.*?\.data\.js)'\)|require\('(.*?\.schema\.json))/g,
+            resolve: (match, filePath) => {
+              if (!(match[1] || match[2])) {
+                return null;
+              }
+              return path.resolve(path.dirname(filePath), match[1] || match[2]);
+            },
+          },
+          json: {},
+        },
+      },
+      watcher: estaticoWatch,
+    },
+  }, env);
+  // Don't immediately run task when skipping build
+  if (env.watch && env.skipBuild) {
+    return instance;
+  }
+  return instance();
+});
+
+/**
  * CSS task
  * Transforms Sass to CSS, uses PostCSS (autoprefixer and clean-css) to transform the output
  *
