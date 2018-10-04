@@ -4,6 +4,8 @@ const Joi = require('joi');
 
 // We need an exportable handlebars instance to be reused in other tasks
 const handlebars = require('handlebars').create();
+const handlebarsWax = require('handlebars-wax');
+const wax = handlebarsWax(handlebars);
 
 // Config schema used for validation
 const schema = Joi.object().keys({
@@ -71,10 +73,11 @@ const defaults = env => ({
       if (!fs.existsSync(dataFilePath)) {
         logger.debug(`Data file ${chalk.yellow(dataFilePath)} not found for ${chalk.yellow(file.path)}. This will not break anything, but the template will receive no data.`);
       }
-
+console.time('geData')
       const data = require(dataFilePath); // eslint-disable-line
 
-      return merge({}, data);
+      console.timeEnd('geData')
+      return data;
     },
     prettify: {
       indent_with_tabs: false,
@@ -104,6 +107,7 @@ const defaults = env => ({
  * @return {object} gulp stream
  */
 const task = (config, env = {}, watcher) => {
+  console.time('prepare')
   const gulp = require('gulp');
   const plumber = require('gulp-plumber');
   const prettify = require('gulp-prettify');
@@ -113,7 +117,6 @@ const task = (config, env = {}, watcher) => {
   const chalk = require('chalk');
   const path = require('path');
   const merge = require('lodash.merge');
-  const handlebarsWax = require('handlebars-wax');
 
   // Remove file extension from path, including complex ones like .data.js
   const getSimplifiedFilePath = (filePath) => {
@@ -122,11 +125,13 @@ const task = (config, env = {}, watcher) => {
     return filePath.replace(path.basename(filePath), fileName);
   };
 
-  const wax = handlebarsWax(handlebars);
+  console.time('wax')
 
   config.plugins.handlebars.handlebars = handlebars; // eslint-disable-line no-param-reassign
+  console.timeEnd('wax')
 
   // Register partials
+  console.time('partials')
   if (config.plugins.handlebars.partials) {
     const waxOptions = {};
 
@@ -136,8 +141,10 @@ const task = (config, env = {}, watcher) => {
 
     wax.partials(config.plugins.handlebars.partials, waxOptions);
   }
+  console.timeEnd('partials')
 
   // Register helpers
+  console.time('helpers')
   wax.helpers(require('handlebars-layouts'));
 
   if (config.plugins.handlebars.helpers) {
@@ -149,7 +156,8 @@ const task = (config, env = {}, watcher) => {
 
     wax.helpers(config.plugins.handlebars.helpers, waxOptions);
   }
-
+  console.timeEnd('helpers')
+  console.timeEnd('prepare')
   return gulp.src(config.src, {
     base: config.srcBase,
   })
@@ -159,45 +167,54 @@ const task = (config, env = {}, watcher) => {
 
     // Decide based on watcher dependency graph which files to pass through
     .pipe(through.obj((file, enc, done) => {
+      console.time('watcher')
       if (watcher && watcher.matchGraph && !watcher.matchGraph(file.path, true)) {
+        console.timeEnd('watcher')
         return done();
       }
 
+      console.timeEnd('watcher')
       return done(null, file);
     }))
 
     // Optional template transformation
     .pipe(through.obj((file, enc, done) => {
+      console.time('transformBefore')
       if (config.plugins.transformBefore) {
         const content = config.plugins.transformBefore(file);
 
         file.contents = content; // eslint-disable-line no-param-reassign
 
-        config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformBefore"` /* , chalk.gray(content.toString()) */);
+        // config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformBefore"` /* , chalk.gray(content.toString()) */);
       }
 
+      console.timeEnd('transformBefore')
       done(null, file);
     }).on('error', err => config.logger.error(err, env.dev)))
 
     // Find data and assign it to file object
     .pipe(through.obj((file, enc, done) => {
+      console.time('data')
       try {
         const data = config.plugins.data(file, config.logger);
 
         file.data = data; // eslint-disable-line no-param-reassign
 
-        config.logger.debug(`Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')));
+        // config.logger.debug(`Data found for ${chalk.yellow(file.path)}`, chalk.gray(JSON.stringify(data, null, '\t')));
 
+        console.timeEnd('data')
         done(null, file);
       } catch (err) {
         err.fileName = file.path;
 
+        console.timeEnd('data')
         done(new PluginError('data', err), file);
       }
     }).on('error', err => config.logger.error(err, env.dev)))
 
     // Optionally clone file
     .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
+      console.time('clone')
       if (config.plugins.clone) {
         const clone = file.clone();
 
@@ -209,11 +226,12 @@ const task = (config, env = {}, watcher) => {
           clone.path = config.plugins.clone.rename(file.path);
         }
 
-        config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
+        // config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
 
         this.push(clone);
       }
 
+      console.timeEnd('clone')
       done(null, file);
     }).on('error', err => config.logger.error(err, env.dev)))
 
@@ -222,14 +240,16 @@ const task = (config, env = {}, watcher) => {
 
     // Optional HTML transformation
     .pipe(through.obj((file, enc, done) => {
+      console.time('transformAfter')
       if (config.plugins.transformAfter) {
         const content = config.plugins.transformAfter(file);
 
         file.contents = content; // eslint-disable-line
 
-        config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformAfter"`);
+        // config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformAfter"`);
       }
 
+      console.timeEnd('transformAfter')
       done(null, file);
     }).on('error', err => config.logger.error(err, env.dev)))
 
@@ -238,18 +258,20 @@ const task = (config, env = {}, watcher) => {
 
     // Rename to .html
     .pipe(through.obj((file, enc, done) => {
+      console.time('rename')
       const renamedPath = file.path.replace(path.extname(file.path), '.html');
 
       file.path = renamedPath; // eslint-disable-line no-param-reassign
 
-      config.logger.debug(`Renamed ${chalk.yellow(file.path)} to ${chalk.yellow(renamedPath)}`);
+      // config.logger.debug(`Renamed ${chalk.yellow(file.path)} to ${chalk.yellow(renamedPath)}`);
 
+      console.timeEnd('rename')
       done(null, file);
     }))
 
     // Log
     .pipe(through.obj((file, enc, done) => {
-      config.logger.info(`Saving ${chalk.yellow(path.relative(config.srcBase, file.path))}`);
+      // config.logger.info(`Saving ${chalk.yellow(path.relative(config.srcBase, file.path))}`);
 
       return done(null, file);
     }))
