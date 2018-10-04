@@ -8,10 +8,6 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 end_of_line = lf
 
-[package.json]
-indent_size = 2
-indent_style = space
-
 [*.md]
 trim_trailing_whitespace = false
 
