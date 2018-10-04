@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-boilerplate",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "@unic/estatico-copy": "0.0.11",
     "@unic/estatico-data": "0.0.8",
     "@unic/estatico-eslint": "0.0.13",
-    "@unic/estatico-font-datauri": "0.0.10",
+    "@unic/estatico-font-datauri": "0.0.11",
     "@unic/estatico-handlebars": "0.0.11",
     "@unic/estatico-imageversions": "0.0.12",
     "@unic/estatico-jest": "0.0.2",
