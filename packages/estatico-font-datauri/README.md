@@ -92,6 +92,13 @@ Default: `null`
 
 Passed to [`gulp-concat`](https://www.npmjs.com/package/gulp-concat).
 
+##### plugins.rename
+
+Type: `Function`<br>
+Default: `null`
+
+Result will be assigned to `file.path` before passing the file to [`gulp-simplefont64`](https://github.com/unic/gulp-simplefont64). This allows you to optionally generate file names which can be handled by the plugin (e.g. `FontFamily-FontStyle`).
+
 #### logger
 
 Type: `{ info: Function, debug: Function, error: Function }`<br>
