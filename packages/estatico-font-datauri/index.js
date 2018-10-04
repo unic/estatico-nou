@@ -12,6 +12,7 @@ const schema = Joi.object().keys({
   plugins: {
     simplefont: Joi.object().allow(null),
     concat: Joi.string(),
+    rename: Joi.func().allow(null),
   },
   logger: Joi.object().keys({
     info: Joi.func(),
@@ -31,6 +32,7 @@ const defaults = (/* env */) => ({
   plugins: {
     simplefont: null,
     concat: null,
+    rename: null,
   },
   logger: new Logger('estatico-font-datauri'),
 });
@@ -54,6 +56,13 @@ const task = (config, env = {}) => {
 
     // Prevent stream from unpiping on error
     .pipe(plumber())
+
+    // Rename
+    .pipe(config.plugins.rename ? through.obj((file, enc, done) => {
+      file.path = config.plugins.rename(file.path); // eslint-disable-line no-param-reassign
+
+      done(null, file);
+    }) : through.obj())
 
     // Simplefont64
     .pipe(simplefont(config.plugins.simplefont).on('error', err => config.logger.error(err, env.dev)))
