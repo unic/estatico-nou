@@ -7,8 +7,9 @@
  * If a polyfill is expected to be used only in exceptional cases it could make sense to load it
  * where needed instead of here
  *
- * !IMPORTANT! Check with core-js to see which polyfills are included for you automatically with @babel/preset-env
- * https://www.npmjs.com/package/core-js
+ * !IMPORTANT! Check with core-js to see which polyfills are included for you
+ * automatically with @babel/preset-env
+ * Website: https://www.npmjs.com/package/core-js
  */
 import 'mdn-polyfills/NodeList.prototype.forEach';
 import 'mdn-polyfills/CustomEvent';
