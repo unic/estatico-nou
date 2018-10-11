@@ -1,4 +1,4 @@
-import loadSvgSprites from '@unic/estatico-svgsprite/lib/loader';
+import SvgSpriteLoader from '@unic/estatico-svgsprite/lib/loader';
 import './helpers/modernizrrc';
 import FontLoader from './helpers/fontloader';
 import Helper from './helpers/helper';
@@ -8,7 +8,6 @@ window[namespace] = {
   data: {}, // Content data
   options: {}, // Module options
   fontLoader: new FontLoader(),
+  svgSpriteLoader: new SvgSpriteLoader(),
   helpers: new Helper(),
 };
-
-document.addEventListener('DOMContentLoaded', loadSvgSprites);
