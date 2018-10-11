@@ -51,6 +51,7 @@ class SvgSpriteLoader {
     const container = document.createElement('div');
 
     container.classList.add(this.config.containerClass);
+    container.setAttribute('style', 'overflow:hidden;width:0;height:0;');
 
     document.body.appendChild(container);
 
