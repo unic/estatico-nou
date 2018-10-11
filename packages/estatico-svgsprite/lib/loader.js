@@ -4,12 +4,13 @@ class SvgSpriteLoader {
     this.config = Object.assign({
       // Class added to inserted sprites container
       containerClass: 'svgsprites',
-      // Callback when sprites were loaded
+      // Callback when sprite is loaded
       onLoaded: (name) => {
         document.documentElement.classList.add('svgsprites--loaded');
         document.documentElement.classList.add(`svgsprites--loaded-${name}`);
       },
-      // Where to get the sprite config
+      // Get sprites to load
+      // Returns array of { name, url } objects
       getSprites: () => {
         try {
           const config = JSON.parse(document.body.dataset.svgspritesOptions);
