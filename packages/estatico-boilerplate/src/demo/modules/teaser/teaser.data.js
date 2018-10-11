@@ -14,13 +14,8 @@ const data = _.merge({}, defaultData, {
     text: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
   },
 });
-const variants = _.mapValues({
-  default: {
-    meta: {
-      title: 'Default',
-      desc: 'Default implementation',
-    },
-  },
+const variants = {
+  default: {},
   noText: {
     meta: {
       title: 'No text',
@@ -42,24 +37,13 @@ const variants = _.mapValues({
       variant: 'm-teaser--inverted',
     },
   },
-}, (variant) => {
-  const variantProps = _.merge({}, data, variant).props;
-  const compiledVariant = () => handlebars.compile(template)(variantProps);
-  const variantData = _.merge({}, data, variant, {
-    meta: {
-      demo: compiledVariant,
+};
 
-      // code: {
-      //  handlebars: dataHelper.getFormattedHandlebars(template),
-      //  html: dataHelper.getFormattedHtml(compiledVariant),
-      //  data: dataHelper.getFormattedJson(variantProps)
-      // }
-    },
-  });
-
-  return variantData;
+data.variants = dataHelper.setupVariants({
+  variants,
+  data,
+  template,
+  handlebars,
 });
-
-data.variants = variants;
 
 module.exports = data;
