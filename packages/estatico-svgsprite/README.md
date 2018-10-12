@@ -140,6 +140,8 @@ svgo: {
 
 Passed to [`imagemin-svgo`](https://www.npmjs.com/package/imagemin-svgo) via [`gulp-imagemin`](https://www.npmjs.com/package/gulp-imagemin). Setting to `null` will disable this step. Otherwise it will run before piping the files to `svgstore`.
 
+**NOTE**: Unless you pass a function instead of an object with your custom options, they are deep-merged into the defaults. So to overwrite `removeViewBox: false` above, you would have to pass `svgo: { plugins: [{}, {}, {}, { removeViewBox: true }] }`
+
 #### logger
 
 Type: `{ info: Function, debug: Function, error: Function }`<br>
