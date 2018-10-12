@@ -110,13 +110,13 @@ Default:
 
 Passed to [`gulp-svgstore`](https://www.npmjs.com/package/gulp-svgstore).
 
-##### plugins.imagemin
+##### plugins.svgo
 
 Type: `Object`<br>
 Default:
 ```js
-imagemin: {
-  svgoPlugins: [
+svgo: {
+  plugins: [
     {
       cleanupIDs: {
         remove: false,
@@ -131,14 +131,14 @@ imagemin: {
       removeStyleElement: true,
     },
     {
-      removeTitle: true,
+      removeViewBox: false,
     },
   ],
   multipass: true,
 },
 ```
 
-Passed to [`imagemin`](https://www.npmjs.com/package/imagemin) via [`gulp-imagemin`](https://www.npmjs.com/package/gulp-imagemin). Setting to `null` will disable this step. Otherwise it will run before piping the files to `svgstore`.
+Passed to [`imagemin-svgo`](https://www.npmjs.com/package/imagemin-svgo) via [`gulp-imagemin`](https://www.npmjs.com/package/gulp-imagemin). Setting to `null` will disable this step. Otherwise it will run before piping the files to `svgstore`.
 
 #### logger
 
