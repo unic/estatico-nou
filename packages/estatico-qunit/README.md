@@ -1,4 +1,4 @@
-# @unic/estatico-qunit [WIP]
+# @unic/estatico-qunit [Deprecated]
 
 Helpers for QUnit tests
 
@@ -14,16 +14,16 @@ Add the following config to the `estatico-puppeteer`'s options:
 ```js
 {
   plugins: {
-    interact: {
-      interact: async (page) => {
-        // Run tests
-        const results = await require('@unic/estatico-qunit').puppeteer.run(page);
+    interact: async (page) => {
+      // Run tests
+      const results = await require('@unic/estatico-qunit').puppeteer.run(page);
 
-        // Report results
-        if (results) {
-          require('@unic/estatico-qunit').puppeteer.log(results);
-        }
-      },
+      // Report results
+      if (results) {
+        require('@unic/estatico-qunit').puppeteer.log(results, {
+          info: console.log,
+        });
+      }
     },
   },
 };
@@ -31,17 +31,17 @@ Add the following config to the `estatico-puppeteer`'s options:
 
 Include test script in `src/preview/assets/js/main.js`, e.g.:
 ```js
-import 'estatico-qunit/lib/browser';
+import '@unic/estatico-qunit/lib/browser';
 ```
 
-Add the following config to the `estatico-handlebars`'s options:
+Add the following config to the `estatico-handlebars`'s options to provide the `qunit` helper below:
 ```js
 {
   plugins: {
     handlebars: {
       helpers: {
         register: () => {
-          handlebars.registerHelper('qunit', estaticoQunit.handlebarsHelper(handlebars));
+          handlebars.registerHelper('qunit', require('@unic/estatico-qunit').handlebarsHelper(handlebars));
         },
       }
     },
