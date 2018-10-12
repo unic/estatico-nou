@@ -34,8 +34,8 @@ const defaults = (/* env */) => ({
     svgstore: {
       inlineSvg: true,
     },
-    imagemin: {
-      svgoPlugins: [
+    svgo: {
+      plugins: [
         {
           cleanupIDs: {
             remove: false,
@@ -50,7 +50,7 @@ const defaults = (/* env */) => ({
           removeStyleElement: true,
         },
         {
-          removeTitle: true,
+          removeViewBox: false,
         },
       ],
       multipass: true,
@@ -85,7 +85,9 @@ const task = (config, env = {}) => {
     .pipe(plumber())
 
     // Imagemin
-    .pipe(config.plugins.imagemin ? imagemin(config.plugins.imagemin).on('error', err => config.logger.error(err, env.dev)) : through.obj())
+    .pipe(config.plugins.svgo ? imagemin([
+      imagemin.svgo(config.plugins.svgo),
+    ]).on('error', err => config.logger.error(err, env.dev)) : through.obj())
 
     // Svgstore
     .pipe(svgstore(config.plugins.svgstore).on('error', err => config.logger.error(err, env.dev)))
