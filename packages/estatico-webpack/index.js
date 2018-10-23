@@ -57,7 +57,7 @@ const task = (config, env = {}, cb) => {
       }
 
       if (err) {
-        config.errorHandler(err);
+        config.logger.error(err);
       }
 
       config.logger.info(format(stats));
