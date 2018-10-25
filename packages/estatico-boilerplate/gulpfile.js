@@ -247,7 +247,10 @@ gulp.task('css', () => {
                 return [...new Set(candidatePaths)];
               }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
 
-              return candidates.find(fs.existsSync) || null;
+              return candidates.find((candiatePath) => { // eslint-disable-line arrow-body-style
+                // Ignore inexistent files
+                return fs.existsSync(candiatePath) && fs.statSync(candiatePath).isFile();
+              }) || null;
             },
           },
         },
