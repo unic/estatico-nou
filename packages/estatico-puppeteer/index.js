@@ -99,8 +99,7 @@ const task = (config, env = {}) => {
     const tests = files.map(async (file) => {
       // Get available page
       const page = await pagePool.acquire();
-
-      config.logger.info(`Testing ${chalk.yellow(path.relative(config.srcBase, file))}`);
+      const filePathLog = chalk.yellow(path.relative(config.srcBase, file));
 
       // Open file
       await page.goto(`file://${file}`);
@@ -111,17 +110,21 @@ const task = (config, env = {}) => {
           if (config.viewports) {
             // eslint-disable-next-line no-restricted-syntax
             for (const viewport of Object.keys(config.viewports)) {
-              config.logger.info(`Testing viewport ${chalk.yellow(viewport)}`);
+              config.logger.info(`Testing ${filePathLog} in viewport ${chalk.yellow(viewport)}`);
 
               await page.setViewport(config.viewports[viewport]);
               await config.plugins.interact(page, config.logger);
             }
           } else {
+            config.logger.info(`Testing ${filePathLog}`);
+
             await config.plugins.interact(page, config.logger);
           }
         } catch (err) {
           error = err;
         }
+      } else {
+        config.logger.info(`Opening ${filePathLog}`);
       }
 
       // Handle errors: Exit on error (see note in 'pageerror' handler)
