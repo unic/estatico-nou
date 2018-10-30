@@ -10,7 +10,7 @@
     "bootstrap": {
       "hoist": true,
       "npmClientArgs": ["--no-package-lock"],
-      "noCi": true
+      "ci": false
     }
   }
 }
