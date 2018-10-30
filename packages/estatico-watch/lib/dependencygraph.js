@@ -127,7 +127,13 @@ class DependencyGraph {
       return null;
     }
 
-    const timestamp = fs.statSync(filePath).mtime.getTime();
+    const stats = fs.statSync(filePath);
+
+    if (!stats.isFile()) {
+      return null;
+    }
+
+    const timestamp = stats.mtime.getTime();
 
     if (this.cache[filePath] && this.cache[filePath].timestamp === timestamp) {
       return this.cache[filePath].content;
