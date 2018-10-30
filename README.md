@@ -86,4 +86,4 @@ To run all tests in every package we can call `lerna exec -- npm test`. For a sp
 
 ### Release
 
-[`lerna publish --exact`](https://github.com/lerna/lerna#publish) and lots of magic.
+`npm release` will run [`lerna publish --conventional-commits`](https://github.com/lerna/lerna/tree/master/commands/publish#readme) and generate a CHANGELOG via [`Conventional Changelog`](https://github.com/conventional-changelog/conventional-changelog). For this changelog to be properly created, the correct [commit message format](https://www.conventionalcommits.org) needs to be used.
