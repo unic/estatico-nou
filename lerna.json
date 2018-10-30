@@ -9,7 +9,8 @@
   "command": {
     "bootstrap": {
       "hoist": true,
-      "npmClientArgs": ["--no-package-lock"]
+      "npmClientArgs": ["--no-package-lock"],
+      "noCi": true
     }
   }
 }
