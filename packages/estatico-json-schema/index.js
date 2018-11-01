@@ -117,35 +117,42 @@ const task = (config, env = {}, watcher) => {
 
       const validationSchema = require(validationSchemaPath); // eslint-disable-line import/no-dynamic-require,max-len
 
-      // Resolve local references
-      const resolvedValidationSchema = await $RefParser.dereference(validationSchemaPath, validationSchema, {}); // eslint-disable-line max-len
+      try {
+        // Resolve local references
+        const resolvedValidationSchema = await $RefParser.dereference(validationSchemaPath, validationSchema, {}); // eslint-disable-line max-len
 
-      // Create validation function
-      const validation = ajv.compile(resolvedValidationSchema);
+        // Create validation function
+        const validation = ajv.compile(resolvedValidationSchema);
 
-      // Get data object (or array of data objects)
-      let data = config.plugins.setup.getData(content);
+        // Get data object (or array of data objects)
+        let data = config.plugins.setup.getData(content);
 
-      // Make sure we have an array anyway
-      if (!Array.isArray(data)) {
-        data = [data];
-      }
-
-      // Loop through variants and validate each
-      data.forEach((variantData, i) => {
-        const valid = validation(variantData);
-        const variantName = i ? `Variant ${i}` : 'Default';
-        const errorPrefix = data.length > 1 ? `[${variantName}] ` : '';
-
-        if (!valid) {
-          validation.errors.forEach((error) => {
-            config.logger.error({
-              fileName,
-              message: `${errorPrefix}${error.schemaPath}: ${error.message}`,
-            }, env.dev);
-          });
+        // Make sure we have an array anyway
+        if (!Array.isArray(data)) {
+          data = [data];
         }
-      });
+
+        // Loop through variants and validate each
+        data.forEach((variantData, i) => {
+          const valid = validation(variantData);
+          const variantName = i ? `Variant ${i}` : 'Default';
+          const errorPrefix = data.length > 1 ? `[${variantName}] ` : '';
+
+          if (!valid) {
+            validation.errors.forEach((error) => {
+              config.logger.error({
+                fileName,
+                message: `${errorPrefix}${error.schemaPath}: ${error.message}`,
+              }, env.dev);
+            });
+          }
+        });
+      } catch (err) {
+        config.logger.error({
+          fileName,
+          message: err.message,
+        }, env.dev);
+      }
 
       return done();
     }));
