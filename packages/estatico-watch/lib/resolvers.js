@@ -10,7 +10,7 @@ module.exports = {
         js: /(?:require\('(.*?\.data\.js)'\)|getFileContent\('(.*?)'\))/g,
       },
     }, options);
-    
+
     return {
       hbs: {
         match: config.pattern.hbs,
@@ -44,7 +44,7 @@ module.exports = {
       srcBase: null, // Specify when using
       pattern: /(?:require\('(.*?\.data\.js)'\)|require\('(.*?\.schema\.json))/g,
     }, options);
-    
+
     return {
       js: {
         match: config.pattern,
@@ -63,7 +63,7 @@ module.exports = {
       srcBase: null, // Specify when using
       pattern: /@import[\s-]*["|']?([^"\s(]+).*?/g,
     }, options);
-    
+
     return {
       scss: {
         match: config.pattern,
