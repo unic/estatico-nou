@@ -24,6 +24,7 @@
     "@unic/estatico-imageversions": "0.0.12",
     "@unic/estatico-jest": "^0.1.0",
     "@unic/estatico-json-mocks": "0.0.10",
+    "@unic/estatico-json-schema": "^0.1.0",
     "@unic/estatico-puppeteer": "^0.0.13",
     "@unic/estatico-sass": "^0.0.13",
     "@unic/estatico-scaffold": "0.0.15",

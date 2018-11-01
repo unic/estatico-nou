@@ -761,7 +761,7 @@ gulp.task('clean', () => {
 /**
  * Test & lint / validate
  */
-gulp.task('lint', gulp.parallel('css:lint', 'js:lint'));
+gulp.task('lint', gulp.parallel('css:lint', 'js:lint', 'data:lint'));
 gulp.task('test', gulp.parallel('html:validate', 'js:test'));
 
 /**
