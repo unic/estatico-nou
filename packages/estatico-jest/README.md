@@ -28,6 +28,10 @@ $ npm install --save-dev jest @unic/estatico-jest
       puppeteerServer: {
         port: 3000,
         dir: './dist',
+        puppeteer: {
+          // Our current Teamcity agents expect Puppeteer to run in no-sandbox mode
+          args: env.ci ? ['--no-sandbox'] : [],
+        },
       },
     }],
   };

@@ -426,7 +426,7 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
   const { spawn } = require('child_process');
   let failed = false;
 
-  const tests = spawn('npm', ['run', 'jest'], {
+  const tests = spawn('npm', ['run', 'jest'].concat(env.ci ? ['--', '--ci'] : []), {
     // Add proper output coloring unless in CI env (where this would have weird side-effects)
     stdio: env.ci ? 'pipe' : ['inherit', 'inherit', 'pipe'],
   });
