@@ -151,7 +151,7 @@ gulp.task('html:validate', () => {
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('data:lint', () => {
-  const task = require('../estatico-json-schema');
+  const task = require('@unic/estatico-json-schema');
   const estaticoWatch = require('@unic/estatico-watch');
   const instance = task({
     src: [
