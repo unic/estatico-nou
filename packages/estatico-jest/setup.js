@@ -3,8 +3,8 @@ const fs = require('fs');
 const handler = require('serve-handler');
 const http = require('http');
 
-async function launchPuppeteer() {
-  const browser = await puppeteer.launch();
+async function launchPuppeteer(config) {
+  const browser = await puppeteer.launch(config);
   const browserEndpoint = browser.wsEndpoint();
 
   // Store browser instance so we can tear it down in the end
@@ -40,7 +40,7 @@ module.exports = async (globalConfig) => {
   }, customServerConfig);
 
   // Start puppeteer and expose connection ednpoint
-  const browserEndpoint = await launchPuppeteer();
+  const browserEndpoint = await launchPuppeteer(serverConfig.puppeteer);
 
   // Serve static build on port 3000
   const staticPort = await launchStaticServer(serverConfig);
