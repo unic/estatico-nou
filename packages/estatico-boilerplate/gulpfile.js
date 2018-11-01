@@ -1,7 +1,6 @@
 /* eslint-disable global-require */
 const gulp = require('gulp');
 const path = require('path');
-const fs = require('fs');
 const env = require('minimist')(process.argv.slice(2));
 
 
@@ -15,6 +14,7 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
   const estaticoWatch = require('@unic/estatico-watch');
+  const { handlebars: resolver } = require('@unic/estatico-watch/lib/resolvers');
   const { readFileSyncCached } = require('@unic/estatico-utils');
 
   const instance = task({
@@ -38,33 +38,10 @@ gulp.task('html', () => {
       name: 'html',
       dependencyGraph: {
         srcBase: './',
-        resolver: {
-          hbs: {
-            match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
-            resolve: (match /* , filePath */) => {
-              if (!match[1]) {
-                return null;
-              }
-
-              let resolvedPath = path.resolve('./src', match[1]);
-
-              // Add extension
-              resolvedPath = `${resolvedPath}.hbs`;
-
-              return resolvedPath;
-            },
-          },
-          js: {
-            match: /(?:require\('(.*?\.data\.js)'\)|getFileContent\('(.*?)'\))/g,
-            resolve: (match, filePath) => {
-              if (!(match[1] || match[2])) {
-                return null;
-              }
-
-              return path.resolve(path.dirname(filePath), match[1] || match[2]);
-            },
-          },
-        },
+        // See https://github.com/unic/estatico-nou/blob/develop/packages/estatico-watch/lib/resolver.js
+        resolver: resolver({
+          srcBase: './src',
+        }),
       },
       watcher: estaticoWatch,
     },
@@ -153,6 +130,7 @@ gulp.task('html:validate', () => {
 gulp.task('data:lint', () => {
   const task = require('@unic/estatico-json-schema');
   const estaticoWatch = require('@unic/estatico-watch');
+  const { schema: resolver } = require('@unic/estatico-watch/lib/resolvers');
   const instance = task({
     src: [
       './src/**/*.data.js',
@@ -166,18 +144,8 @@ gulp.task('data:lint', () => {
       name: 'data:lint',
       dependencyGraph: {
         srcBase: './',
-        resolver: {
-          js: {
-            match: /(?:require\('(.*?\.data\.js)'\)|require\('(.*?\.schema\.json))/g,
-            resolve: (match, filePath) => {
-              if (!(match[1] || match[2])) {
-                return null;
-              }
-              return path.resolve(path.dirname(filePath), match[1] || match[2]);
-            },
-          },
-          json: {},
-        },
+        // See https://github.com/unic/estatico-nou/blob/develop/packages/estatico-watch/lib/resolver.js
+        resolver: resolver(),
       },
       watcher: estaticoWatch,
     },
@@ -200,6 +168,7 @@ gulp.task('data:lint', () => {
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
   const estaticoWatch = require('@unic/estatico-watch');
+  const { sass: resolver } = require('@unic/estatico-watch/lib/resolvers');
   const nodeSassJsonImporter = require('node-sass-json-importer');
 
   const instance = task({
@@ -216,44 +185,13 @@ gulp.task('css', () => {
       name: 'css',
       dependencyGraph: {
         srcBase: './',
-        resolver: {
-          scss: {
-            match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
-            resolve: (match, filePath) => {
-              if (!match[1]) {
-                return null;
-              }
-
-              // Find possible path candidates
-              const candidates = [
-                path.dirname(filePath),
-                './src/',
-                './src/assets/css/',
-              ].map((dir) => {
-                const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
-                const candidatePath = path.resolve(dir, match[1]);
-                const candidatePartialPath = path.resolve(dir, partialPath);
-                const candidatePaths = [
-                  candidatePath,
-                  candidatePartialPath,
-                  // .scss extension
-                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
-                  path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
-                  // .css extension
-                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
-                ];
-
-                // Remove duplicates
-                return [...new Set(candidatePaths)];
-              }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
-
-              return candidates.find((candidatePath) => { // eslint-disable-line arrow-body-style
-                // Ignore inexistent files
-                return fs.existsSync(candidatePath) && fs.statSync(candidatePath).isFile();
-              }) || null;
-            },
-          },
-        },
+        // See https://github.com/unic/estatico-nou/blob/develop/packages/estatico-watch/lib/resolver.js
+        resolver: resolver({
+          srcBase: [
+            './src/',
+            './src/assets/css/',
+          ],
+        }),
       },
       watcher: estaticoWatch,
     },
