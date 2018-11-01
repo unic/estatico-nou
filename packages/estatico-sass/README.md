@@ -27,8 +27,8 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
   const estaticoWatch = require('@unic/estatico-watch');
+  const { sass: resolver } = require('@unic/estatico-watch/lib/resolvers');
   const nodeSassJsonImporter = require('node-sass-json-importer');
-  const autoprefixer = require('autoprefixer');
 
   const instance = task({
     src: [
@@ -44,41 +44,13 @@ gulp.task('css', () => {
       name: 'css',
       dependencyGraph: {
         srcBase: './',
-        resolver: {
-          scss: {
-            match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
-            resolve: (match, filePath) => {
-              if (!match[1]) {
-                return null;
-              }
-
-              // Find possible path candidates
-              const candidates = [
-                path.dirname(filePath),
-                './src/',
-                './src/assets/css/',
-              ].map((dir) => {
-                const partialPath = match[1].replace(path.basename(match[1]), `_${path.basename(match[1])}`);
-                const candidatePath = path.resolve(dir, match[1]);
-                const candidatePartialPath = path.resolve(dir, partialPath);
-                const candidatePaths = [
-                  candidatePath,
-                  candidatePartialPath,
-                  // .scss extension
-                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.scss`,
-                  path.extname(candidatePartialPath) ? candidatePartialPath : `${candidatePartialPath}.scss`,
-                  // .css extension
-                  path.extname(candidatePath) ? candidatePath : `${candidatePath}.css`,
-                ];
-
-                // Remove duplicates
-                return [...new Set(candidatePaths)];
-              }).reduce((arr, curr) => arr.concat(curr), []); // Flatten
-
-              return candidates.find(fs.existsSync) || null;
-            },
-          },
-        },
+        // See https://github.com/unic/estatico-nou/blob/develop/packages/estatico-watch/lib/resolver.js
+        resolver: resolver({
+          srcBase: [
+            './src/',
+            './src/assets/css/',
+          ],
+        }),
       },
       watcher: estaticoWatch,
     },
@@ -93,14 +65,11 @@ gulp.task('css', () => {
           nodeSassJsonImporter,
         ],
       },
-      postcss: [
-        autoprefixer(
-          // Either add .browserslistrc to project or specify config in here
-        ),
-      ],
+      // Use task default (autoprefixer with .browserslistrc config)
+      // postcss: [],
     },
   }, env);
-  
+
   // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;

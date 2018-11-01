@@ -23,9 +23,9 @@ const env = require('minimist')(process.argv.slice(2));
  * When combined with `--skipBuild`, the task will not run immediately but only after changes
  */
 gulp.task('data:lint', () => {
-  const task = require('../estatico-json-schema');
+  const task = require('@unic/estatico-json-schema');
   const estaticoWatch = require('@unic/estatico-watch');
-
+  const { schema: resolver } = require('@unic/estatico-watch/lib/resolvers');
   const instance = task({
     src: [
       './src/**/*.data.js',
@@ -39,29 +39,16 @@ gulp.task('data:lint', () => {
       name: 'data:lint',
       dependencyGraph: {
         srcBase: './',
-        resolver: {
-          js: {
-            match: /(?:require\('(.*?\.data\.js)'\)|require\('(.*?\.schema\.json))/g,
-            resolve: (match, filePath) => {
-              if (!(match[1] || match[2])) {
-                return null;
-              }
-
-              return path.resolve(path.dirname(filePath), match[1] || match[2]);
-            },
-          },
-          json: {},
-        },
+        // See https://github.com/unic/estatico-nou/blob/develop/packages/estatico-watch/lib/resolver.js
+        resolver: resolver(),
       },
       watcher: estaticoWatch,
     },
   }, env);
-
   // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
   }
-
   return instance();
 });
 ```
