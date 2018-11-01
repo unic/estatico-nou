@@ -11,6 +11,15 @@
       "hoist": true,
       "npmClientArgs": ["--no-package-lock"],
       "ci": false
+    },
+    "publish": {
+      "allowBranch": "develop",
+      "conventionalCommits": true,
+      "message": "chore(release): publish %s"
     }
-  }
+  },
+  "ignoreChanges": [
+    "**/CHANGELOG.md",
+    "lerna.json"
+  ]
 }

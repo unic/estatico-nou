@@ -14,7 +14,7 @@
     "update": "npm-check -u && lerna exec -- npm-check -u",
     "test": "lerna exec -- npm test",
     "netlify": "lerna bootstrap && lerna exec --scope @unic/estatico-boilerplate -- npm run netlify",
-    "release": "lerna publish --conventional-commits"
+    "release": "lerna publish"
   },
   "husky": {
     "hooks": {
