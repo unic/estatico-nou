@@ -140,9 +140,11 @@ const task = (config, env = {}, watcher) => {
 
           if (!valid) {
             validation.errors.forEach((error) => {
+              const details = error.params.additionalProperty ? ` (${JSON.stringify(error.params)})` : '';
+
               config.logger.error({
                 fileName,
-                message: `${errorPrefix}${error.schemaPath}: ${error.message}`,
+                message: `${errorPrefix}${error.schemaPath}: ${error.message}${details}`,
               }, env.dev);
             });
           }
