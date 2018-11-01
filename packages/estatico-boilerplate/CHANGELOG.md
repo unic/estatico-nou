@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/compare/@unic/estatico-boilerplate@1.5.0...@unic/estatico-boilerplate@1.5.1) (2018-11-01)
+
+
+### Bug Fixes
+
+* **estatico-boilerplate:** fix package reference ([#86](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/issues/86)) ([7b2b748](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/commit/7b2b748))
+
+
+
+
+
 # [1.5.0](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/compare/@unic/estatico-boilerplate@1.3.0...@unic/estatico-boilerplate@1.5.0) (2018-11-01)
 
 
