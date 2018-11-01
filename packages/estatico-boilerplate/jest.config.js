@@ -1,4 +1,5 @@
 const path = require('path');
+const env = require('minimist')(process.argv.slice(2));
 
 const dir = path.dirname(require.resolve('@unic/estatico-jest'));
 
@@ -10,12 +11,13 @@ module.exports = {
   projects: [{
     // This seems to be the only way for now to pass options to setup.js
     // https://github.com/facebook/jest/issues/5957#issuecomment-422027349
-    projects: [{
-      // We temporarily run a static webserver where Puppeteer can access our HTML
-      puppeteerServer: {
-        port: 3000,
-        dir: './dist',
+    puppeteerServer: {
+      port: 3000,
+      dir: './dist',
+      puppeteer: {
+        // Our current Teamcity agents expect Puppeteer to run in no-sandbox mode
+        args: env.ci ? ['--no-sandbox'] : [],
       },
-    }],
+    },
   }],
 };
