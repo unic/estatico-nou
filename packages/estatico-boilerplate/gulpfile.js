@@ -428,6 +428,7 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
 
   let failed = false;
   let killed = false;
+  let teardownFailed = false;
 
   const tests = spawn('npm', ['run', 'jest'].concat(env.ci ? ['--', '--ci'] : []), {
     // Add proper output coloring unless in CI env (where this would have weird side-effects)
@@ -444,11 +445,16 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
       killed = true;
     }
 
+    // Teamcity has other issues
+    if (stripAnsi(`${data}`).match(/No process found on port/m)) {
+      teardownFailed = true;
+    }
+
     process.stderr.write(data);
   });
 
   tests.on('close', () => {
-    if (failed && !env.dev && !killed) {
+    if (failed && !env.dev && !killed && !teardownFailed) {
       process.exit(1);
     }
 
