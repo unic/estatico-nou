@@ -14,5 +14,10 @@ module.exports = async () => {
 
   // Find and stop static server
   const [process] = await findProcess('port', global.__STATIC_PORT_GLOBAL__);
-  await asyncTerminate(process.pid);
+
+  if (process) {
+    await asyncTerminate(process.pid);
+  } else {
+    console.log(`Jest teardown: No process found on port ${global.__STATIC_PORT_GLOBAL__}, static file server was apparently stopped already`);
+  }
 };
