@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/compare/@unic/estatico-boilerplate@1.5.1...@unic/estatico-boilerplate@1.5.2) (2018-11-06)
+
+
+### Bug Fixes
+
+* **estatico-jest:** add fallback for missing process in teardown ([#89](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/issues/89)) ([6d0f590](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/commit/6d0f590))
+
+
+
+
+
 ## [1.5.1](https://github.com/unic/estatico-nou/tree/master/packages/estatico-boilerplate/compare/@unic/estatico-boilerplate@1.5.0...@unic/estatico-boilerplate@1.5.1) (2018-11-01)
 
 
