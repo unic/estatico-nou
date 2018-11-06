@@ -424,7 +424,10 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
   }
 
   const { spawn } = require('child_process');
+  const stripAnsi = require('strip-ansi');
+
   let failed = false;
+  let killed = false;
 
   const tests = spawn('npm', ['run', 'jest'].concat(env.ci ? ['--', '--ci'] : []), {
     // Add proper output coloring unless in CI env (where this would have weird side-effects)
@@ -432,15 +435,20 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
   });
 
   tests.stderr.on('data', (data) => {
-    if (`${data}`.match(/Test Suites: (.*?) failed/m)) {
+    if (stripAnsi(`${data}`).match(/(Test Suites: (.*?) failed|npm ERR!)/m)) {
       failed = true;
+    }
+
+    // Travis will kill the whole process for whatever reason
+    if (stripAnsi(`${data}`).match(/Killed/m)) {
+      killed = true;
     }
 
     process.stderr.write(data);
   });
 
   tests.on('close', () => {
-    if (failed && !env.dev) {
+    if (failed && !env.dev && !killed) {
       process.exit(1);
     }
 
