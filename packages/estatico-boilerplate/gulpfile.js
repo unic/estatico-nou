@@ -424,6 +424,8 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
   }
 
   const { spawn } = require('child_process');
+  const stripAnsi = require('strip-ansi');
+
   let failed = false;
 
   const tests = spawn('npm', ['run', 'jest'].concat(env.ci ? ['--', '--ci'] : []), {
@@ -432,7 +434,7 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
   });
 
   tests.stderr.on('data', (data) => {
-    if (`${data}`.match(/Test Suites: (.*?) failed/m)) {
+    if (stripAnsi(`${data}`).match(/(Test Suites: (.*?) failed|npm ERR!)/m)) {
       failed = true;
     }
 
