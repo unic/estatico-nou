@@ -18,6 +18,10 @@ module.exports = async () => {
   if (process) {
     await asyncTerminate(process.pid);
   } else {
-    console.log(`Jest teardown: No process found on port ${global.__STATIC_PORT_GLOBAL__}, static file server was apparently stopped already`);
+    throw new Error(`
+  Jest teardown: No process found on port ${global.__STATIC_PORT_GLOBAL__}, static file server was apparently stopped already.
+  This is not an issue with the tests themselves and might be ignored.
+  Throwing this error will make sure Jest properly stops anyway.
+`);
   }
 };
