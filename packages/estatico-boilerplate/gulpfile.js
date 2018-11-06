@@ -440,7 +440,7 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
     }
 
     // Travis will kill the whole process for whatever reason
-    if (stripAnsi(`${data}`) === 'Killed') {
+    if (stripAnsi(`${data}`).match(/Killed/m)) {
       killed = true;
     }
 
