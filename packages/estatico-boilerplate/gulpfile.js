@@ -440,12 +440,12 @@ gulp.task('js:test', (done) => { // eslint-disable-line consistent-return
       failed = true;
     }
 
-    // Travis will kill the whole process for whatever reason
+    // Don't treat as failure: Travis seems to kill the whole process for whatever reason
     if (stripAnsi(`${data}`).match(/Killed/m)) {
       killed = true;
     }
 
-    // Teamcity has other issues
+    // Don't treat as failure: The web server might have stopped or the process could not be found
     if (stripAnsi(`${data}`).match(/No process found on port/m)) {
       teardownFailed = true;
     }
@@ -586,7 +586,7 @@ gulp.task('scaffold', () => {
         name: 'Module',
         src: './src/modules/.scaffold/*',
         dest: './src/modules/',
-        transformInput : (answers) => {
+        transformInput: (answers) => {
           const changeCase = require('change-case'),
             name = answers.newName || answers.name;
 
