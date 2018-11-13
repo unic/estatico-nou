@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/compare/@unic/estatico-jest@0.2.2...@unic/estatico-jest@0.2.3) (2018-11-13)
+
+
+### Bug Fixes
+
+* **estatico-jest:** fix teardown not finding process ([#91](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/issues/91)) ([f8cdbf8](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/commit/f8cdbf8))
+
+
+
+
+
 ## [0.2.2](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/compare/@unic/estatico-jest@0.2.1...@unic/estatico-jest@0.2.2) (2018-11-06)
 
 
