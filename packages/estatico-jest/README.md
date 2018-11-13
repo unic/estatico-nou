@@ -79,12 +79,12 @@ $ npm install --save-dev jest @unic/estatico-jest
         failed = true;
       }
 
-      // Travis will kill the whole process for whatever reason
+      // Don't treat as failure: Travis seems to kill the whole process for whatever reason
       if (stripAnsi(`${data}`).match(/Killed/m)) {
         killed = true;
       }
 
-      // Teamcity has other issues
+      // Don't treat as failure: The web server might have stopped or the process could not be found
       if (stripAnsi(`${data}`).match(/No process found on port/m)) {
         teardownFailed = true;
       }
