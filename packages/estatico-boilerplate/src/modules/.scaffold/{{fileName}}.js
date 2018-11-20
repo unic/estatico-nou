@@ -4,10 +4,10 @@
  * @author
  * @copyright
  */
-import EstaticoModule from '../../assets/js/helpers/module';
+import Module from '../../assets/js/helpers/module';
 import namespace from '../../assets/js/helpers/namespace';
 
-class {{className}} extends EstaticoModule {
+class {{className}} extends Module {
   constructor($element, data, options) {
     const defaultData = {
     };

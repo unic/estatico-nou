@@ -1,4 +1,4 @@
-import EstaticoModule from '../../../assets/js/helpers/module';
+import Module from '../../../assets/js/helpers/module';
 import MediaQuery from '../../../assets/js/helpers/mediaqueries';
 import WindowEventListener from '../../../assets/js/helpers/events';
 
@@ -7,7 +7,7 @@ const templates = {
   slide: require('./_slideshow_slide.js.hbs'), // eslint-disable-line global-require
 };
 
-class SlideShow extends EstaticoModule {
+class SlideShow extends Module {
   constructor(element, data, options) {
     const defaultData = {
       i18n: {
