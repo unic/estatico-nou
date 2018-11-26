@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/compare/@unic/estatico-jest@0.2.3...@unic/estatico-jest@0.2.4) (2018-11-26)
+
+
+### Bug Fixes
+
+* **estatico-jest:** lock down event-stream ([#92](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/issues/92)) ([cc308f5](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/commit/cc308f5))
+
+
+
+
+
 ## [0.2.3](https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest/compare/@unic/estatico-jest@0.2.2...@unic/estatico-jest@0.2.3) (2018-11-13)
 
 
