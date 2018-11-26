@@ -10,6 +10,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-jest",
   "license": "Apache-2.0",
   "dependencies": {
+    "event-stream": "3.3.4",
     "jest-environment-node": "^23.4.0",
     "lsofi": "^1.0.0",
     "puppeteer": "^1.8.0",
