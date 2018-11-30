@@ -42,7 +42,6 @@
     "inquirer": "^5.2.0",
     "lodash.merge": "^4.6.1",
     "minimist": "^1.2.0",
-    "node-sass-json-importer": "^3.2.0",
     "strip-ansi": "^5.0.0"
   },
   "dependencies": {

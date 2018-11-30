@@ -40,6 +40,11 @@ const defaults = (env = {}) => {
   const autoprefixer = require('autoprefixer');
   const clean = require('postcss-clean');
   const filterStream = require('postcss-filter-stream');
+  const nodeSassJsonImporter = require('node-sass-json-importer');
+  const fs = require('fs');
+  const path = require('path');
+
+  const logger = new Logger('estatico-sass');
 
   return {
     src: null,
@@ -50,13 +55,39 @@ const defaults = (env = {}) => {
     plugins: {
       sass: {
         includePaths: null,
+        importer: [
+          nodeSassJsonImporter,
+
+          // Resolve CSS files
+          (url, file) => {
+            if (!/\.css$/.test(url)) {
+              return null;
+            }
+
+            const filePath = path.resolve(path.dirname(file), url);
+
+            if (!fs.existsSync(filePath)) {
+              logger.error({
+                message: `Import "${url}" not found`,
+                plugin: 'Custom CSS importer',
+              }, env.dev);
+
+              return null;
+            }
+
+            return {
+              file: url,
+              contents: fs.readFileSync(filePath, 'utf-8'),
+            };
+          },
+        ],
       },
       clone: env.ci,
       postcss: [
         autoprefixer(),
       ].concat(env.dev ? [] : filterStream(['**/*', '!**/*.min*'], clean())),
     },
-    logger: new Logger('estatico-sass'),
+    logger,
   };
 };
 
