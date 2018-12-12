@@ -73,7 +73,7 @@ const sinon = require('sinon');
 const utils = require('@unic/estatico-utils').test;
 
 test.cb('error', (t) => {
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
 
   task(defaults)().on('end', () => {
     spy.restore();

@@ -15,7 +15,7 @@ const defaults = {
 };
 
 test.cb('with --fix', (t) => {
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
 
   task(defaults, {
     dev: true,
@@ -41,7 +41,7 @@ test.cb('without --fix', (t) => {
     },
   });
 
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
 
   task(options, {
     dev: true,
