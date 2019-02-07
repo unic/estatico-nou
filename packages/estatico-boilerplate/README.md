@@ -11,6 +11,16 @@ git clone https://github.com/unic/estatico-nou.git
 cd estatico-nou
 git filter-branch --subdirectory-filter packages/estatico-boilerplate
 
+# Clean git history
+rm -rf .git
+
+# Start your new git repo
+git init
+git remote add origin https://whatever.git
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+
 # Optionally use Docker container, see below
 
 # Install correct node version
