@@ -40,7 +40,7 @@ gulp.task('html', () => {
         srcBase: './',
         resolver: {
           hbs: {
-            match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
+            match: /{{(?:>|#extend)[\s-]*["|']?([^(?:"|')\s(]+).*?}}/g,
             resolve: (match /* , filePath */) => {
               if (!match[1]) {
                 return null;
@@ -218,7 +218,7 @@ gulp.task('css', () => {
         srcBase: './',
         resolver: {
           scss: {
-            match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
+            match: /@import[\s-]*["|']?([^(?:"|')\s(]+).*?/g,
             resolve: (match, filePath) => {
               if (!match[1]) {
                 return null;
