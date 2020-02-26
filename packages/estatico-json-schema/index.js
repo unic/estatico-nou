@@ -76,6 +76,7 @@ const task = (config, env = {}, watcher) => {
   const through = require('through2');
   const fs = require('fs');
   const $RefParser = require('json-schema-ref-parser');
+  const importFresh = require('import-fresh');
 
   const ajv = new Ajv(config.plugins.ajv);
 
@@ -99,7 +100,7 @@ const task = (config, env = {}, watcher) => {
     // Validate
     .pipe(through.obj(async (file, enc, done) => {
       const fileName = path.relative(config.srcBase, file.path);
-      const content = require(file.path); // eslint-disable-line import/no-dynamic-require
+      const content = importFresh(file.path);
       const validationSchemaPath = config.plugins.setup.getSchemaPath(content, file.path);
 
       if (!validationSchemaPath) {

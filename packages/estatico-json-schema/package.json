@@ -19,6 +19,7 @@
   "dependencies": {
     "@unic/estatico-utils": "^0.0.10",
     "ajv": "^6.5.3",
+    "import-fresh": "^3.2.1",
     "joi": "^13.6.0",
     "json-schema-ref-parser": "^5.1.3"
   },
