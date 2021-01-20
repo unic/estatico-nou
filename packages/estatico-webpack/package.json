@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,12 +11,11 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-webpack",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
-    "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/core": "^7.12.10",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
     "@unic/estatico-utils": "0.0.10",
-    "babel-loader": "^8.0.4",
+    "babel-loader": "^8.2.2",
     "chalk": "^2.4.1",
     "core-js": "^3.8.2",
     "expose-loader": "^0.7.5",
@@ -31,14 +30,17 @@
     "webpack-modernizr-loader": "^4.0.1",
     "yargs": "^12.0.2"
   },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "del": "^3.0.0"
+  },
+  "peerDependencies": {
+    "core-js": "^3.8.3"
+  },
   "engines": {
     "node": ">=8"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "devDependencies": {
-    "ava": "^0.25.0",
-    "del": "^3.0.0"
   }
 }

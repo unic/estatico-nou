@@ -18,8 +18,4 @@ module.exports = {
       debug: (env.L && env.L.length > 3),
     }],
   ],
-  plugins: [
-    // Allow parsing of import()
-    '@babel/plugin-syntax-dynamic-import',
-  ],
 };
