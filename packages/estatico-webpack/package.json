@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,6 +18,7 @@
     "@unic/estatico-utils": "0.0.10",
     "babel-loader": "^8.0.4",
     "chalk": "^2.4.1",
+    "core-js": "^3.8.2",
     "expose-loader": "^0.7.5",
     "handlebars-loader": "^1.7.0",
     "joi": "^14.0.2",

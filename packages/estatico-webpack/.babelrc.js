@@ -6,6 +6,7 @@ module.exports = {
     ['@babel/preset-env', {
       // Include polyfills when needed
       useBuiltIns: 'usage',
+      corejs: 3,
 
       // See browserslist file for config
       // targets: {},
