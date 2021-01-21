@@ -29,7 +29,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
+    "ava": "^3.15.0",
     "del": "^3.0.0"
   },
   "peerDependencies": {
