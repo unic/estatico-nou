@@ -38,21 +38,31 @@ test.afterEach(() => {
 
 test.afterEach.always(() => del(path.join(__dirname, '/results')));
 
-test.cb('default', (t) => {
-  task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
-});
+test('default', t => new Promise((resolve) => {
+  task(defaults)()
+    .on('end', () => {
+      const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/default/*'));
+      resolve(t.truthy(pairsMatch));
+    });
+}));
 
-test.cb('unprettified', (t) => {
+test('unprettified', (t) => {
   const options = merge({}, defaults, {
     plugins: {
       prettify: null,
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/unprettified/*')));
+  return new Promise((resolve) => {
+    task(options)()
+      .on('end', () => {
+        const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/unprettified/*'));
+        resolve(t.truthy(pairsMatch));
+      });
+  });
 });
 
-test.cb('customHelpers', (t) => {
+test('customHelpers', (t) => {
   const options = merge({}, defaults, {
     src: './test/fixtures/helper.hbs',
     plugins: {
@@ -64,10 +74,16 @@ test.cb('customHelpers', (t) => {
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
+  return new Promise((resolve) => {
+    task(options)()
+      .on('end', () => {
+        const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/customHelpers/*'));
+        resolve(t.truthy(pairsMatch));
+      });
+  });
 });
 
-test.cb('customHelpersFactory', (t) => {
+test('customHelpersFactory', (t) => {
   const options = merge({}, defaults, {
     src: './test/fixtures/helper.hbs',
     plugins: {
@@ -83,7 +99,13 @@ test.cb('customHelpersFactory', (t) => {
     },
   });
 
-  task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
+  return new Promise((resolve) => {
+    task(options)()
+      .on('end', () => {
+        const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/customHelpers/*'));
+        resolve(t.truthy(pairsMatch));
+      });
+  });
 });
 
 test('error', (t) => {
