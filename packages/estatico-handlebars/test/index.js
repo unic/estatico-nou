@@ -4,6 +4,7 @@ const utils = require('@unic/estatico-utils').test;
 const path = require('path');
 const del = require('del');
 const merge = require('lodash.merge');
+const { Logger } = require('@unic/estatico-utils');
 const task = require('../index.js');
 
 const defaults = {
@@ -21,7 +22,21 @@ const defaults = {
     },
     clone: null,
   },
+  logger: new Logger('estatico-handlebars'),
 };
+
+const sandbox = sinon.createSandbox();
+let spy;
+
+test.beforeEach(() => {
+  spy = sandbox.spy(defaults.logger, 'error');
+});
+
+test.afterEach(() => {
+  sandbox.restore();
+});
+
+test.afterEach.always(() => del(path.join(__dirname, '/results')));
 
 test.cb('default', (t) => {
   task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
@@ -71,25 +86,16 @@ test.cb('customHelpersFactory', (t) => {
   task(options)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/customHelpers/*')));
 });
 
-test.cb('error', (t) => {
+test('error', (t) => {
   const options = merge({}, defaults, {
     src: './test/fixtures/error.hbs',
   });
 
-  const spy = sinon.spy(console, 'log');
-
-  task(options, {
-    dev: true,
-  })().on('end', () => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    t.regex(log, /test\/fixtures\/error.json: Unexpected token in JSON at position 15/);
-    t.regex(log, /test\/fixtures\/error.hbs Parse error on line 2/);
-
-    t.end();
+  return new Promise((resolve) => {
+    task(options, {
+      dev: true,
+    })().on('end', () => {
+      resolve(t.truthy(spy.calledTwice));
+    });
   });
 });
-
-test.afterEach(() => del(path.join(__dirname, '/results')));
