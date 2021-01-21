@@ -50,7 +50,7 @@ module.exports = (options, env = {}) => new Plugin({
 
 ### Test
 
-#### compareFiles(t, fileGlob)
+#### compareFiles(fileGlob)
 
 Compares files resolved from `fileGlob` with current files in `results/` directory.
 
@@ -58,8 +58,13 @@ Compares files resolved from `fileGlob` with current files in `results/` directo
 const test = require('ava');
 const utils = require('@unic/estatico-utils').test;
 
-test.cb('default', (t) => {
-  task(defaults)().on('end', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
+test('default', (t) => {
+  task(defaults)()
+    .on('end', () => {
+      resolve(t.truthy(
+        utils.compareFiles(path.join(__dirname, 'expected/default/*'))
+      ));
+    });
 });
 ```
 

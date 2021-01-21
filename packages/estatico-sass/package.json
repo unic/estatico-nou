@@ -36,6 +36,7 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "del": "^3.0.0",
+    "postcss": "^8.2.4",
     "sinon": "^5.0.7"
   },
   "peerDependencies": {

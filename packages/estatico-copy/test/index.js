@@ -16,18 +16,28 @@ const defaults = {
   },
 };
 
-test.cb('default', (t) => {
-  task(defaults)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
-});
+test.afterEach(() => del(path.join(__dirname, '/results')));
 
-test.cb('rename', (t) => {
+test('default', t => new Promise((resolve) => {
+  task(defaults)()
+    .on('finish', () => {
+      const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/default/*'));
+      resolve(t.truthy(pairsMatch));
+    });
+}));
+
+test('rename', (t) => {
   const options = merge({}, defaults, {
     plugins: {
       rename: filePath => filePath.replace(path.basename(filePath), `new-${path.basename(filePath)}`),
     },
   });
 
-  task(options)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/rename/*')));
+  return new Promise((resolve) => {
+    task(options)()
+      .on('finish', () => {
+        const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/rename/*'));
+        resolve(t.truthy(pairsMatch));
+      });
+  });
 });
-
-test.afterEach(() => del(path.join(__dirname, '/results')));
