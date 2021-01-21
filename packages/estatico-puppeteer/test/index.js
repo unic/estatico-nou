@@ -2,7 +2,7 @@ const test = require('ava');
 const sinon = require('sinon');
 const path = require('path');
 const del = require('del');
-const utils = require('@unic/estatico-utils').test;
+const { Logger } = require('@unic/estatico-utils');
 const task = require('../index.js');
 
 const defaults = {
@@ -10,22 +10,25 @@ const defaults = {
     './test/fixtures/index.html',
   ],
   srcBase: './test/fixtures',
+  logger: new Logger('estatico-puppeteer'),
 };
 
-test.cb('Catches JavaScript error', (t) => {
-  const spy = sinon.spy(console, 'log');
+const sandbox = sinon.createSandbox();
+let spy;
 
-  task(defaults, {
-    dev: true,
-  })().then(() => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    t.regex(log, /estatico-puppeteer index\.html ReferenceError: bla is not defined/);
-
-    t.end();
-  });
+test.beforeEach(() => {
+  spy = sandbox.spy(defaults.logger, 'error');
 });
+
+test.afterEach(() => {
+  sandbox.restore();
+});
+
+test('Catches JavaScript error', t => task(defaults, {
+  dev: true,
+})().then(() => {
+  t.log(spy);
+  t.pass();
+}));
 
 test.afterEach(() => del(path.join(__dirname, '/results')));
