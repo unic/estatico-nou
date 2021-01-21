@@ -11,7 +11,7 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-font-datauri",
   "license": "Apache-2.0",
   "dependencies": {
-    "@unic/estatico-utils": "1.0.0",
+    "@unic/estatico-utils": "^1.0.0",
     "chalk": "^2.4.1",
     "gulp-concat": "^2.6.1",
     "gulp-plumber": "^1.2.0",
