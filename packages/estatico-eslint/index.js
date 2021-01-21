@@ -76,8 +76,15 @@ const task = (config, env = {}) => {
     .pipe(eslint(config.plugins.eslint).on('error', err => config.logger.error(err, env.dev)))
     .pipe(eslint.formatEach())
     .pipe(through.obj((file, enc, done) => {
-      if (file.eslint && (file.eslint.errorCount > 0 || file.eslint.fixed)) {
+      if (file.eslint) {
         const relFilePath = path.relative(config.srcBase, file.path);
+
+        if (file.eslint.warningCount > 0) {
+          config.logger.error({
+            message: 'Linting warning (details above)',
+            fileName: relFilePath,
+          }, env.dev);
+        }
 
         if (file.eslint.errorCount > 0) {
           config.logger.error({
