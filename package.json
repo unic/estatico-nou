@@ -10,11 +10,13 @@
     "lerna": "^3.4.3"
   },
   "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean",
     "lint": "eslint --fix \"{,**,**/**}*.js\"",
-    "update": "yarn outdated && lerna exec -- yarn outdated",
-    "test": "lerna exec -- yarn test",
     "netlify": "lerna bootstrap && lerna exec --scope @unic/estatico-boilerplate -- npm run netlify",
-    "release": "lerna publish"
+    "release": "lerna publish",
+    "test": "lerna exec -- yarn test",
+    "update": "yarn outdated && lerna exec -- yarn outdated"
   },
   "husky": {
     "hooks": {

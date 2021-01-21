@@ -64,8 +64,8 @@ The [estatico-boilerplate](packages/estatico-boilerplate) package is meant as a 
 
 - Clone this repository
 - Install yarn if you don't already have it: `npm i -g yarn`
-- Install lerna globally: `npm i -g lerna`
-- Bootstrap (installing dependencies and linking them): `lerna bootstrap`
+- Bootstrap (installing dependencies and linking them): `yarn bootstrap`,
+- To remove `node_modules` from each package: `yarn clean`
 
 If bootstrapping fails, reducing the concurrency might help: `lerna bootstrap --concurrency=1`
 
