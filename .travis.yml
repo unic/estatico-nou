@@ -5,8 +5,9 @@ cache:
   directories:
     - node_modules
 script:
-  - lerna bootstrap --loglevel=verbose
+  - yarn install
   - yarn test
+
 # https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
 sudo: required
 before_install:
