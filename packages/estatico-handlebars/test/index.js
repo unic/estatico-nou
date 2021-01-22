@@ -76,7 +76,7 @@ test.cb('error', (t) => {
     src: './test/fixtures/error.hbs',
   });
 
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
 
   task(options, {
     dev: true,
@@ -84,7 +84,7 @@ test.cb('error', (t) => {
     spy.restore();
 
     const log = utils.stripLogs(spy);
-
+console.log(1, log)
     t.regex(log, /test\/fixtures\/error.json: Unexpected token in JSON at position 15/);
     t.regex(log, /test\/fixtures\/error.hbs Parse error on line 2/);
 

@@ -9,7 +9,7 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
   const options = merge({}, defaults, {
     src: ['./test/fixtures/default/*.js'],
     plugins: {
@@ -39,7 +39,7 @@ test.cb('default', (t) => {
 });
 
 test.cb('variants', (t) => {
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
   const options = merge({}, defaults, {
     src: ['./test/fixtures/variants/*.js'],
     plugins: {
@@ -68,7 +68,7 @@ test.cb('variants', (t) => {
 });
 
 test.cb('refs', (t) => {
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
   const options = merge({}, defaults, {
     src: ['./test/fixtures/refs/*.js'],
     plugins: {

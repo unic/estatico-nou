@@ -12,7 +12,7 @@ const defaults = {
 };
 
 test.cb('default', (t) => {
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
 
   task(defaults, {
     dev: true,

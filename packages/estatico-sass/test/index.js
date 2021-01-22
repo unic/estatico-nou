@@ -27,7 +27,7 @@ test.cb('error', (t) => {
     src: './test/fixtures/error.scss',
   });
 
-  const spy = sinon.spy(console, 'log');
+  const spy = sinon.spy(process.stdout, 'write');
 
   task(options, {
     dev: true,
