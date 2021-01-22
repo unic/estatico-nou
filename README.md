@@ -1,3 +1,5 @@
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+
 # Estático Nou
 
 Refactored https://github.com/unic/estatico with separate packages for every task. Mono-repo based on [Lerna](https://github.com/lerna/lerna).
@@ -61,8 +63,9 @@ The [estatico-boilerplate](packages/estatico-boilerplate) package is meant as a 
 ## How can I contribute?
 
 - Clone this repository
-- Install lerna globally: `npm i -g lerna`
-- Bootstrap (installing dependencies and linking them): `lerna bootstrap` 
+- Install yarn if you don't already have it: `npm i -g yarn`
+- Bootstrap (installing dependencies and linking them): `yarn bootstrap`,
+- To remove `node_modules` from each package: `yarn clean`
 
 If bootstrapping fails, reducing the concurrency might help: `lerna bootstrap --concurrency=1`
 

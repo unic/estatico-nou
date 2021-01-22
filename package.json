@@ -1,4 +1,5 @@
 {
+  "private": true,
   "devDependencies": {
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-conventional": "^7.1.2",
@@ -6,19 +7,23 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
     "husky": "^1.1.2",
-    "lerna": "^3.4.3",
-    "npm-check": "^5.7.0"
+    "lerna": "^3.4.3"
   },
   "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean",
     "lint": "eslint --fix \"{,**,**/**}*.js\"",
-    "update": "npm-check -u && lerna exec -- npm-check -u",
-    "test": "lerna exec -- npm test",
     "netlify": "lerna bootstrap && lerna exec --scope @unic/estatico-boilerplate -- npm run netlify",
-    "release": "lerna publish"
+    "release": "lerna publish",
+    "test": "lerna exec -- yarn test",
+    "update": "yarn outdated && lerna exec -- yarn outdated"
   },
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
