@@ -6,7 +6,6 @@ const fs = require('fs');
 const Highlight = require('highlight.js');
 const marked = require('marked');
 const prettify = require('js-beautify');
-const Handlebars = require('handlebars');
 
 const fileCache = {};
 
@@ -81,23 +80,21 @@ module.exports = {
   },
 
   getFormattedHandlebars(content) {
-    let usedPartials = this.getUsedPartialsInTemplate(content);
-    let partialContent;
+    return this.getHighlightedTemplate(content);
+  },
+
+  getFormattedHandlebarsPartials(content) {
+    const usedPartials = this.getUsedPartialsInTemplate(content);
 
     // Look up content of all partials used in the main template
-    usedPartials = usedPartials.map((partial) => {
-      partialContent = getFile(path.resolve('./src/', `${partial}.hbs`));
+    return usedPartials.map((partial) => {
+      const partialContent = getFile(path.resolve('./src/', `${partial}.hbs`));
 
       return {
         name: partial,
         content: this.getHighlightedTemplate(partialContent),
       };
     });
-
-    return {
-      content: this.getHighlightedTemplate(content),
-      partials: usedPartials,
-    };
   },
 
   getFormattedJsx(filePath) {
@@ -133,7 +130,7 @@ module.exports = {
    */
   getUsedPartialsInTemplate(content) {
     let list = [];
-    const regexp = /{{>[\s"]*([a-z0-9/_-]+\/_[a-z0-9/._-]+)[\s"}]/g;
+    const regexp = /{{>[\s-]*["|']?([^"\s(]+).*?}}/g;
     let match;
 
     match = regexp.exec(content);
@@ -170,14 +167,6 @@ module.exports = {
     return marked(content);
   },
 
-  getMarkedHandlebars(filePath, context) {
-    const requirePath = getRequirePath(filePath);
-    const content = getFile(requirePath);
-    const compiledHandlebars = Handlebars.compile(content)(context);
-
-    return marked(compiledHandlebars);
-  },
-
   getColors(filePath) {
     const requirePath = getRequirePath(filePath);
     let colors = [];
@@ -202,5 +191,39 @@ module.exports = {
     }
 
     return colors;
+  },
+
+  /**
+   * Set up variant data to be rendered with code preview etc.
+   */
+  setupVariants(config) {
+    const variants = _.merge({
+      default: {
+        meta: {
+          title: 'Default',
+          desc: 'Default implementation',
+        },
+      },
+    }, config.variants);
+
+    return _.mapValues(variants, (variant) => {
+      const variantProps = _.merge({}, config.data, variant).props;
+      const compiledVariant = () => config.handlebars.compile(config.template)(variantProps);
+      const variantData = _.merge({}, config.data, variant, {
+        meta: {
+          demo: compiledVariant,
+          code: config.skipCode ? null : {
+            handlebars: {
+              content: () => this.getFormattedHandlebars(config.template),
+              partials: () => this.getFormattedHandlebarsPartials(config.template),
+            },
+            html: () => this.getFormattedHtml(compiledVariant()),
+            data: () => this.getFormattedJson(variantProps),
+          },
+        },
+      });
+
+      return variantData;
+    });
   },
 };
