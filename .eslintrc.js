@@ -1,7 +1,10 @@
 module.exports = {
   extends: 'airbnb-base',
-  rules: {
-    'import/no-extraneous-dependencies': 'off',
-    'import/no-unresolved': 'off'
-  }
+  ignorePatterns: [
+    '**/dist',
+    '**/test/expected',
+    '**/estatico-eslint/test/fixtures/main.js',
+    '**/estatico-webpack/test/fixtures/async.js',
+    '**/estatico-boilerplate/src'
+  ]
 };
