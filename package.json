@@ -20,6 +20,6 @@
   "scripts": {
     "lint": "eslint . --fix",
     "test": "yarn workspaces run test",
-    "update": "yarn upgrade-interactive --latest && yarn upgrade"
+    "update": "yarn upgrade-interactive --latest"
   }
 }
