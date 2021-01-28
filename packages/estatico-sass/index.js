@@ -18,7 +18,6 @@ const schema = Joi.object().keys({
   src: [Joi.string().required(), Joi.array().required()],
   srcBase: Joi.string().required(),
   dest: Joi.string().required(),
-  minifiedSuffix: Joi.string().required(),
   plugins: {
     sass: Joi.object().keys({
       includePaths: Joi.array().allow(null),

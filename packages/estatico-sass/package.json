@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-sass",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Compiles Sass to CSS using node-sass and postcss.",
   "main": "index.js",
   "repository": "https://github.com/unic/estatico-nou.git",
