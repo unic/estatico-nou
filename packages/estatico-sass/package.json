@@ -1,44 +1,44 @@
 {
   "name": "@unic/estatico-sass",
-  "version": "0.0.14",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Compiles Sass to CSS using node-sass and postcss.",
   "main": "index.js",
-  "scripts": {
-    "test": "ava test/index.js --serial --verbose",
-    "lerna-test": "lerna exec --scope @unic/estatico-sass -- npm test"
-  },
+  "repository": "https://github.com/unic/estatico-nou.git",
+  "homepage": "https://github.com/unic/estatico-nou/tree/develop/packages/estatico-sass",
+  "bugs": "https://github.com/unic/estatico-nou/issues",
   "author": "Unic AG",
-  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-sass",
   "license": "Apache-2.0",
-  "dependencies": {
-    "@unic/estatico-utils": "0.0.10",
-    "@unic/estatico-watch": "^0.0.12",
-    "autoprefixer": "^9.1.5",
-    "chalk": "^2.4.1",
-    "gulp-ignore": "^2.0.2",
-    "gulp-plumber": "^1.2.0",
-    "gulp-postcss": "^8.0.0",
-    "gulp-sass": "^4.0.1",
-    "gulp-size": "^3.0.0",
-    "gulp-sourcemaps": "^2.6.4",
-    "joi": "^13.2.0",
-    "lodash.merge": "^4.6.1",
-    "postcss-clean": "^1.1.0",
-    "postcss-filter-stream": "^0.0.6",
-    "through2": "^2.0.3"
-  },
   "engines": {
     "node": ">=8"
   },
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@unic/estatico-utils": "0.0.10",
+    "@unic/estatico-watch": "^0.0.12",
+    "cssnano": "^4.1.10",
+    "gulp-filter": "^6.0.0",
+    "gulp-if": "^3.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-postcss": "^9.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-size": "^3.0.0",
+    "joi": "^13.2.0",
+    "postcss": "^8.2.4",
+    "postcss-preset-env": "^6.7.0"
+  },
   "devDependencies": {
     "ava": "^0.25.0",
-    "del": "^3.0.0",
+    "del": "^6.0.0",
     "sinon": "^5.0.7"
   },
   "peerDependencies": {
-    "gulp": ">=3.9.0"
+    "gulp": ">=4"
+  },
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-sass -- npm test"
   }
 }

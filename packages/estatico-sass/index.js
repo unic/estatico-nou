@@ -1,6 +1,17 @@
-/* eslint-disable global-require */
+const { Transform } = require('stream');
 const { Plugin, Logger } = require('@unic/estatico-utils');
 const Joi = require('joi');
+
+const gulp = require('gulp');
+const plumber = require('gulp-plumber');
+const sass = require('gulp-sass');
+const conditionally = require('gulp-if');
+const postcss = require('gulp-postcss');
+const presetEnv = require('postcss-preset-env');
+const cssnano = require('cssnano');
+const rename = require('gulp-rename');
+const filter = require('gulp-filter');
+const size = require('gulp-size');
 
 // Config schema used for validation
 const schema = Joi.object().keys({
@@ -36,29 +47,21 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (env = {}) => {
-  const autoprefixer = require('autoprefixer');
-  const clean = require('postcss-clean');
-  const filterStream = require('postcss-filter-stream');
-
-  return {
-    src: null,
-    srcBase: null,
-    dest: null,
-    watch: null,
-    minifiedSuffix: '.min',
-    plugins: {
-      sass: {
-        includePaths: null,
-      },
-      clone: env.ci,
-      postcss: [
-        autoprefixer(),
-      ].concat(env.dev ? [] : filterStream(['**/*', '!**/*.min*'], clean())),
+const defaults = () => ({
+  src: null,
+  srcBase: null,
+  dest: null,
+  watch: null,
+  plugins: {
+    sass: {
+      includePaths: null,
     },
-    logger: new Logger('estatico-sass'),
-  };
-};
+    postcss: [
+      presetEnv(),
+    ],
+  },
+  logger: new Logger('estatico-sass'),
+});
 
 /**
  * Task function
@@ -67,87 +70,47 @@ const defaults = (env = {}) => {
  * @param {object} [watcher] - Watch file events (requires `@unic/estatico-watch`)
  * @return {object} gulp stream
  */
-const task = (config, env = {}, watcher) => {
-  const chalk = require('chalk');
-  const path = require('path');
-  const gulp = require('gulp');
-  const plumber = require('gulp-plumber');
-  const sass = require('gulp-sass');
-  const postcss = require('gulp-postcss');
-  const sourcemaps = require('gulp-sourcemaps');
-  const through = require('through2');
-  const ignore = require('gulp-ignore');
-  const size = require('gulp-size');
-
-  const autoprefixer = config.plugins.postcss.find(plugin => plugin.postcssPlugin === 'autoprefixer');
-
-  if (autoprefixer) {
-    const info = autoprefixer.info();
-
-    config.logger.debug('autoprefixer', info);
-  }
-
-  return gulp.src(config.src, {
-    base: config.srcBase,
-  })
-
-    // Prevent stream from unpiping on error
-    .pipe(plumber())
-
-    // Decide based on watcher dependency graph which files to pass through
-    .pipe(through.obj((file, enc, done) => {
+const task = (config, env = {}, watcher) => gulp.src(config.src, {
+  base: config.srcBase,
+  sourcemaps: env.dev,
+})
+  .pipe(plumber())
+  // check whether the current file can be skipped
+  .pipe((() => new Transform({
+    objectMode: true,
+    transform(file, _encoding, done) {
       if (watcher && watcher.matchGraph && !watcher.matchGraph(file.path)) {
         return done();
       }
 
       return done(null, file);
-    }))
-
-    .pipe(sourcemaps.init())
-
-    // Sass
-    .pipe(sass(config.plugins.sass).on('error', err => config.logger.error(err, env.dev)))
-
-    // Clone for production version
-    .pipe(config.plugins.clone ? through.obj(function (file, enc, done) { // eslint-disable-line
-      const clone = file.clone();
-
-      clone.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`);
-
-      config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)} to keep unminified files`);
-
-      this.push(clone);
-
-      done(null, file);
-    }) : through.obj((file, enc, done) => {
-      if (!env.dev) {
-        file.path = file.path.replace(path.extname(file.path), ext => `${config.minifiedSuffix}${ext}`); // eslint-disable-line no-param-reassign
-      }
-
-      done(null, file);
-    }))
-
-    // PostCSS
-    .pipe(postcss(config.plugins.postcss))
-
-    // Add sourcemaps files to stream
-    .pipe(sourcemaps.write('.', {
-      includeContent: false,
-      sourceRoot: config.srcBase,
-    }))
-
-    // Save
-    .pipe(gulp.dest(config.dest))
-
-    // Remove sourcemaps before logging size
-    .pipe(ignore.exclude(file => path.extname(file.path) === '.map'))
-
-    // Log size
-    .pipe(size({
-      showFiles: true,
-      title: 'estatico-sass',
-    }));
-};
+    },
+  }))())
+  // transpile scss to css
+  .pipe(sass.sync(config.plugins.sass).on('error', sassError => config.logger.error(sassError, env.dev)))
+  // pipe through postcss without minifying it
+  .pipe(postcss(config.plugins.postcss))
+  // write unminified files to disk
+  .pipe(gulp.dest(config.dest, {
+    sourcemaps: '.',
+  }))
+  // filter out sourcemaps from the stream, if present
+  .pipe(filter(['**', '!**/*.css.map']))
+  // pipe through cssnano and minify when not in dev mode
+  .pipe(conditionally(!env.dev, postcss([
+    cssnano(),
+  ])))
+  // rename to ${file}.min.css when not in dev mode
+  .pipe(conditionally(!env.dev, rename({
+    suffix: '.min',
+  })))
+  // write minified files to disk when not in dev mode
+  .pipe(conditionally(!env.dev, gulp.dest(config.dest)))
+  // log stats to console
+  .pipe(size({
+    showFiles: true,
+    title: 'estatico-sass',
+  }));
 
 /**
  * @param {object|func} options - Custom config
