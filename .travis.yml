@@ -1,15 +1,14 @@
 language: node_js
+
 node_js:
   - "14"
-cache:
-  directories:
-    - node_modules
+
+cache: yarn
+
 script:
-  - lerna bootstrap --loglevel=verbose
+  - yarn install
   - yarn test
-# https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
-sudo: required
+
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install graphicsmagick
-  - npm i -g yarn
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$PATH"
