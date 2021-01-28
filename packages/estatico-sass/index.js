@@ -47,17 +47,15 @@ const schema = Joi.object().keys({
  * @param {object} env - Optional environment config, e.g. { dev: true }
  * @return {object}
  */
-const defaults = (env = {}) => ({
+const defaults = () => ({
   src: null,
   srcBase: null,
   dest: null,
   watch: null,
-  minifiedSuffix: '.min',
   plugins: {
     sass: {
       includePaths: null,
     },
-    clone: env.ci,
     postcss: [
       presetEnv(),
     ],
@@ -89,7 +87,7 @@ const task = (config, env = {}, watcher) => gulp.src(config.src, {
     },
   }))())
   // transpile scss to css
-  .pipe(sass.sync(config.plugins.sass).on('error', err => config.logger.error(err, env.dev)))
+  .pipe(sass.sync(config.plugins.sass).on('error', sassError => config.logger.error(sassError, env.dev)))
   // pipe through postcss without minifying it
   .pipe(postcss(config.plugins.postcss))
   // write unminified files to disk
@@ -104,7 +102,7 @@ const task = (config, env = {}, watcher) => gulp.src(config.src, {
   ])))
   // rename to ${file}.min.css when not in dev mode
   .pipe(conditionally(!env.dev, rename({
-    suffix: config.minifiedSuffix,
+    suffix: '.min',
   })))
   // write minified files to disk when not in dev mode
   .pipe(conditionally(!env.dev, gulp.dest(config.dest)))

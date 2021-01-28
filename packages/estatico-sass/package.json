@@ -1,15 +1,19 @@
 {
   "name": "@unic/estatico-sass",
-  "version": "0.1.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Compiles Sass to CSS using node-sass and postcss.",
   "main": "index.js",
-  "scripts": {
-    "test": "ava test/index.js --serial --verbose",
-    "lerna-test": "lerna exec --scope @unic/estatico-sass -- npm test"
-  },
+  "repository": "https://github.com/unic/estatico-nou.git",
+  "homepage": "https://github.com/unic/estatico-nou/tree/develop/packages/estatico-sass",
+  "bugs": "https://github.com/unic/estatico-nou/issues",
   "author": "Unic AG",
-  "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-sass",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@unic/estatico-utils": "0.0.10",
     "@unic/estatico-watch": "^0.0.12",
@@ -25,12 +29,6 @@
     "postcss": "^8.2.4",
     "postcss-preset-env": "^6.7.0"
   },
-  "engines": {
-    "node": ">=8"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
   "devDependencies": {
     "ava": "^0.25.0",
     "del": "^6.0.0",
@@ -38,5 +36,9 @@
   },
   "peerDependencies": {
     "gulp": ">=4"
+  },
+  "scripts": {
+    "test": "ava test/index.js --serial --verbose",
+    "lerna-test": "lerna exec --scope @unic/estatico-sass -- npm test"
   }
 }
