@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-data",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,11 +11,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "callsite": "^1.0.0",
-    "glob": "^7.1.2",
+    "glob": "^7.1.6",
     "handlebars": "^4.0.11",
     "highlight.js": "^10.5.0",
-    "js-beautify": "^1.7.5",
-    "lodash": "^4.17.10",
+    "js-beautify": "^1.13.5",
+    "lodash": "^4.17.20",
     "marked": "^0.3.19"
   },
   "engines": {
