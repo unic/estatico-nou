@@ -25,22 +25,19 @@ function stripLogs(sinonSpy) {
   return logs;
 }
 
-function compareFiles(t, globPath) {
+function compareFiles(globPath) {
   const expected = glob.sync(globPath, {
     nodir: true,
   });
 
-  expected.forEach((filePath) => {
-    const resultedFilePath = filePath.replace(/expected\/(.*?)\//, 'results/');
+  return expected.map((filePath) => {
+    const resultFilePath = filePath.replace(/expected\/(.*?)\//, 'results/');
     const expectedFile = fs.readFileSync(filePath).toString();
-    const resultedFile = fs.readFileSync(resultedFilePath).toString();
+    const resultFile = fs.readFileSync(resultFilePath).toString();
+    console.log(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultFilePath)}`);
 
-    console.log(`Comparing ${chalk.yellow(filePath)} with ${chalk.yellow(resultedFilePath)}`);
-
-    t.is(expectedFile, resultedFile);
-  });
-
-  t.end();
+    return (expectedFile === resultFile);
+  }).every(matchResult => matchResult);
 }
 
 async function compareImages(t, globPath) {

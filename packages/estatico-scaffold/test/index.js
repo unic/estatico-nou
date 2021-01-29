@@ -21,12 +21,12 @@ const defaults = {
   },
 };
 
-test.cb('default', (t) => {
-  task(defaults)().then((/* results */) => {
-    // console.log(results);
+test.afterEach.always(() => del(path.join(__dirname, '/results')));
 
-    utils.compareFiles(t, path.join(__dirname, 'expected/default/*'));
-  });
-});
-
-test.afterEach(() => del(path.join(__dirname, '/results')));
+test('default', t => new Promise((resolve) => {
+  task(defaults)()
+    .then(() => {
+      const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/default/*'));
+      resolve(t.truthy(pairsMatch));
+    });
+}));

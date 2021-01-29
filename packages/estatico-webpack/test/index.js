@@ -1,9 +1,7 @@
 const test = require('ava');
-// const sinon = require('sinon');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
-const utils = require('@unic/estatico-utils').test;
 const merge = require('lodash.merge');
 const task = require('../index.js');
 

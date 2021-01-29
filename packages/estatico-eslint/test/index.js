@@ -1,9 +1,9 @@
 const test = require('ava');
 const sinon = require('sinon');
-const utils = require('@unic/estatico-utils').test;
 const path = require('path');
 const del = require('del');
 const merge = require('lodash.merge');
+const { Logger } = require('@unic/estatico-utils');
 const task = require('../index.js');
 
 const defaults = {
@@ -12,49 +12,45 @@ const defaults = {
   ],
   srcBase: './test/fixtures',
   dest: './test/results/',
+  logger: new Logger('estatico-eslint'),
 };
 
-test.cb('with --fix', (t) => {
-  const spy = sinon.spy(console, 'log');
+const sandbox = sinon.createSandbox();
+let spy;
 
+test.beforeEach(() => {
+  spy = sandbox.spy(defaults.logger, 'error');
+});
+
+test.afterEach(() => {
+  sandbox.restore();
+});
+
+test.afterEach.always(() => {
+  del(path.join(__dirname, '/results'));
+});
+
+test('logger alerts eslint warnings', t => new Promise((resolve) => {
   task(defaults, {
     dev: true,
     fix: true,
   })().on('end', () => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    t.notRegex(log, /'hello' is never reassigned. Use 'const' instead/);
-    t.notRegex(log, /estatico-eslint Linting error in file main\.js \(details above\)/);
-
-    utils.compareFiles(t, path.join(__dirname, 'expected/default/*'));
-
-    t.end();
+    resolve(t.truthy(spy.calledOnce));
   });
-});
+}));
 
-test.cb('without --fix', (t) => {
+test('logger alerts eslint errors', (t) => {
   const options = merge({}, defaults, {
     plugins: {
       changed: null,
     },
   });
 
-  const spy = sinon.spy(console, 'log');
-
-  task(options, {
-    dev: true,
-  })().on('finish', () => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    t.regex(log, /'hello' is never reassigned. Use 'const' instead/);
-    t.regex(log, /estatico-eslint main\.js Linting error \(details above\)/);
-
-    t.end();
+  return new Promise((resolve) => {
+    task(options, {
+      dev: true,
+    })().on('finish', () => {
+      resolve(t.truthy(spy.calledTwice));
+    });
   });
 });
-
-test.afterEach(() => del(path.join(__dirname, '/results')));

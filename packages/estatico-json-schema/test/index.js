@@ -1,15 +1,26 @@
 const test = require('ava');
 const sinon = require('sinon');
-const utils = require('@unic/estatico-utils').test;
 const merge = require('lodash.merge');
+const { Logger } = require('@unic/estatico-utils');
 const task = require('../index.js');
 
 const defaults = {
   srcBase: './test/fixtures',
+  logger: new Logger('estatico-json-schema'),
 };
 
-test.cb('default', (t) => {
-  const spy = sinon.spy(console, 'log');
+const sandbox = sinon.createSandbox();
+let spy;
+
+test.beforeEach('setup logger spy', () => {
+  spy = sandbox.spy(defaults.logger, 'error');
+});
+
+test.afterEach('teardown logger spy', () => {
+  sandbox.restore();
+});
+
+test('logs two errors in default/error.js', (t) => {
   const options = merge({}, defaults, {
     src: ['./test/fixtures/default/*.js'],
     plugins: {
@@ -20,26 +31,16 @@ test.cb('default', (t) => {
     },
   });
 
-  task(options, {
-    dev: true,
-  })().on('finish', () => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    // error.js should log two errors
-    t.regex(log, /default\/error\.js #\/required: should have required property 'firstName'/);
-    t.regex(log, /default\/error\.js #\/properties\/age\/type: should be integer/);
-
-    // success.js should not log any errors
-    t.notRegex(log, /default\/success\.js/);
-
-    t.end();
+  return new Promise((resolve) => {
+    task(options, {
+      dev: true,
+    })().on('finish', () => {
+      resolve(t.truthy(spy.calledTwice));
+    });
   });
 });
 
-test.cb('variants', (t) => {
-  const spy = sinon.spy(console, 'log');
+test('logs two errors in variants/error.js', (t) => {
   const options = merge({}, defaults, {
     src: ['./test/fixtures/variants/*.js'],
     plugins: {
@@ -49,26 +50,16 @@ test.cb('variants', (t) => {
     },
   });
 
-  task(options, {
-    dev: true,
-  })().on('finish', () => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    // error.js should log two errors
-    t.regex(log, /variants\/error\.js \[Default\] #\/required: should have required property 'firstName'/);
-    t.regex(log, /variants\/error\.js \[Variant 1\] #\/properties\/age\/type: should be integer/);
-
-    // success.js should not log any errors
-    t.notRegex(log, /variants\/success\.js/);
-
-    t.end();
+  return new Promise((resolve) => {
+    task(options, {
+      dev: true,
+    })().on('finish', () => {
+      resolve(t.truthy(spy.calledTwice));
+    });
   });
 });
 
-test.cb('refs', (t) => {
-  const spy = sinon.spy(console, 'log');
+test('logs one error in refs/error.js', (t) => {
   const options = merge({}, defaults, {
     src: ['./test/fixtures/refs/*.js'],
     plugins: {
@@ -78,19 +69,11 @@ test.cb('refs', (t) => {
     },
   });
 
-  task(options, {
-    dev: true,
-  })().on('finish', () => {
-    spy.restore();
-
-    const log = utils.stripLogs(spy);
-
-    // error.js should log an error
-    t.regex(log, /refs\/error\.js #\/properties\/items\/items\/properties\/age\/type: should be integer/);
-
-    // // success.js should not log any errors
-    t.notRegex(log, /refs\/success\.js/);
-
-    t.end();
+  return new Promise((resolve) => {
+    task(options, {
+      dev: true,
+    })().on('finish', () => {
+      resolve(t.truthy(spy.calledOnce));
+    });
   });
 });

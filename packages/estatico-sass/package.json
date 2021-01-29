@@ -30,7 +30,7 @@
     "postcss-preset-env": "^6.7.0"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
+    "ava": "^3.15.0",
     "del": "^6.0.0",
     "sinon": "^5.0.7"
   },

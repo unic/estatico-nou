@@ -12,8 +12,12 @@ const defaults = {
   dest: './test/results/',
 };
 
-test.cb('default', (t) => {
-  task(defaults)().on('finish', () => utils.compareFiles(t, path.join(__dirname, 'expected/default/*')));
-});
+test('default', t => new Promise((resolve) => {
+  task(defaults)()
+    .on('finish', () => {
+      const pairsMatch = utils.compareFiles(path.join(__dirname, 'expected/default/*'));
+      resolve(t.truthy(pairsMatch));
+    });
+}));
 
 test.afterEach(() => del(path.join(__dirname, '/results')));
