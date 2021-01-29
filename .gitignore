@@ -1,4 +1,4 @@
 node_modules
 dist
 lerna-debug.log
-package-lock.json
+yarn-error.log

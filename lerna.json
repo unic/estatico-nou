@@ -1,5 +1,7 @@
 {
   "lerna": "3.4.3",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
   "packages": [
     "packages/*"
   ],
@@ -7,11 +9,6 @@
   "useGitVersion": true,
   "gitVersionPrefix": "v",
   "command": {
-    "bootstrap": {
-      "hoist": true,
-      "npmClientArgs": ["--no-package-lock"],
-      "ci": false
-    },
     "publish": {
       "allowBranch": "develop",
       "conventionalCommits": true,
