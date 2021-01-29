@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "jest": "jest",
+    "test": "jest",
     "gulp": "gulp",
     "build": "gulp build --ci",
     "start": "gulp --dev --watch",
