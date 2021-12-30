@@ -74,6 +74,7 @@ const task = (config, env = {}) => {
     .pipe(through.obj(async (file, _enc, done) => {
       const eslint = new ESLint(config.plugins.eslint);
       const results = await eslint.lintFiles(file.path);
+      const [ result ] = results;
       const formatter = await eslint.loadFormatter('stylish');
       const output = formatter.format(results);
 
@@ -84,6 +85,14 @@ const task = (config, env = {}) => {
       if (output.length > 0) {
         // eslint-disable-next-line no-console
         console.log(output);
+      }
+
+      if (!env.dev && result.errorCount > 0) {
+        return done(new Error(`Found ${result.errorCount} error(s) in ${file.relative}! Aborting build!`), file);
+      }
+
+      if (!env.dev && result.warningCount > 0) {
+        return done(new Error(`Found ${result.warningCount} warning(s) in ${file.relative}! Aborting build!`), file);
       }
 
       return done(null, file);
