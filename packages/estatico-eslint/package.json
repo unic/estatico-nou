@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-eslint",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,9 +14,9 @@
     "@babel/core": "^7.16.5",
     "@babel/eslint-parser": "^7.16.5",
     "@unic/estatico-utils": "0.0.10",
-    "eslint": "^8.5.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.11.0",
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
     "gulp-changed-in-place": "^2.3.0",
     "gulp-plumber": "^1.2.0",
     "joi": "^13.2.0",
