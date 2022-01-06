@@ -57,10 +57,8 @@ const task = (config, env = {}) => {
   const gulp = require('gulp');
   const plumber = require('gulp-plumber');
   const changed = require('gulp-changed-in-place');
-  const eslint = require('gulp-eslint');
   const through = require('through2');
-  const chalk = require('chalk');
-  const path = require('path');
+  const { ESLint } = require('eslint');
 
   return gulp.src(config.src, {
     base: config.srcBase,
@@ -72,33 +70,33 @@ const task = (config, env = {}) => {
     // Do not pass unchanged files
     .pipe(config.plugins.changed ? changed(config.plugins.changed) : through.obj())
 
-    // Lint and log formatted results, optionally auto-fix files
-    .pipe(eslint(config.plugins.eslint).on('error', err => config.logger.error(err, env.dev)))
-    .pipe(eslint.formatEach())
-    .pipe(through.obj((file, enc, done) => {
-      if (file.eslint && (file.eslint.errorCount > 0 || file.eslint.fixed)) {
-        const relFilePath = path.relative(config.srcBase, file.path);
+    // pass files directly to eslint
+    .pipe(through.obj(async (file, _enc, done) => {
+      const eslint = new ESLint(config.plugins.eslint);
+      const results = await eslint.lintFiles(file.path);
+      const [ result ] = results;
+      const formatter = await eslint.loadFormatter('stylish');
+      const output = formatter.format(results);
 
-        if (file.eslint.errorCount > 0) {
-          config.logger.error({
-            message: 'Linting error (details above)',
-            fileName: relFilePath,
-          }, env.dev);
-        }
-
-        // Only keep file in stream if it was fixed
-        if (file.eslint.fixed) {
-          config.logger.info(`Automatically fixed linting issues in ${chalk.yellow(relFilePath)}. Set "plugins.eslint.fix" to false to disable this functionality.`);
-
-          return done(null, file);
-        }
+      if (config.plugins.eslint.fix) {
+        await ESLint.outputFixes(results);
       }
 
-      return done();
-    }))
+      if (output.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log(output);
+      }
 
-    // Optionally write back to disc
-    .pipe(config.plugins.eslint.fix ? gulp.dest(config.dest) : through.obj());
+      if (!env.dev && result.errorCount > 0) {
+        return done(new Error(`Found ${result.errorCount} error(s) in ${file.relative}! Aborting build!`), file);
+      }
+
+      if (!env.dev && result.warningCount > 0) {
+        return done(new Error(`Found ${result.warningCount} warning(s) in ${file.relative}! Aborting build!`), file);
+      }
+
+      return done(null, file);
+    }).on('error', error => config.logger.error(error, env.dev)))
 };
 
 /**

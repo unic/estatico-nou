@@ -1,14 +1,13 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   extends: 'airbnb-base',
   rules: {
     'import/no-extraneous-dependencies': 'off',
-    'import/no-unresolved': 'off',
-    'class-methods-use-this': 'off'
+    'class-methods-use-this': 'off',
+    'function-paren-newline': 'off',
   },
   env: {
     node: true,
     browser: true,
   },
 };
-  

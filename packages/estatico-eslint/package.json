@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-eslint",
-  "version": "0.0.13",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,26 +11,25 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-eslint",
   "license": "Apache-2.0",
   "dependencies": {
+    "@babel/core": "^7.16.5",
+    "@babel/eslint-parser": "^7.16.5",
     "@unic/estatico-utils": "0.0.10",
-    "babel-eslint": "^9.0.0",
-    "chalk": "^2.4.1",
+    "eslint": "^8.5.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
     "gulp-changed-in-place": "^2.3.0",
-    "gulp-eslint": "^4.0.2",
     "gulp-plumber": "^1.2.0",
     "joi": "^13.2.0",
     "through2": "^2.0.3"
   },
   "engines": {
-    "node": ">=8"
+    "node": "^12.22.0 || ^14.17.0 || >=16.0.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "del": "^3.0.0",
     "lodash.merge": "^4.6.1",
     "sinon": "^5.0.7"
   },
