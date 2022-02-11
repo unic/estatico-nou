@@ -1,5 +1,4 @@
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
@@ -9,41 +8,36 @@ module.exports = {
     },
   },
   module: {
-    rules: [
-      {
-        test: /jquery\.js$/,
-        loader: 'expose-loader?$!expose-loader?jQuery',
-      },
-      {
-        test: /modernizrrc\.js$/,
-        loader: 'expose-loader?Modernizr!webpack-modernizr-loader',
-      },
-      {
-        test: /\.hbs$/,
-        loader: 'handlebars-loader',
-      },
-      {
-        test: /(\.js|\.jsx)$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
+    rules: [{
+      test: /jquery\.js$/,
+      use: [{
+        loader: 'expose-loader',
         options: {
-          // See .babelrc.js
+          exposes: ['$', 'jQuery'],
         },
-      },
-    ],
-  },
-
-  // Custom UglifyJS options
-  optimization: {
-    minimizer: [
-      new UglifyJSPlugin({
-        uglifyOptions: {
-          mangle: {
-            keep_fnames: true,
-          },
+      }],
+    }, {
+      test: /modernizrrc\.js$/,
+      use: [{
+        loader: 'expose-loader',
+        options: {
+          exposes: ['Modernizr'],
         },
-      }),
-    ],
+      }, {
+        loader: 'webpack-modernizr-loader',
+      }],
+    }, {
+      test: /\.hbs$/,
+      use: [{
+        loader: 'handlebars-loader',
+      }],
+    }, {
+      test: /(\.jsx?)$/,
+      exclude: /node_modules/,
+      use: [{
+        loader: 'babel-loader',
+      }],
+    }],
   },
   plugins: [
     new BundleAnalyzerPlugin({

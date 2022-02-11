@@ -1,6 +1,6 @@
 {
   "name": "@unic/estatico-webpack",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,31 +11,29 @@
   "repository": "https://github.com/unic/estatico-nou/tree/master/packages/estatico-webpack",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/polyfill": "^7.12.1",
-    "@babel/preset-env": "^7.12.11",
+    "@babel/core": "^7.17.2",
+    "@babel/preset-env": "^7.16.11",
     "@unic/estatico-utils": "0.0.10",
-    "babel-loader": "^8.2.2",
+    "babel-loader": "^8.2.3",
     "chalk": "^2.4.1",
-    "core-js": "^3.8.2",
-    "expose-loader": "^0.7.5",
-    "handlebars-loader": "^1.7.0",
+    "core-js": "^3.21.0",
+    "expose-loader": "^3.1.0",
+    "handlebars-loader": "^1.7.1",
     "joi": "^14.0.2",
-    "lodash.merge": "^4.6.1",
+    "lodash.merge": "^4.6.2",
     "lodash.once": "^4.1.1",
-    "uglifyjs-webpack-plugin": "^2.0.1",
-    "unminified-webpack-plugin": "^2.0.0",
-    "webpack": "^4.23.1",
-    "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-modernizr-loader": "^4.0.1",
+    "unminified-webpack-plugin": "^3.0.0",
+    "webpack": "^5.68.0",
+    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-modernizr-loader": "^5.0.0",
     "yargs": "^12.0.2"
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "del": "^3.0.0"
+    "del": "^6.0.0"
   },
   "peerDependencies": {
-    "core-js": "^3.8.3"
+    "core-js": "^3.21.0"
   },
   "engines": {
     "node": ">=8"
