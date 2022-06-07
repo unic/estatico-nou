@@ -4,7 +4,8 @@ const Joi = require('joi');
 
 const gulp = require('gulp');
 const plumber = require('gulp-plumber');
-const sass = require('gulp-sass');
+const dartSass = require('sass');
+const sass = require('gulp-sass')(dartSass);
 const conditionally = require('gulp-if');
 const postcss = require('gulp-postcss');
 const presetEnv = require('postcss-preset-env');
@@ -86,7 +87,7 @@ const task = (config, env = {}, watcher) => gulp.src(config.src, {
     },
   }))())
   // transpile scss to css
-  .pipe(sass.sync(config.plugins.sass).on('error', sassError => config.logger.error(sassError, env.dev)))
+  .pipe(sass.sync(config.plugins.sass).on('error', (sassError) => config.logger.error(sassError, env.dev)))
   // pipe through postcss without minifying it
   .pipe(postcss(config.plugins.postcss))
   // write unminified files to disk
