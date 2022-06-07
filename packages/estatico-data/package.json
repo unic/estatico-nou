@@ -16,7 +16,7 @@
     "highlight.js": "^10.5.0",
     "js-beautify": "^1.13.5",
     "lodash": "^4.17.20",
-    "marked": "^0.3.19"
+    "marked": "^4.0.10"
   },
   "engines": {
     "node": ">=8"
