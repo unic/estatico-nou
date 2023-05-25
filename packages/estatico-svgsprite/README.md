@@ -50,14 +50,44 @@ See possible flags specified above.
 ### Client
 
 ```js
-import loadSvgSprites from '@unic/estatico-svgsprite/lib/loader';
+import SvgSpriteLoader from '@unic/estatico-svgsprite/lib/loader';
 
-document.addEventListener('DOMContentLoaded', loadSvgSprites());
+new SvgSpriteLoader();
 ```
 
 Add config to template:
 ```html
 <body data-svgsprites-options='["/assets/media/svgsprite/main.svg", "/assets/media/svgsprite/demo.svg"]'>
+```
+
+Optional configuration:
+
+```js
+import SvgSpriteLoader from '@unic/estatico-svgsprite/lib/loader';
+
+new SvgSpriteLoader({
+  // Class added to inserted sprites container
+  containerClass: 'svgsprites',
+  // Callback when sprite is loaded
+  onLoaded: (name) => {
+    document.documentElement.classList.add('svgsprites--loaded');
+    document.documentElement.classList.add(`svgsprites--loaded-${name}`);
+  },
+  // Get sprites to load
+  // Returns array of { name, url } objects
+  getSprites: () => {
+    try {
+      const config = JSON.parse(document.body.dataset.svgspritesOptions);
+
+      return config.map((url) => {
+        const name = url.match(/([^/]*)\/*\.svg$/)[1];
+
+        return { name, url };
+      });
+    } catch (e) {
+      return null;
+    }
+});
 ```
 
 ## API

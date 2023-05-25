@@ -1,82 +1,79 @@
-/* eslint-disable no-var,vars-on-top,prefer-arrow-callback,func-names,prefer-template */
-/* globals document, window, ActiveXObject */
+/* globals document, XMLHttpRequest */
+class SvgSpriteLoader {
+  constructor(options) {
+    this.config = Object.assign({
+      // Class added to inserted sprites container
+      containerClass: 'svgsprites',
+      // Callback when sprite is loaded
+      onLoaded: (name) => {
+        document.documentElement.classList.add('svgsprites--loaded');
+        document.documentElement.classList.add(`svgsprites--loaded-${name}`);
+      },
+      // Get sprites to load
+      // Returns array of { name, url } objects
+      getSprites: () => {
+        try {
+          const config = JSON.parse(document.body.dataset.svgspritesOptions);
 
-/**
- * SVG Icon Sprite Loader
- *
- * @author Unic AG
- * @copyright Unic AG
- */
+          return config.map((url) => {
+            const name = url.match(/([^/]*)\/*\.svg$/)[1];
 
-function loadSvgSprites() {
-  var id = 'm-svgsprites';
-  var spriteContainer = document.createElement('div');
-  var spritesToLoad;
-  var spritesAmount;
-
-  setTimeout(function () {
-    spritesToLoad = JSON.parse(document.body.getAttribute('data-svgsprites-options'));
-    spritesAmount = spritesToLoad.length;
-
-    /**
-     * Check if we can send a XMLHttpRequest
-     * @returns {*}
-     */
-    function getXMLHttpRequest() {
-      if (window.XMLHttpRequest) {
-        return new window.XMLHttpRequest();
-      }
-      try {
-        return new ActiveXObject('MSXML2.XMLHTTP.3.0');
-      } catch (e) {
-        return null;
-      }
-    }
-
-    /**
-     * RequestSVG
-     * @param url - string holding the url to the svg file
-     * @constructor
-     */
-    function RequestSVG(url) {
-      var oReq = getXMLHttpRequest();
-      var container = document.getElementById(id);
-      var handler = function () {
-        if (oReq.readyState === 4) { // complete
-          if (oReq.status === 200) {
-            container.innerHTML += oReq.responseText;
-          }
+            return {
+              name,
+              url,
+            };
+          });
+        } catch (e) {
+          return null;
         }
-      };
+      },
+    }, options);
 
-      oReq.open('GET', url, true);
-      oReq.onreadystatechange = handler;
-      oReq.send();
+    document.addEventListener('DOMContentLoaded', () => {
+      this.init();
+    });
+  }
+
+  init() {
+    this.sprites = this.config.getSprites();
+
+    if (!this.sprites) {
+      return;
     }
 
-    /**
-     * Send getXMLHttpRequest for each SVG sprite reference
-     * found in the data-icon-sets attribute on the body tag
-     */
-    if (spritesAmount > 0 && (document.getElementById(id) === null)) {
-      var i = spritesAmount;
-      var html = document.getElementsByTagName('html')[0];
+    this.container = this.insertContainer();
 
-      if (getXMLHttpRequest() !== null) {
-        spriteContainer.setAttribute('id', id);
-        spriteContainer.setAttribute('data-svgsprites', 'wrapper'); // for potential later usage within JavaScript
-        spriteContainer.setAttribute('style', 'display: none');
+    this.sprites.forEach((sprite) => {
+      this.loadSprite(sprite);
+    });
+  }
 
-        document.body.appendChild(spriteContainer);
+  insertContainer() {
+    const container = document.createElement('div');
 
-        while (i--) { // eslint-disable-line no-plusplus
-          new RequestSVG(spritesToLoad[i]); // eslint-disable-line no-new
-        }
+    container.classList.add(this.config.containerClass);
+    container.setAttribute('style', 'overflow:hidden;width:0;height:0;');
 
-        html.setAttribute('class', html.getAttribute('class') + ' svgsprites--loaded'); // word of caution: the SVG files might not really be loaded yet, this is rather about having them requested (for now)
+    document.body.appendChild(container);
+
+    return container;
+  }
+
+  loadSprite(sprite) {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('GET', sprite.url, true);
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        this.container.innerHTML += xhr.responseText;
+
+        this.config.onLoaded(sprite.name);
       }
-    }
-  }, 100);
+    };
+
+    xhr.send();
+  }
 }
 
-export default loadSvgSprites;
+export default SvgSpriteLoader;
