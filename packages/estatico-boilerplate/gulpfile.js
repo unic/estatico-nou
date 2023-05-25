@@ -4,6 +4,10 @@ const path = require('path');
 const fs = require('fs');
 const env = require('minimist')(process.argv.slice(2));
 
+env.browserSync = {
+  currentUrl: '',
+};
+
 
 /**
  * HTML task
@@ -16,6 +20,7 @@ gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
   const estaticoWatch = require('@unic/estatico-watch');
   const { readFileSyncCached } = require('@unic/estatico-utils');
+  const { parse } = require('url');
 
   const instance = task({
     src: [
@@ -96,6 +101,17 @@ gulp.task('html', () => {
         content = Buffer.from(content);
 
         return content;
+      },
+      // Prioritize the currently active page (as reported by BrowserSync)
+      sort: (file) => {
+        const currentPath = parse(env.browserSync.currentUrl).pathname || '';
+        const filePath = path.relative('./src', file.path).replace(path.extname(file.path), '');
+
+        if (currentPath.includes(filePath)) {
+          return -1;
+        }
+
+        return 1;
       },
     },
   }, env);
@@ -565,12 +581,37 @@ gulp.task('serve', () => {
     plugins: {
       browsersync: {
         server: './dist',
-        watch: './dist/**/*.{html,css,js}',
+        files: [
+          './dist/**/*.{css,js}',
+          {
+            match: ['./dist/**/*.html'],
+            // Reload only if current url is affected
+            fn: function fn(event, file) {
+              const filePath = path.relative('./dist', file);
+
+              if (env.browserSync.currentUrl && !env.browserSync.currentUrl.includes(filePath)) {
+                return;
+              }
+
+              this.reload();
+            },
+          },
+        ],
       },
     },
   }, env);
 
-  return instance();
+  const browserSync = instance();
+
+  // Save last requested url
+  // This can be used to decide which html page to build first
+  browserSync.emitter.on('service:running', () => {
+    browserSync.sockets.on('connection', (socket) => {
+      env.browserSync.currentUrl = socket.handshake.headers.referer;
+    });
+  });
+
+  return browserSync;
 });
 
 /**

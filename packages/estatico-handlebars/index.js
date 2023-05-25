@@ -29,10 +29,8 @@ const schema = Joi.object().keys({
     transformAfter: Joi.func().allow(null),
     data: Joi.func().allow(null),
     prettify: Joi.object().allow(null),
-    clone: Joi.object().keys({
-      data: Joi.object().allow(null),
-      rename: Joi.func(),
-    }).allow(null),
+    clone: Joi.func().allow(null),
+    sort: Joi.func().allow(null),
   },
   logger: Joi.object().keys({
     info: Joi.func(),
@@ -80,18 +78,26 @@ const defaults = env => ({
       indent_with_tabs: false,
       max_preserve_newlines: 1,
     },
-    clone: env.ci ? {
-      data: {
+    clone: env.ci ? (file) => {
+      const path = require('path');
+      const merge = require('lodash.merge');
+
+      const clone = file.clone();
+
+      // Extend default data
+      clone.data = merge({}, file.data, {
         env: {
           dev: true,
         },
-      },
-      rename: (filePath) => {
-        const path = require('path');
+      });
 
-        return filePath.replace(path.extname(filePath), `.dev${path.extname(filePath)}`);
-      },
+      // Rename
+      clone.path = file.path.replace(path.extname(file.path), `.dev${path.extname(file.path)}`);
+
+      // Return array
+      return [clone];
     } : null,
+    sort: null,
   },
   logger: new Logger('estatico-handlebars'),
 });
@@ -112,7 +118,6 @@ const task = (config, env = {}, watcher) => {
   const PluginError = require('plugin-error');
   const chalk = require('chalk');
   const path = require('path');
-  const merge = require('lodash.merge');
   const handlebarsWax = require('handlebars-wax');
 
   // Remove file extension from path, including complex ones like .data.js
@@ -150,6 +155,14 @@ const task = (config, env = {}, watcher) => {
     wax.helpers(config.plugins.handlebars.helpers, waxOptions);
   }
 
+  // Streaming helpers
+  const stream = {
+    files: [],
+    index: -1,
+    continue: false,
+  };
+
+  // Start streaming
   return gulp.src(config.src, {
     base: config.srcBase,
   })
@@ -164,25 +177,56 @@ const task = (config, env = {}, watcher) => {
       }
 
       return done(null, file);
-    }))
+    }).on('error', err => config.logger.error(err, env.dev)))
 
-    // Optional template transformation
+    // Optional sorting of passed files
     .pipe(through.obj((file, enc, done) => {
-      if (config.plugins.transformBefore) {
-        const content = config.plugins.transformBefore(file);
+      if (config.plugins.sort) {
+        // Don't immediately push files back to stream, create sortable array first
+        stream.files.push(file);
 
-        file.contents = content; // eslint-disable-line no-param-reassign
-
-        config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformBefore"` /* , chalk.gray(content.toString()) */);
+        return done();
       }
 
-      done(null, file);
+      return done(null, file);
+    }, function flush(done) {
+      // Sort array and push files back to stream
+      stream.files.sort(config.plugins.sort).forEach(file => this.push(file));
+
+      return done();
+    }).on('error', err => config.logger.error(err, env.dev)))
+
+    // Wait for first file to successfully build
+    // Otherwise, following files will slow down the build
+    .pipe(through.obj((file, enc, done) => {
+      // Skip if we are not in watch mode or if there is no sorting going on
+      if (!(watcher && config.plugins.sort)) {
+        return done(null, file);
+      }
+
+      stream.index += 1;
+
+      // First file is passed through
+      if (stream.index === 0) {
+        return done(null, file);
+      }
+
+      // Following files have to wait
+      const interval = setInterval(() => {
+        if (stream.continue) {
+          done(null, file);
+
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return interval;
     }).on('error', err => config.logger.error(err, env.dev)))
 
     // Find data and assign it to file object
     .pipe(through.obj((file, enc, done) => {
       try {
-        const data = config.plugins.data(file, config.logger);
+        const data = config.plugins.data(file, config);
 
         file.data = data; // eslint-disable-line no-param-reassign
 
@@ -196,22 +240,27 @@ const task = (config, env = {}, watcher) => {
       }
     }).on('error', err => config.logger.error(err, env.dev)))
 
+    // Optional template transformation
+    .pipe(through.obj((file, enc, done) => {
+      if (config.plugins.transformBefore) {
+        const content = config.plugins.transformBefore(file, config);
+
+        file.contents = content; // eslint-disable-line no-param-reassign
+
+        config.logger.debug(`Transformed ${chalk.yellow(file.path)} via "transformBefore"` /* , chalk.gray(content.toString()) */);
+      }
+
+      done(null, file);
+    }).on('error', err => config.logger.error(err, env.dev)))
+
     // Optionally clone file
     .pipe(through.obj(function (file, enc, done) { // eslint-disable-line
       if (config.plugins.clone) {
-        const clone = file.clone();
+        config.plugins.clone(file, config).forEach((clone) => {
+          config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
 
-        // Extend default data
-        clone.data = merge({}, file.data, config.plugins.clone.data);
-
-        // Rename
-        if (config.plugins.clone.rename) {
-          clone.path = config.plugins.clone.rename(file.path);
-        }
-
-        config.logger.debug(`Cloned ${chalk.yellow(file.path)} to ${chalk.yellow(clone.path)}`);
-
-        this.push(clone);
+          this.push(clone);
+        });
       }
 
       done(null, file);
@@ -223,7 +272,7 @@ const task = (config, env = {}, watcher) => {
     // Optional HTML transformation
     .pipe(through.obj((file, enc, done) => {
       if (config.plugins.transformAfter) {
-        const content = config.plugins.transformAfter(file);
+        const content = config.plugins.transformAfter(file, config);
 
         file.contents = content; // eslint-disable-line
 
@@ -245,7 +294,7 @@ const task = (config, env = {}, watcher) => {
       config.logger.debug(`Renamed ${chalk.yellow(file.path)} to ${chalk.yellow(renamedPath)}`);
 
       done(null, file);
-    }))
+    }).on('error', err => config.logger.error(err, env.dev)))
 
     // Log
     .pipe(through.obj((file, enc, done) => {
@@ -255,7 +304,16 @@ const task = (config, env = {}, watcher) => {
     }))
 
     // Save
-    .pipe(gulp.dest(config.dest));
+    .pipe(gulp.dest(config.dest))
+
+    // Report that first file was successfully built
+    .pipe(through.obj((file, enc, done) => {
+      if (!stream.continue) {
+        stream.continue = true;
+      }
+
+      return done(null, file);
+    }));
 };
 
 /**
