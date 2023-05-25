@@ -27,6 +27,7 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('html', () => {
   const task = require('@unic/estatico-handlebars');
   const estaticoWatch = require('@unic/estatico-watch');
+  const { handlebars: resolver } = require('@unic/estatico-watch/lib/resolvers');
   const { readFileSyncCached } = require('@unic/estatico-utils');
 
   const instance = task({
@@ -50,38 +51,14 @@ gulp.task('html', () => {
       name: 'html',
       dependencyGraph: {
         srcBase: './',
-        resolver: {
-          hbs: {
-            match: /{{(?:>|#extend)[\s-]*["|']?([^"\s(]+).*?}}/g,
-            resolve: (match /* , filePath */) => {
-              if (!match[1]) {
-                return null;
-              }
-
-              let resolvedPath = path.resolve('./src', match[1]);
-
-              // Add extension
-              resolvedPath = `${resolvedPath}.hbs`;
-
-              return resolvedPath;
-            },
-          },
-          js: {
-            match: /require\('(.*?\.data\.js)'\)/g,
-            resolve: (match, filePath) => {
-              if (!match[1]) {
-                return null;
-              }
-
-              return path.resolve(path.dirname(filePath), match[1]);
-            },
-          },
-        },
+        // See https://github.com/unic/estatico-nou/blob/develop/packages/estatico-watch/lib/resolver.js
+        resolver: resolver({
+          srcBase: './src',
+        }),
       },
       watcher: estaticoWatch,
     },
     plugins: {
-      clone: null,
       handlebars: {
         partials: [
           './src/**/*.hbs',
@@ -112,7 +89,7 @@ gulp.task('html', () => {
       },
     },
   }, env);
-  
+
   // Don't immediately run task when skipping build
   if (env.watch && env.skipBuild) {
     return instance;
