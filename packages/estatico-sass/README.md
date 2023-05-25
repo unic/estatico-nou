@@ -46,7 +46,7 @@ gulp.task('css', () => {
         srcBase: './',
         resolver: {
           scss: {
-            match: /@import[\s-]*["|']?([^"\s(]+).*?/g,
+            match: /@import[\s-]*["|']?([^(?:"|')\s(]+).*?/g,
             resolve: (match, filePath) => {
               if (!match[1]) {
                 return null;
