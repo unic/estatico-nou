@@ -200,7 +200,7 @@ gulp.task('data:lint', () => {
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
   const estaticoWatch = require('@unic/estatico-watch');
-  const nodeSassJsonImporter = require('node-sass-json-importer');
+  const sassJsonImporter = require('sass-json-importer');
 
   const instance = task({
     src: [
@@ -265,7 +265,7 @@ gulp.task('css', () => {
         ],
         importer: [
           // Add importer being able to deal with json files like colors, e.g.
-          nodeSassJsonImporter,
+          sassJsonImporter,
         ],
       },
       // Use task default (autoprefixer with .browserslistrc config)

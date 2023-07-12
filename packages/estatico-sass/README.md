@@ -27,7 +27,7 @@ const env = require('minimist')(process.argv.slice(2));
 gulp.task('css', () => {
   const task = require('@unic/estatico-sass');
   const estaticoWatch = require('@unic/estatico-watch');
-  const nodeSassJsonImporter = require('node-sass-json-importer');
+  const sassJsonImporter = require('sass-json-importer');
   const autoprefixer = require('autoprefixer');
 
   const instance = task({
@@ -90,7 +90,7 @@ gulp.task('css', () => {
         ],
         importer: [
           // Add importer being able to deal with json files like colors, e.g.
-          nodeSassJsonImporter,
+          sassJsonImporter,
         ],
       },
       postcss: [
@@ -170,7 +170,7 @@ Default:
 }
 ```
 
-Passed to [`node-sass`](https://www.npmjs.com/package/node-sass) via [`gulp-sass`](https://www.npmjs.com/package/gulp-sass). `includePaths` is resolved first since we cannot pass a function there.
+Passed to [`sass`](https://www.npmjs.com/package/sass) via [`gulp-sass`](https://www.npmjs.com/package/gulp-sass). `includePaths` is resolved first since we cannot pass a function there.
 
 ##### plugins.postcss
 

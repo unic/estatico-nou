@@ -73,7 +73,7 @@ Every package in `packages/` can be developed separately.
 
 ### Manage npm dependencies
 
-Since lerna does magic things with packages (symlinking local ones etc.), we need to use `lerna add` to add new dependencies to a package. Examples: `lerna add node-sass --scope=@unic/estatico-sass` or `lerna add left-pad --dev --scope=@unic/estatico-boilerplate`.
+Since lerna does magic things with packages (symlinking local ones etc.), we need to use `lerna add` to add new dependencies to a package. Examples: `lerna add sass --scope=@unic/estatico-sass` or `lerna add left-pad --dev --scope=@unic/estatico-boilerplate`.
 
 To remove dependencies, delete them from the corresponding `package.json`.
 
